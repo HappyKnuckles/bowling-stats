@@ -1,0 +1,7 @@
+{
+  "name": "BowlingStats",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

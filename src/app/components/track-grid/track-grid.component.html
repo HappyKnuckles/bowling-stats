@@ -1,22 +1,42 @@
 <div class="grid-container">
-<ion-grid fixed="true" *ngFor="let frame of frames; let i = index">
-  <ion-row>
-    <ion-col class="middle frame">{{i + 1}}</ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col class="inputCol" *ngIf="i !== 9"></ion-col>
-    <ion-col class="inputCol">
-      <ion-input type="number" [(ngModel)]="rolls[i].roll1" (input)="updateScore(i, 1, rolls[i].roll1)"></ion-input>
-    </ion-col>
-    <ion-col class="inputCol">
-      <ion-input type="number" [(ngModel)]="rolls[i].roll2" (input)="updateScore(i, 2, rolls[i].roll2)"></ion-input>
-    </ion-col>
-    <ion-col class="inputCol" *ngIf="i === 9">
-      <ion-input type="number" [(ngModel)]="rolls[i].roll3" (input)="updateScore(i, 3, rolls[i].roll3)"></ion-input>
-    </ion-col>
-  </ion-row>
-  <ion-row>
-    <ion-col class="middle count">{{ calculateFrameScore(i) }}</ion-col>
-  </ion-row>
-</ion-grid>
+  <ion-grid fixed="true" *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; let frameIndex = index;">
+    <ion-row>
+      <ion-col class="middle frame">{{i}}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
+      <ion-col class="inputCol">
+        <ion-input type="number" [(ngModel)]="frames[frameIndex][0]" (ionBlur)="simulateScore()"></ion-input>
+      </ion-col>
+      <ion-col class="inputCol">
+        <ion-input type="number" [(ngModel)]="frames[frameIndex][1]"
+          [disabled]="frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore()"></ion-input>
+      </ion-col>
+      <ion-col class="inputCol" *ngIf="i === 10">
+        <ion-input type="number" [(ngModel)]="frames[frameIndex][2]"
+          [disabled]="frames[frameIndex][0] !== 10 && frames[frameIndex][0] + (frames[frameIndex][1] || 0) !== 10"
+          (ionBlur)="simulateScore()"></ion-input>
+      </ion-col>
+    </ion-row>
+    <ion-row
+      *ngIf="(frames[frameIndex][0] !== undefined || frames[frameIndex][1] !== undefined || (i === 10 && frames[frameIndex][0] !== undefined)) &&  isNumber(frameScores[i - 1])">
+      <ion-col class="middle count">{{ frameScores[i - 1] }}</ion-col>
+    </ion-row>
+    <ion-row
+      *ngIf="!((frames[frameIndex][0] !== undefined || frames[frameIndex][1] !== undefined || (i === 10 && frames[frameIndex][0] !== undefined)) && isNumber(frameScores[i - 1]))">
+      <ion-col class="middle count" style="color: #294B29;">0</ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row>
+      <ion-col class="middle count">Total Score: {{ totalScore }}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="middle count">Max Score: {{ totalScore }}</ion-col>
+    </ion-row>
+    <ion-row>
+      <button (click)="calculateScore()">Calculate Score</button>
+    </ion-row>
+    <button (click)="clearFrames()">Clear</button>
+  </ion-grid>
 </div>

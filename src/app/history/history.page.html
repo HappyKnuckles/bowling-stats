@@ -1,3 +1,6 @@
+<ion-backdrop *ngIf="isLoading" style="opacity: 0.3; z-index: 11;"></ion-backdrop>
+<ion-spinner *ngIf="isLoading" name="lines" color="primary" class="custom-loader"></ion-spinner>
+
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
@@ -7,6 +10,50 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>
+  <ion-text style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 999;"
+    *ngIf="gameHistory.length === 0">
+    Spiele erst ein paar Runden
+  </ion-text>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <div *ngIf="gameHistory.length > 0">
+    <div *ngFor="let game of gameHistory; let i = index">
+      <div class="title">Game {{i + 1}}</div>
+      <div class="grid-container">
+        <ion-grid fixed="true" *ngFor="let frame of game.frames; let j = index;">
+          <ion-row>
+            <ion-col class="middle frame">{{j + 1}}</ion-col>
+          </ion-row>
+          <ion-row *ngIf="j !== 9">
+            <ion-col class="inputCol"></ion-col>
+            <ion-col class="inputCol">
+              <ion-input readonly="true" type="text"
+                [value]="frame.throws[0]?.value === 10 ? 'X' : frame.throws[0]?.value"></ion-input>
+            </ion-col>
+            <ion-col class="inputCol">
+              <ion-input type="text" readonly="true"
+                [value]="(frame.throws[0]?.value !== 10 && frame.throws[0]?.value + (frame.throws[1]?.value || 0) === 10) ? '/' : frame.throws[1]?.value"></ion-input>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf="j === 9">
+            <ion-col class="inputCol">
+              <ion-input type="text" readonly="true"
+                [value]="frame.throws[0]?.value === 10 ? 'X' : frame.throws[0]?.value"></ion-input>
+            </ion-col>
+            <ion-col class="inputCol">
+              <ion-input type="text" readonly="true"
+                [value]="frame.throws[1]?.value === 10 ? 'X' : (frame.throws[0]?.value !== 10 && frame.throws[0]?.value + frame.throws[1]?.value === 10) ? '/' : frame.throws[1]?.value"></ion-input>
+            </ion-col>
+            <ion-col class="inputCol" *ngIf="j === 9">
+              <ion-input type="text" readonly="true"
+                [value]="(frame.throws[0]?.value === 10 && frame.throws[1]?.value !== 10 && frame.throws[1]?.value + frame.throws[2]?.value === 10) ? '/' : frame.throws[2]?.value === 10 ? 'X' : frame.throws[2]?.value"></ion-input>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="middle count">{{ game.frameScores[j] }}</ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>
+  </div>
 </ion-content>

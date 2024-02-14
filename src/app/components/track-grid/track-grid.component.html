@@ -1,0 +1,22 @@
+<div class="grid-container">
+<ion-grid fixed="true" *ngFor="let frame of frames; let i = index">
+  <ion-row>
+    <ion-col class="middle frame">{{i + 1}}</ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col class="inputCol" *ngIf="i !== 9"></ion-col>
+    <ion-col class="inputCol">
+      <ion-input type="number" [(ngModel)]="rolls[i].roll1" (input)="updateScore(i, 1, rolls[i].roll1)"></ion-input>
+    </ion-col>
+    <ion-col class="inputCol">
+      <ion-input type="number" [(ngModel)]="rolls[i].roll2" (input)="updateScore(i, 2, rolls[i].roll2)"></ion-input>
+    </ion-col>
+    <ion-col class="inputCol" *ngIf="i === 9">
+      <ion-input type="number" [(ngModel)]="rolls[i].roll3" (input)="updateScore(i, 3, rolls[i].roll3)"></ion-input>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col class="middle count">{{ calculateFrameScore(i) }}</ion-col>
+  </ion-row>
+</ion-grid>
+</div>

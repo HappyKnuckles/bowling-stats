@@ -7,5 +7,25 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <ion-text>Durchschnitt: {{averageScore}}</ion-text>
+  <ion-text>Strikes: {{totalStrikes}}</ion-text>
+  <ion-text>Strikewahrscheinlichkeit: {{strikePercentage}}%</ion-text>
+  <ion-text>Spares: {{totalSpares}}</ion-text>
+  <ion-text>Sparewahrscheinlichkeit: {{sparePercentage}}%</ion-text>
+  <ion-text>Opens: {{totalOpens}}</ion-text>
+  <ion-text>Openwahrscheinlichkeit: {{openPercentage}}%</ion-text>
+  <div>
+    <h2>Pin Counts for Spares</h2>
+    <ion-grid>
+      <ion-row *ngFor="let count of pinCounts; let i = index">
+        <ion-col>
+          {{ i }} Pin Spares: {{ count }}
+        </ion-col>
+        <ion-col>
+          Missed: {{ missedCounts[i] }}
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    
+</div>
 </ion-content>

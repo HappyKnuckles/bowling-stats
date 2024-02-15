@@ -32,7 +32,8 @@ export class HistoryPage implements OnInit {
   }
 
   ngOnInit() {
-    this.loadGameHistory(); // Call the method to load game history
+    this.loadGameHistory();
+    console.log(this.gameHistory) // Call the method to load game history
   }
 
   handleRefresh(event: any) {

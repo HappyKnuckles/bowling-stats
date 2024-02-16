@@ -18,19 +18,41 @@ export class TrackGridComponent implements OnInit {
     // Check if gameIndex exists in local storage
     const savedIndex = localStorage.getItem('index');
     this.gameIndex = savedIndex ? parseInt(savedIndex, 10) : 1;
+    this.maxScore = this.bowlingService.calculateMaxScore(0);
   }
 
-  simulateScore() {
+  simulateScore(index: number, throwIndex: number) {
     this.bowlingService.calculateScore();
+    if (index === 10 && throwIndex === 2) {
+      this.maxScore === this.totalScore + 10;
+    }
+    else if (index === 10 && throwIndex === 3) {
+      this.maxScore === this.totalScore;
+    }
+    else this.maxScore = this.bowlingService.calculateMaxScore(index);
   }
 
   calculateScore() {
     this.bowlingService.calculateScore();
-    this.totalScore = this.bowlingService.totalScore;
-    if (!Number.isNaN(this.totalScore)) {
+    const allInputsFilled = this.frames.every((frame: string | any[], index: number) => {
+      if (index < 9) {
+        return frame.length === (frame[0] === 10 ? 1 : 2);
+      } else {
+        if (frame[0] === 10) {
+          return frame.length === 3;
+        } else {
+          return frame.length === 2;
+        }
+      }
+    });
+
+    if (allInputsFilled) {
+      this.totalScore = this.bowlingService.totalScore;
       this.saveGameToLocalStorage();
     }
   }
+
+
 
   isNumber(value: any): boolean {
     return !isNaN(parseFloat(value)) && isFinite(value);
@@ -58,8 +80,10 @@ export class TrackGridComponent implements OnInit {
 
 
   clearFrames() {
-    this.frames = Array.from({ length: 10 }, () => []);
-    this.totalScore = 0;
+    this.bowlingService.clearRolls();
+    this.frameScores = this.bowlingService.frameScores;
+    this.frames = this.bowlingService.frames;
+    this.maxScore = this.bowlingService.calculateMaxScore(0);
   }
 }
 

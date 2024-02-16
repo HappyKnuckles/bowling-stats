@@ -7,13 +7,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-text>Durchschnitt: {{averageScore}}</ion-text>
+  <ion-text>Durchschnitt: {{averageScore  | number:'1.2-2' }}</ion-text>
   <ion-text>Strikes: {{totalStrikes}}</ion-text>
-  <ion-text>Strikewahrscheinlichkeit: {{strikePercentage}}%</ion-text>
+  <ion-text>Strikewahrscheinlichkeit: {{strikePercentage  | number:'1.2-2'}}%</ion-text>
   <ion-text>Spares: {{totalSpares}}</ion-text>
-  <ion-text>Sparewahrscheinlichkeit: {{sparePercentage}}%</ion-text>
+  <ion-text>Sparewahrscheinlichkeit: {{sparePercentage  | number:'1.2-2'}}%</ion-text>
   <ion-text>Opens: {{totalOpens}}</ion-text>
-  <ion-text>Openwahrscheinlichkeit: {{openPercentage}}%</ion-text>
+  <ion-text>Openwahrscheinlichkeit: {{openPercentage  | number:'1.2-2'}}%</ion-text>
   <div>
     <h2>Pin Counts for Spares</h2>
     <ion-grid>

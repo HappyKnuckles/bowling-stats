@@ -6,16 +6,20 @@
     <ion-row>
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
-        <ion-input type="number" [(ngModel)]="frames[frameIndex][0]" (ionBlur)="simulateScore()"></ion-input>
+        <ion-input type="number" [(ngModel)]="frames[frameIndex][0]" (ionBlur)="simulateScore(frameIndex, 1)"></ion-input>
       </ion-col>
-      <ion-col class="inputCol">
+      <ion-col class="inputCol" *ngIf="i !== 10">
         <ion-input type="number" [(ngModel)]="frames[frameIndex][1]"
-          [disabled]="frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore()"></ion-input>
+          [disabled]="frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex, 2)"></ion-input>
+      </ion-col>
+      <ion-col class="inputCol" *ngIf="i === 10">
+        <ion-input type="number" [(ngModel)]="frames[frameIndex][1]"
+          [disabled]="frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex, 2)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
         <ion-input type="number" [(ngModel)]="frames[frameIndex][2]"
           [disabled]="frames[frameIndex][0] !== 10 && frames[frameIndex][0] + (frames[frameIndex][1] || 0) !== 10"
-          (ionBlur)="simulateScore()"></ion-input>
+          (ionBlur)="simulateScore(frameIndex, 3)"></ion-input>
       </ion-col>
     </ion-row>
     <ion-row
@@ -32,11 +36,11 @@
       <ion-col class="middle count">Total Score: {{ totalScore }}</ion-col>
     </ion-row>
     <ion-row>
-      <ion-col class="middle count">Max Score: {{ totalScore }}</ion-col>
+      <ion-col class="middle count">Max Score: {{ maxScore }}</ion-col>
     </ion-row>
-    <ion-row>
-      <button (click)="calculateScore()">Calculate Score</button>
+    <ion-row class="buttonRow">
+      <ion-button (click)="clearFrames()">Clear</ion-button>
+      <ion-button (click)="calculateScore()">Save Score</ion-button>
     </ion-row>
-    <button (click)="clearFrames()">Clear</button>
   </ion-grid>
 </div>

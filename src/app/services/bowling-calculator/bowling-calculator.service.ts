@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { first, max } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,9 @@ export class BowlingCalculatorService {
 
   frames: number[][] = [[]];
   totalScore: number = 0;
+  rolls: number[] = Array.from({ length: 21 }, () => 0);
+  maxScore = 300; // Maximum possible score is 300 for 10 strikes
+
 
   constructor() {
     for (let i = 1; i < 10; i++) {
@@ -23,62 +27,95 @@ export class BowlingCalculatorService {
     }
   }
 
+  clearRolls() {
+    // Reset rolls array
+    this.rolls = Array.from({ length: 21 }, () => 0);
+    this.frames = Array.from({ length: 10 }, () => []);
+
+    // Recalculate the score and max score
+    this.calculateScore();
+  }
+
   calculateScore() {
-    let rolls: number[] = [];
+    let index = 0;
     this.frames.forEach(frame => {
-      rolls.push(...frame);
+      frame.forEach(value => {
+        this.rolls[index++] = value;
+      });
     });
 
     let score = 0;
     let frameIndex = 0;
 
     for (let frame = 0; frame < 10; frame++) {
-      if (this.isStrike(rolls[frameIndex]) && rolls[frameIndex] != null && rolls[frameIndex + 1] != null) {
-        score += 10 + this.strikeBonus(frameIndex, rolls);
+      if (this.isStrike(this.rolls[frameIndex]) && this.rolls[frameIndex] != null && this.rolls[frameIndex + 1] != null) {
+        score += 10 + this.strikeBonus(frameIndex, this.rolls);
         frameIndex++;
-      } else if (this.isSpare(rolls[frameIndex], rolls[frameIndex + 1]) && rolls[frameIndex] != null && rolls[frameIndex + 1] != null) {
-        score += 10 + this.spareBonus(frameIndex, rolls);
+      } else if (this.isSpare(this.rolls[frameIndex], this.rolls[frameIndex + 1]) && this.rolls[frameIndex] != null && this.rolls[frameIndex + 1] != null) {
+        score += 10 + this.spareBonus(frameIndex, this.rolls);
         frameIndex += 2;
-      } else if (rolls[frameIndex] != null && rolls[frameIndex + 1] != null) {
-        score += this.sumOfBallsInFrame(frameIndex, rolls);
+      } else if (this.rolls[frameIndex] != null && this.rolls[frameIndex + 1] != null) {
+        score += this.sumOfBallsInFrame(frameIndex, this.rolls);
         frameIndex += 2;
       }
-
       // Update frame score
       this.frameScores[frame] = score;
     }
-    console.log(score);
     this.totalScore = score;
   }
 
   calculateMaxScore(frameIndex: number): number {
-    const rolls: number[] = [];
-    this.frames.slice(0, frameIndex + 1).forEach(frame => {
-      rolls.push(...frame);
-    });
+    const firstThrow = this.frames[frameIndex][0];
+    const secondThrow = this.frames[frameIndex][1];
 
-    let maxScore = this.frameScores[frameIndex];
-    let frameScore = this.frameScores[frameIndex];
-    let remainingFrames = 10 - frameIndex - 1; // Remaining frames after the current frame
-
-    for (let i = 0; i < remainingFrames; i++) {
-      const currentFrame = frameIndex + i + 1;
-      const nextFrame = currentFrame + 1;
-
-      if (this.isStrike(rolls[currentFrame])) {
-        maxScore += 10 + this.strikeBonus(currentFrame, rolls.slice(nextFrame, nextFrame + 2));
-      } else if (this.isSpare(rolls[currentFrame], rolls[currentFrame + 1])) {
-        maxScore += 10 + this.spareBonus(currentFrame, rolls.slice(nextFrame, nextFrame + 1));
+    if (frameIndex === 0 && secondThrow !== undefined) {
+      if (this.isStrike(firstThrow)) {
+        return this.maxScore = 300;
+      } else if (this.isSpare(firstThrow, secondThrow)) {
+        this.maxScore -= 10;
       } else {
-        maxScore += this.sumOfBallsInFrame(currentFrame, rolls.slice(currentFrame, currentFrame + 2));
+        this.maxScore -= 30 - firstThrow + secondThrow;
+      }
+    } else if (this.isPreviousStrike(firstThrow) && this.isStrike(firstThrow)) {
+      this.maxScore = this.maxScore;
+    } else if (firstThrow !== 10 && secondThrow !== undefined) {
+      if (this.isPreviousStrike(firstThrow) && this.isSpare(firstThrow, secondThrow)) {
+        this.maxScore -= 20;
+      } else if (this.isPreviousStrike(firstThrow) && !this.isSpare(firstThrow, secondThrow)) {
+        this.maxScore -= 40 - 2 * (firstThrow + secondThrow);
+      } else if (this.isPreviousSpare(firstThrow, secondThrow) && this.isSpare(firstThrow, secondThrow)) {
+        this.maxScore -= 20 - firstThrow ;
+      } else if (this.isPreviousSpare(firstThrow, secondThrow) && !this.isSpare(firstThrow, secondThrow)) {
+        this.maxScore -= 40 - 2 * firstThrow + secondThrow;
+      } else if (!this.isPreviousSpare(firstThrow, secondThrow) && this.isStrike(firstThrow)) {
+        this.maxScore = this.maxScore;
+      } else {
+        this.maxScore -= 40 - firstThrow + secondThrow;
       }
     }
 
-    return maxScore;
+    return this.maxScore;
   }
 
   isStrike(roll: number): boolean {
     return roll === 10;
+  }
+
+  isPreviousStrike(firstThrow: number): boolean {
+    if (firstThrow === undefined) {
+      return true;
+    }
+    if (firstThrow === 10) {
+      return true;
+    }
+    return false;
+  }
+
+  isPreviousSpare(firstThrow: number, secondThrow: number): boolean {
+    if (firstThrow + secondThrow === 10) {
+      return true;
+    }
+    return false;
   }
 
   isSpare(roll1: number, roll2: number): boolean {
@@ -96,5 +133,4 @@ export class BowlingCalculatorService {
   strikeBonus(frameIndex: number, rolls: number[]): number {
     return rolls[frameIndex + 1] + rolls[frameIndex + 2];
   }
-
 }

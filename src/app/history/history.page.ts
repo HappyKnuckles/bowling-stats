@@ -1,4 +1,5 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-history',
@@ -9,7 +10,7 @@ export class HistoryPage implements OnInit {
   gameHistory: any = [];
   isLoading: boolean = false;
 
-  constructor() { }
+  constructor(private alertController: AlertController) { }
 
   loadGameHistory() {
     this.isLoading = true;
@@ -29,6 +30,32 @@ export class HistoryPage implements OnInit {
       }
     }
     this.isLoading = false;
+  }
+  
+  async deleteGame(index: number) {
+    const alert = await this.alertController.create({
+      header: 'Confirm Deletion',
+      message: 'Are you sure you want to delete this game?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            // Do nothing if canceled
+          }
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            const key = 'game' + index;
+            localStorage.removeItem(key);
+            // Perform any additional actions after deletion if needed
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
   }
 
   ngOnInit() {

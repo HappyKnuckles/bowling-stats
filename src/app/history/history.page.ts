@@ -9,7 +9,6 @@ import { AlertController } from '@ionic/angular';
 export class HistoryPage implements OnInit {
   gameHistory: any = [];
   isLoading: boolean = false;
-  isOpen: boolean[] = [];
   constructor(private alertController: AlertController) { }
 
   loadGameHistory() {
@@ -30,10 +29,6 @@ export class HistoryPage implements OnInit {
       }
     }
     this.isLoading = false;
-  }
-  
-  openGame(index: number ){
-    this.isOpen[index] = !this.isOpen[index];
   }
 
   async deleteGame(index: number) {

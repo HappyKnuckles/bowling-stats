@@ -7,26 +7,8 @@ import { BowlingCalculatorService } from '../services/bowling-calculator/bowling
   styleUrls: ['add-game.page.scss']
 })
 export class AddGamePage {
-  private frameScores: number[] = [];
 
 
-  constructor(private bowlingService: BowlingCalculatorService) {
-  //   const game = [
-  //     10, 
-  //     10,
-  //     10,
-  //     9, 1,
-  //     9, 1,
-  //     9, 1,
-  //     9, 1,
-  //     9, 1,
-  //     9, 1,
-  //     9, 1, 10
-  //   ]
-  //   for (const pins of game) {
-  //     bowlingService.roll(pins);
-  //     console.log(bowlingService.score())
-
-  //   }
+  constructor() {
   }
 }

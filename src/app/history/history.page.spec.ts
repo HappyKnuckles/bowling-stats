@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
-
 import { HistoryPage } from './history.page';
 
 describe('HistoryPage', () => {
@@ -12,7 +10,7 @@ describe('HistoryPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [HistoryPage],
-      imports: [IonicModule.forRoot(), ExploreContainerComponentModule]
+      imports: [IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HistoryPage);

@@ -25,10 +25,25 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-ion-header{
+ion-header {
     background-color: #080f08;
 }
 
-ion-content{
+ion-content {
     --background: #020a06;
+    letter-spacing: 1px;
+}
+
+div.mat-expansion-panel-body {
+    padding: 0 12px 10px;
+}
+.mat-expansion-panel{
+    background: none;
+}
+.mat-expansion-panel-header {
+    align-items: baseline;
+}
+
+.mat-expansion-panel-header-description {
+    justify-content: flex-end;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, SecurityContext } from '@angular/core';
 import { first, max } from 'rxjs';
 
 @Injectable({
@@ -68,29 +68,59 @@ export class BowlingCalculatorService {
     const firstThrow = this.frames[frameIndex][0];
     const secondThrow = this.frames[frameIndex][1];
 
-    if (frameIndex === 0 && secondThrow !== undefined) {
-      if (this.isStrike(firstThrow)) {
-        return this.maxScore = 300;
-      } else if (this.isSpare(firstThrow, secondThrow)) {
-        this.maxScore -= 10;
-      } else {
-        this.maxScore -= 30 - firstThrow + secondThrow;
-      }
-    } else if (this.isPreviousStrike(firstThrow) && this.isStrike(firstThrow)) {
-      this.maxScore = this.maxScore;
-    } else if (firstThrow !== 10 && secondThrow !== undefined) {
-      if (this.isPreviousStrike(firstThrow) && this.isSpare(firstThrow, secondThrow)) {
-        this.maxScore -= 20;
-      } else if (this.isPreviousStrike(firstThrow) && !this.isSpare(firstThrow, secondThrow)) {
-        this.maxScore -= 40 - 2 * (firstThrow + secondThrow);
-      } else if (this.isPreviousSpare(firstThrow, secondThrow) && this.isSpare(firstThrow, secondThrow)) {
-        this.maxScore -= 20 - firstThrow ;
-      } else if (this.isPreviousSpare(firstThrow, secondThrow) && !this.isSpare(firstThrow, secondThrow)) {
-        this.maxScore -= 40 - 2 * firstThrow + secondThrow;
-      } else if (!this.isPreviousSpare(firstThrow, secondThrow) && this.isStrike(firstThrow)) {
-        this.maxScore = this.maxScore;
-      } else {
-        this.maxScore -= 40 - firstThrow + secondThrow;
+    // Base case: First frame
+    if (frameIndex === 0) {
+      if (secondThrow !== undefined) {
+        if (this.isStrike(firstThrow)) {
+          return this.maxScore = 300; // Maximum score if first throw is a strike
+        }
+        if (this.isSpare(firstThrow, secondThrow)) {
+          return this.maxScore -= 10;
+        }
+        return this.maxScore -= 30 - (firstThrow + secondThrow);
+      } else return this.maxScore;
+    }
+    // Handling frames after the first frame
+    else {
+      if (secondThrow !== undefined) {
+        if (frameIndex >= 2) {
+          if (this.isPreviousStrike(frameIndex - 1) && this.isPreviousStrike(frameIndex)) {
+            this.maxScore -= secondThrow;
+          }
+          if (this.isPreviousStrike(frameIndex - 1) && this.isPreviousStrike(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
+            return this.maxScore -= 30 - (firstThrow);
+          }
+          if (this.isPreviousStrike(frameIndex - 1) && this.isPreviousStrike(frameIndex) && !this.isSpare(firstThrow, secondThrow)) {
+            return this.maxScore -= 50 - ((2 * firstThrow) + secondThrow);
+          }
+          if (this.isPreviousStrike(frameIndex - 1) && !this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
+            return this.maxScore -= 20 - (this.frames[frameIndex - 1][0] + this.frames[frameIndex - 1][1]);
+          }
+        }
+        if (frameIndex >= 1) {
+          if (firstThrow !== 10) {
+            if (this.isPreviousStrike(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
+              return this.maxScore -= 20;
+            }
+            if (this.isPreviousStrike(frameIndex) && !this.isSpare(firstThrow, secondThrow)) {
+              return this.maxScore -= 40 - (firstThrow + secondThrow);
+            }
+            if (this.isPreviousSpare(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
+              return this.maxScore -= 20 - (firstThrow);
+            }
+            if (this.isPreviousSpare(frameIndex) && !this.isSpare(firstThrow, secondThrow)) {
+              return this.maxScore -= 40 - (2 * firstThrow + secondThrow);
+            }
+            if (!this.isPreviousSpare(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
+              return this.maxScore -= 10;
+            }
+          }
+          if (!this.isPreviousSpare(frameIndex) && this.isStrike(firstThrow)) {
+            return this.maxScore = this.maxScore;
+          }
+
+          return this.maxScore -= 30 - (firstThrow + secondThrow);
+        }
       }
     }
 
@@ -101,18 +131,15 @@ export class BowlingCalculatorService {
     return roll === 10;
   }
 
-  isPreviousStrike(firstThrow: number): boolean {
-    if (firstThrow === undefined) {
-      return true;
-    }
-    if (firstThrow === 10) {
+  isPreviousStrike(index: number): boolean {
+    if (this.frames[index - 1][0] === 10) {
       return true;
     }
     return false;
   }
 
-  isPreviousSpare(firstThrow: number, secondThrow: number): boolean {
-    if (firstThrow + secondThrow === 10) {
+  isPreviousSpare(index: number): boolean {
+    if (this.frames[index - 1][0] + this.frames[index - 1][1] === 10) {
       return true;
     }
     return false;

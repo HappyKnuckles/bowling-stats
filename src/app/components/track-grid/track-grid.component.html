@@ -6,7 +6,8 @@
     <ion-row>
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
-        <ion-input type="number" [(ngModel)]="frames[frameIndex][0]" (ionBlur)="simulateScore(frameIndex, 1)"></ion-input>
+        <ion-input type="number" [(ngModel)]="frames[frameIndex][0]"
+          (ionBlur)="simulateScore(frameIndex, 1)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
         <ion-input type="number" [(ngModel)]="frames[frameIndex][1]"
@@ -33,14 +34,19 @@
   </ion-grid>
   <ion-grid>
     <ion-row>
-      <ion-col class="middle count">Total Score: {{ totalScore }}</ion-col>
-    </ion-row>
-    <ion-row>
+      <ion-col class="middle count">Total Score: {{ totalScore }}
+        <!-- <span *ngIf="totalScore === undefined" style="color: #294B29;">000</span>
+        <span *ngIf="totalScore !== undefined && totalScore < 100" style="color: #294B29;">0</span> -->
+      </ion-col>
       <ion-col class="middle count">Max Score: {{ maxScore }}</ion-col>
     </ion-row>
     <ion-row class="buttonRow">
-      <ion-button (click)="clearFrames()">Clear Score</ion-button>
-      <ion-button (click)="calculateScore()">Save Score</ion-button>
+      <ion-col>
+        <ion-button (click)="clearFrames()">Clear Score</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="calculateScore()">Save Score</ion-button>
+      </ion-col>
     </ion-row>
   </ion-grid>
 </div>

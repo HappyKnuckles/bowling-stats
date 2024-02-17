@@ -18,7 +18,7 @@ export class TrackGridComponent implements OnInit {
     // Check if gameIndex exists in local storage
     const savedIndex = localStorage.getItem('index');
     this.gameIndex = savedIndex ? parseInt(savedIndex, 10) : 1;
-    this.maxScore = this.bowlingService.calculateMaxScore(0);
+    this.maxScore = this.bowlingService.maxScore;
   }
 
   simulateScore(index: number, throwIndex: number) {
@@ -30,6 +30,7 @@ export class TrackGridComponent implements OnInit {
       this.maxScore === this.totalScore;
     }
     else this.maxScore = this.bowlingService.calculateMaxScore(index);
+    this.totalScore = this.bowlingService.totalScore;
   }
 
   calculateScore() {
@@ -81,6 +82,7 @@ export class TrackGridComponent implements OnInit {
     this.bowlingService.clearRolls();
     this.frameScores = this.bowlingService.frameScores;
     this.frames = this.bowlingService.frames;
+    this.totalScore = undefined;
     this.maxScore = this.bowlingService.calculateMaxScore(0);
   }
 }

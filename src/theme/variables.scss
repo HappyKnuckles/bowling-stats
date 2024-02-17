@@ -1,3 +1,6 @@
+
+
+
 // Ionic Variables and Theming. For more info, please see:
 // http://ionicframework.com/docs/theming/
 
@@ -251,3 +254,5 @@ html {
    */
   --ion-dynamic-font: var(--ion-default-dynamic-font);
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

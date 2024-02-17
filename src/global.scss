@@ -37,13 +37,19 @@ ion-content {
 div.mat-expansion-panel-body {
     padding: 0 12px 10px;
 }
-.mat-expansion-panel{
-    background: none;
+
+mat-expansion-panel {
+    background: none !important;
 }
+
 .mat-expansion-panel-header {
     align-items: baseline;
+    background: none !important;
+
+
 }
 
 .mat-expansion-panel-header-description {
     justify-content: flex-end;
+    background: none !important;
 }

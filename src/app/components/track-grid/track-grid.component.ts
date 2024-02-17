@@ -52,8 +52,6 @@ export class TrackGridComponent implements OnInit {
     }
   }
 
-
-
   isNumber(value: any): boolean {
     return !isNaN(parseFloat(value)) && isFinite(value);
   }

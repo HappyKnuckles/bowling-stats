@@ -59,4 +59,9 @@ ion-row {
 .buttonRow{
     display: flex;
     justify-content: space-between;
+
+    ion-button{
+        --background: var(--ion-color-dark);
+        color: white;
+    }
 }

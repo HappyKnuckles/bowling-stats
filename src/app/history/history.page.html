@@ -18,12 +18,15 @@
 
   <div *ngIf="gameHistory.length > 0">
     <div *ngFor="let game of gameHistory; let i = index">
-      <div class="title" style="display: flex; justify-content: space-between;">
-        <div >Game {{i + 1}}</div>
-        <ion-icon slot="icon-only" name="trash-outline" (click)="deleteGame(i)"
-          ></ion-icon>
+      <div class="title" style="display: flex; justify-content: space-between;" (click)="openGame(i)">
+        <div>Game {{i + 1}}
+          <ion-icon name="chevron-up" *ngIf="isOpen[i]" style="vertical-align: top;"></ion-icon>
+          <ion-icon name="chevron-down" *ngIf="!isOpen[i]" style="vertical-align: top;"></ion-icon>
+        </div>
+        <div *ngIf="!isOpen[i]">Score: {{game.totalScore}}</div>
+        <ion-icon slot="icon-only" name="trash-outline" (click)="deleteGame(i); $event.stopPropagation();"></ion-icon>
       </div>
-      <div class="grid-container">
+      <div class="grid-container" *ngIf="isOpen[i]">
         <ion-grid fixed="true" *ngFor="let frame of game.frames; let j = index;">
           <ion-row>
             <ion-col class="middle frame">{{j + 1}}</ion-col>
@@ -59,5 +62,5 @@
         </ion-grid>
       </div>
     </div>
-  </div>
+  </div><mat-accordion></mat-accordion>
 </ion-content>

@@ -57,7 +57,9 @@ describe('BowlingCalculatorService', () => {
       ];
   
       // Expected max score after each frame
-      const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188];
+      const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // Website
+      // const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // App
+
   
       // Calculate and verify the max score after each frame
       for (let i = 0; i < service.frames.length; i++) {
@@ -82,7 +84,9 @@ describe('BowlingCalculatorService', () => {
       ];
   
       // Expected max score after each frame
-      const expectedMaxScores = [290, 279, 268, 257, 246, 235, 224, 213, 202, 182];
+      const expectedMaxScores = [290, 279, 268, 257, 246, 235, 224, 213, 202, 182]; // Website
+      // const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // App
+
   
       // Calculate and verify the max score after each frame
       for (let i = 0; i < service.frames.length; i++) {
@@ -106,8 +110,10 @@ describe('BowlingCalculatorService', () => {
         // [10, 10, 10]
       ];
   
-      // Expected max score after each frame
-      const expectedMaxScores = [300,  280, 254, 254, 254, 220, 220, 180, 170, 170];
+      // Expected max score after each frame 
+      const expectedMaxScores = [300,  280, 254, 254, 254, 220, 220, 180, 170, 170]; // Website
+      // const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // App
+
   
       // Calculate and verify the max score after each frame
       for (let i = 0; i < service.frames.length; i++) {
@@ -132,7 +138,9 @@ describe('BowlingCalculatorService', () => {
       ];
   
       // Expected max score after each frame
-      const expectedMaxScores = [279, 269, 269, 237, 237, 205, 184, 174, 174, 174, 174];
+      const expectedMaxScores = [279, 269, 269, 237, 237, 205, 184, 174, 174, 174, 174]; // Website
+      // const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // App
+
   
       // Calculate and verify the max score after each frame
       for (let i = 0; i < service.frames.length; i++) {
@@ -164,4 +172,54 @@ describe('BowlingCalculatorService', () => {
         expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
       }
     });
+
+    it('should calculate 300', () => {
+      // Simulate a full game with various scenarios
+      service.maxScore = 300;
+      service.frames = [
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10, 10, 10], // Frame 1: Open frame
+      ];
+  
+      // Expected max score after each frame
+      const expectedMaxScores = [300, 300, 300, 300, 300, 300, 300, 300, 300, 300];
+  
+      // Calculate and verify the max score after each frame
+      for (let i = 0; i < service.frames.length; i++) {
+        expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      }
+    });
+    it('should calculate 300', () => {
+      // Simulate a full game with various scenarios
+      service.maxScore = 300;
+      service.frames = [
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [10], // Frame 1: Open frame
+        [9, 1, 10], // Frame 1: Open frame
+      ];
+  
+      // Expected max score after each frame
+      const expectedMaxScores = [300, 300, 300, 300, 300, 300, 300, 300, 300, 279];
+  
+      // Calculate and verify the max score after each frame
+      for (let i = 0; i < service.frames.length; i++) {
+        expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      }
+    });
+
 });

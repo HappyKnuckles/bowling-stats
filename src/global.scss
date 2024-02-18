@@ -27,29 +27,37 @@
 
 ion-header {
     background-color: #080f08;
+
+    ion-title {
+        font-size: 22px;
+    }
+
 }
 
 ion-content {
     --background: #020a06;
     letter-spacing: 1px;
+    font-size: 19px;
 }
 
 div.mat-expansion-panel-body {
-    padding: 0 12px 10px;
+    padding: 0;
 }
 
 mat-expansion-panel {
     background: none !important;
+    box-shadow: none !important;
 }
 
 .mat-expansion-panel-header {
     align-items: baseline;
     background: none !important;
-
-
+    box-shadow: none !important;
+    padding: 0 !important;
 }
 
 .mat-expansion-panel-header-description {
     justify-content: flex-end;
     background: none !important;
+    box-shadow: none;
 }

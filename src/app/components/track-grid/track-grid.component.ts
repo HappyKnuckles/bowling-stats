@@ -23,13 +23,7 @@ export class TrackGridComponent implements OnInit {
 
   simulateScore(index: number, throwIndex: number) {
     this.bowlingService.calculateScore();
-    if (index === 10 && throwIndex === 2) {
-      this.maxScore === this.totalScore + 10;
-    }
-    else if (index === 10 && throwIndex === 3) {
-      this.maxScore === this.totalScore;
-    }
-    else this.maxScore = this.bowlingService.calculateMaxScore(index);
+  this.maxScore = this.bowlingService.calculateMaxScore(index);
     this.totalScore = this.bowlingService.totalScore;
   }
 
@@ -83,7 +77,7 @@ export class TrackGridComponent implements OnInit {
     this.frameScores = this.bowlingService.frameScores;
     this.frames = this.bowlingService.frames;
     this.totalScore = undefined;
-    this.maxScore = this.bowlingService.calculateMaxScore(0);
+    this.maxScore = this.bowlingService.maxScore;
   }
 }
 

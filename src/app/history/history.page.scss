@@ -40,6 +40,7 @@ ion-grid {
 .grid-container {
     display: flex;
     flex-wrap: wrap;
+    padding: 0 5px;
 }
 
 ion-row {
@@ -71,6 +72,11 @@ mat-panel-title {
         margin-top: 10px;
     }
 }
+
+.padding {
+    padding: 15px 20px 0 !important;
+}
+
 
 .custom-loader {
     position: absolute;

@@ -7,25 +7,57 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-text>Durchschnitt: {{averageScore  | number:'1.2-2' }}</ion-text>
-  <ion-text>Strikes: {{totalStrikes}}</ion-text>
-  <ion-text>Strikewahrscheinlichkeit: {{strikePercentage  | number:'1.2-2'}}%</ion-text>
-  <ion-text>Spares: {{totalSpares}}</ion-text>
-  <ion-text>Sparewahrscheinlichkeit: {{sparePercentage  | number:'1.2-2'}}%</ion-text>
-  <ion-text>Opens: {{totalOpens}}</ion-text>
-  <ion-text>Openwahrscheinlichkeit: {{openPercentage  | number:'1.2-2'}}%</ion-text>
-  <div>
-    <h2>Pin Counts for Spares</h2>
-    <ion-grid>
-      <ion-row *ngFor="let count of pinCounts; let i = index">
-        <ion-col>
-          {{ i }} Pin Spares: {{ count }}
-        </ion-col>
-        <ion-col>
-          Missed: {{ missedCounts[i] }}
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    
-</div>
+  <h2>Allgemein</h2>
+  <div class="stats">
+    <ion-text>Durchschnitt: </ion-text>
+    <ion-text class="value">{{averageScore | number:'1.2-2' }}</ion-text>
+  </div>
+  <div class="stats">
+    <ion-text>Strikes: </ion-text>
+    <ion-text class="value">{{totalStrikes}}</ion-text>
+  </div>
+  <div class="stats">
+    <ion-text>Strikewahrscheinlichkeit: </ion-text>
+    <ion-text class="value">{{strikePercentage | number:'1.2-2'}}%</ion-text>
+  </div>
+  <div class="stats">
+    <ion-text>Spares: </ion-text>
+    <ion-text class="value">{{totalSpares}}</ion-text>
+  </div>
+  <div class="stats">
+    <ion-text>Sparewahrscheinlichkeit: </ion-text>
+    <ion-text class="value">{{sparePercentage | number:'1.2-2'}}%</ion-text>
+  </div>
+  <div class="stats">
+    <ion-text>Opens: </ion-text>
+    <ion-text class="value">{{totalOpens}}</ion-text>
+  </div>
+  <div class="stats">
+    <ion-text>Openwahrscheinlichkeit: </ion-text>
+    <ion-text class="value">{{openPercentage | number:'1.2-2'}}%</ion-text>
+  </div>
+  <div><mat-expansion-panel>
+      <mat-expansion-panel-header class="padding">
+        <mat-panel-title>Spares</mat-panel-title>
+      </mat-expansion-panel-header>
+      <ion-grid class="statGrid">
+        <ion-row>
+          <ion-col>Count</ion-col>
+          <ion-col>Missed</ion-col>
+          <ion-col>Converted</ion-col>
+          <ion-col>Rate</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];">
+          <ion-col>{{ i }} Pin</ion-col>
+          <ion-col>{{ missedCounts[i] }}</ion-col>
+          <ion-col>{{ pinCounts[i] }}</ion-col>
+          <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
+          <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0">
+            {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] /
+            missedCounts[i] * 100) | number:'1.2-2'}}%
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </mat-expansion-panel>
+  </div>
 </ion-content>

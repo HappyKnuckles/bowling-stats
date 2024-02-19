@@ -121,15 +121,22 @@ export class BowlingCalculatorService {
     // Last Frame
     else {
       const thirdThrow = this.frames[frameIndex][3];
-      if (secondThrow !== undefined) {
-        if (this.isStrike(firstThrow)) {
-          if (this.isStrike(secondThrow)) {
-            if (thirdThrow !== undefined)
-              return this.maxScore = this.totalScore;
-          }
-        } // TODO
+      if (!this.isStrike(firstThrow) && this.isStrike(secondThrow) && !this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
+        return this.maxScore = this.totalScore;
+      }
+      if (this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
+        return this.maxScore -= 10;
+      }
+      if (this.isStrike(firstThrow) && !this.isStrike(secondThrow)) {
+        if (this.isPreviousStrike(frameIndex)) {
+          return this.maxScore -= 20 - 2 * secondThrow;
+        } else return this.maxScore -= 10;
+      }
+      if (thirdThrow != undefined) {
+        return this.maxScore = this.totalScore;
       }
     }
+
     return this.maxScore;
   }
 

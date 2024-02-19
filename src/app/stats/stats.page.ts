@@ -93,9 +93,8 @@ export class StatsPage implements OnInit, OnDestroy {
     this.totalOpens = 0;
     this.pinCounts = Array(11).fill(0);
     this.missedCounts = Array(11).fill(0);
-
     this.gameHistory.forEach((game: { frames: any[]; }) => {
-      this.totalStrikes += this.countOccurrences(game.frames, frame => frame.throws[0].value === 10 || frame.throws[1]?.value === 10 || frame.throws[2]?.value === 10);
+      this.totalStrikes += this.countOccurrences(game.frames, frame => frame.throws[0].value === 10);
       this.totalSpares += this.countOccurrences(game.frames, frame => frame.throws[0].value !== 10 && frame.throws[0].value + frame.throws[1]?.value === 10 || frame.throws[0].value === 10 && frame.throws[1]?.value !== 10 && frame.throws[1]?.value + frame.throws[2]?.value === 10);
       this.totalOpens += this.countOccurrences(game.frames, frame => frame.throws.length === 2 && frame.throws[0].value + frame.throws[1]?.value < 10);
 
@@ -114,7 +113,16 @@ export class StatsPage implements OnInit, OnDestroy {
           }
         }
       });
-
+      // Additional logic for counting strikes in the 10th frame
+      if (game.frames.length === 10) {
+        const tenthFrame = game.frames[9]; // Get the 10th frame
+        const throws = tenthFrame.throws;
+        if (throws.length === 3 && throws[0].value === 10 && throws[1]?.value === 10) {
+          this.totalStrikes += 2; // Increment by 2 if both throws are strikes
+        } else if (throws.length === 3 && throws[0].value === 10) {
+          this.totalStrikes++; // Increment by 1 if first throw is a strike
+        }
+      }
       game.frames.forEach(frame => {
         const throws = frame.throws;
         if (throws.length === 2 && throws[0].value + throws[1].value != 10) {
@@ -125,10 +133,10 @@ export class StatsPage implements OnInit, OnDestroy {
     });
 
 
-    const totalFrames = this.gameHistory.length * 10;
-    this.strikePercentage = (this.totalStrikes / totalFrames) * 100;
+    const totalFrames = (this.gameHistory.length * 10);
+    this.strikePercentage = (this.totalStrikes / (totalFrames + 2)) * 100;
     this.sparePercentage = (this.totalSpares / totalFrames) * 100;
-    this.openPercentage = 100 - this.strikePercentage - this.sparePercentage;
+    this.openPercentage = (this.totalOpens / totalFrames) * 100;
   }
 
   countOccurrences(frames: any[], condition: (frame: any) => boolean): number {

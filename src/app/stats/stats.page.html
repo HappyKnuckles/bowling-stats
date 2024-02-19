@@ -52,13 +52,17 @@
           <ion-col>Rate</ion-col>
         </ion-row>
         <ion-row *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];">
-          <ion-col>{{ i }} Pin</ion-col>
+          <ion-col *ngIf="i === 1">{{ i }} Pin</ion-col>
+          <ion-col *ngIf="i > 1">{{ i }} Pins</ion-col>
           <ion-col>{{ missedCounts[i] }}</ion-col>
           <ion-col>{{ pinCounts[i] }}</ion-col>
           <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
-          <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0">
-            {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] /
-            missedCounts[i] * 100) | number:'1.2-2'}}%
+          <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0" [ngClass]="{
+           'green': (missedCounts[i] === 0 || (pinCounts[i] / missedCounts[i] * 100) > 75),
+           'orange': (pinCounts[i] / missedCounts[i] * 100) > 33 && (pinCounts[i] / missedCounts[i] * 100) <= 75,
+           'red': (pinCounts[i] / missedCounts[i] * 100) <= 33
+         }">
+            {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / missedCounts[i] * 100) | number:'1.2-2'}}%
           </ion-col>
         </ion-row>
       </ion-grid>

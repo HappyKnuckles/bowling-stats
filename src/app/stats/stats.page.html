@@ -1,3 +1,6 @@
+<ion-backdrop *ngIf="isLoading" style="opacity: 0.3; z-index: 11;"></ion-backdrop>
+<ion-spinner *ngIf="isLoading" name="lines" color="primary" class="custom-loader"></ion-spinner>
+
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
@@ -7,6 +10,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>
   <h2>Allgemein</h2>
   <div class="stats">
     <ion-text>Durchschnitt: </ion-text>

@@ -10,20 +10,17 @@ export class TrackGridComponent implements OnInit {
   frameScores: any = this.bowlingService.frameScores;
   totalScore: any;
   frames: any = this.bowlingService.frames;
-  gameIndex: any;
   maxScore: any;
   constructor(private bowlingService: BowlingCalculatorService) { }
 
   ngOnInit() {
     // Check if gameIndex exists in local storage
-    const savedIndex = localStorage.getItem('index');
-    this.gameIndex = savedIndex ? parseInt(savedIndex, 10) : 1;
     this.maxScore = this.bowlingService.maxScore;
   }
 
   simulateScore(index: number, throwIndex: number) {
     this.bowlingService.calculateScore();
-  this.maxScore = this.bowlingService.calculateMaxScore(index);
+    this.maxScore = this.bowlingService.calculateMaxScore(index);
     this.totalScore = this.bowlingService.totalScore;
   }
 
@@ -52,7 +49,9 @@ export class TrackGridComponent implements OnInit {
   }
 
   saveGameToLocalStorage() {
+    const gameId = Date.now() + '_' + Math.random().toString(36).substr(2, 9); // Generate a unique gameId
     const gameData = {
+      gameId: gameId,
       frames: this.frames.map((frame: any[], frameIndex: number) => ({
         throws: frame.map((throwValue: any, throwIndex: number) => ({
           value: throwValue,
@@ -65,10 +64,10 @@ export class TrackGridComponent implements OnInit {
     };
 
     const gameDataString = JSON.stringify(gameData);
-    const key = 'game' + this.gameIndex; // Generate key using index
+    const key = 'game' + gameData.gameId; // Generate key using index
     localStorage.setItem(key, gameDataString);
-    this.gameIndex++; // Increment index for the next game
-    localStorage.setItem('index', JSON.stringify(this.gameIndex));
+    this.clearFrames();
+    window.dispatchEvent(new Event('newDataAdded'));
   }
 
 
@@ -76,7 +75,7 @@ export class TrackGridComponent implements OnInit {
     this.bowlingService.clearRolls();
     this.frameScores = this.bowlingService.frameScores;
     this.frames = this.bowlingService.frames;
-    this.totalScore = undefined;
+    this.totalScore = this.bowlingService.totalScore;
     this.maxScore = this.bowlingService.maxScore;
   }
 }

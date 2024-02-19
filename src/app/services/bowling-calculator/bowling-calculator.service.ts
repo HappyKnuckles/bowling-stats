@@ -14,15 +14,11 @@ export class BowlingCalculatorService {
 
 
   constructor() {
-    for (let i = 1; i < 10; i++) {
-      this.addFrame();
-    }
+    this.addFrame();
   }
 
   addFrame() {
-    if (this.frames.length < 9) {
-      this.frames.push([]);
-    } else if (this.frames.length === 9) {
+    for (let i = 1; i < 10; i++) {
       this.frames.push([]);
     }
   }
@@ -30,10 +26,11 @@ export class BowlingCalculatorService {
   clearRolls() {
     // Reset rolls array
     this.rolls = Array.from({ length: 21 }, () => 0);
-    this.frames = Array.from({ length: 10 }, () => []);
-
+    this.frames = [[]];
+    this.frameScores = [];
+    this.addFrame();
     // Recalculate the score and max score
-    this.calculateScore();
+    this.totalScore = 0;
     this.maxScore = 300; // Maximum possible score is 300 for 10 strikes
 
   }
@@ -128,7 +125,7 @@ export class BowlingCalculatorService {
         if (this.isStrike(firstThrow)) {
           if (this.isStrike(secondThrow)) {
             if (thirdThrow !== undefined)
-                return this.maxScore = this.totalScore;
+              return this.maxScore = this.totalScore;
           }
         } // TODO
       }

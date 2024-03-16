@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild, Renderer2, EventEmitter, Output } from '@angular/core';
+import { IonInput } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
 
@@ -25,21 +26,15 @@ export class TrackGridComponent implements OnInit {
     this.totalScoreChanged.emit(this.totalScore);
   }
 
-  simulateScore(index: number) {
-    this.bowlingService.calculateScore();
-    this.totalScore = this.bowlingService.totalScore;
-    this.maxScore = this.bowlingService.calculateMaxScore(index);
-    this.maxScoreChanged.emit(this.maxScore);
-    this.totalScoreChanged.emit(this.totalScore);
-  }
-
-  getGameData(): any {
-    return {
-      frames: this.bowlingService.frames,
-      frameScores: this.bowlingService.frameScores,
-      totalScore: this.bowlingService.totalScore
-      // Add other necessary data
-    };
+  simulateScore(index: number, event: any) {
+    const inputValue = parseInt(event.target.value, 10);
+    if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 10) {
+      this.bowlingService.calculateScore();
+      this.totalScore = this.bowlingService.totalScore;
+      this.maxScore = this.bowlingService.calculateMaxScore(index);
+      this.maxScoreChanged.emit(this.maxScore);
+      this.totalScoreChanged.emit(this.totalScore);
+    }
   }
 
   saveGameToLocalStorage() {
@@ -65,21 +60,24 @@ export class TrackGridComponent implements OnInit {
     this.clearFrames();
     window.dispatchEvent(new Event('newDataAdded'));
   }
-  
-  isGameValid(): boolean{
-    const allInputsFilled = this.bowlingService.frames.every((frame: string | any[], index: number) => {
+
+  isGameValid(): boolean {
+    const allInputsValid = this.bowlingService.frames.every((frame: any[], index: number) => {
       if (index < 9) {
-        return frame.length === (frame[0] === 10 ? 1 : 2);
+        // For frames 1 to 9: Check if there are either 2 throws (unless it's a strike) or 1 throw (for strike)
+        return (frame[0] === 10 && frame.length === 1) ||
+               (frame.length === 2 && frame.reduce((acc, curr) => acc + curr, 0) <= 10 && frame.every(throwValue => throwValue >= 0 && throwValue <= 10));
       } else {
-        if (frame[0] === 10 || frame[0] + frame[1] === 10) {
-          return frame.length === 3;
-        } else {
-          return frame.length === 2;
-        }
+        // For frame 10: Check if there are either 3 throws (if there's a strike or spare in the first two throws),
+        // or 2 throws (if there's no strike or spare in the first two throws)
+        return (frame[0] === 10 && frame.length === 3 && frame.every(throwValue => throwValue >= 0 && throwValue <= 10)) ||
+               (frame.length === 2 && frame[0] + frame[1] < 10 && frame.every(throwValue => throwValue >= 0 && throwValue <= 10)) ||
+               (frame.length === 3 && frame[0] + frame[1] >= 10 && frame[1] !== undefined && frame.every(throwValue => throwValue >= 0 && throwValue <= 10));
       }
     });
-    return allInputsFilled;
+    return allInputsValid;
   }
+  
 
   isNumber(value: any): boolean {
     return !isNaN(parseFloat(value)) && isFinite(value);

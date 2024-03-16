@@ -1,17 +1,15 @@
 import { Injectable, SecurityContext } from '@angular/core';
-import { first, max } from 'rxjs';
+import { Subject, first, max } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BowlingCalculatorService {
   frameScores: number[] = [];
-
   frames: number[][] = [[]];
   totalScore: number = 0;
   rolls: number[] = Array.from({ length: 21 }, () => 0);
   maxScore = 300; // Maximum possible score is 300 for 10 strikes
-
 
   constructor() {
     this.addFrame();
@@ -32,7 +30,6 @@ export class BowlingCalculatorService {
     // Recalculate the score and max score
     this.totalScore = 0;
     this.maxScore = 300; // Maximum possible score is 300 for 10 strikes
-
   }
 
   calculateScore() {
@@ -66,7 +63,7 @@ export class BowlingCalculatorService {
   calculateMaxScore(frameIndex: number): number {
     const firstThrow = this.frames[frameIndex][0];
     const secondThrow = this.frames[frameIndex][1];
-    console.log(frameIndex)
+
     // Base case: First frame
     if (frameIndex < 9) {
       if (frameIndex === 0) {

@@ -26,13 +26,20 @@ export class HistoryPage implements OnInit, OnDestroy {
         if (gameDataString) {
           const gameData = JSON.parse(gameDataString);
           this.gameHistory.push(gameData);
-
         }
       }
     }
+    this.sortGameHistoryByDate();
+
     this.isLoading = false;
   }
-
+  
+  // Function to sort game history by date
+  sortGameHistoryByDate(): void {
+    this.gameHistory.sort((a: { date: number; }, b: { date: number; }) => {
+      return a.date - b.date; // Sorting in descending order based on date
+    });
+  }
 
   async deleteGame(gameId: string) {
     console.log(gameId);
@@ -65,9 +72,8 @@ export class HistoryPage implements OnInit, OnDestroy {
   async ngOnInit() {
     await this.loadGameHistory();
     this.subscribeToDataEvents();
-
   }
-  
+
   private subscribeToDataEvents() {
     window.addEventListener('newDataAdded', () => {
       this.loadGameHistory();

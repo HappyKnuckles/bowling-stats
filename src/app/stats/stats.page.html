@@ -58,11 +58,11 @@
           <ion-col>{{ pinCounts[i] }}</ion-col>
           <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
           <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0" [ngClass]="{
-           'green': (missedCounts[i] === 0 || (pinCounts[i] / missedCounts[i] * 100) > 75),
-           'orange': (pinCounts[i] / missedCounts[i] * 100) > 33 && (pinCounts[i] / missedCounts[i] * 100) <= 75,
-           'red': (pinCounts[i] / missedCounts[i] * 100) <= 33
+           'green': (missedCounts[i] === 0 || (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) > 75),
+           'orange': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) > 33 && (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 75,
+           'red': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 33
          }">
-            {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / missedCounts[i] * 100) | number:'1.2-2'}}%
+            {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) | number:'1.2-2'}}%
           </ion-col>
         </ion-row>
       </ion-grid>

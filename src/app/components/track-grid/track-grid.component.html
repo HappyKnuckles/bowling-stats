@@ -1,7 +1,4 @@
 <div class="grid-container">
-  <ion-alert [isOpen]="isAlertOpen" header="Error" message="You didn't fill all inputs" [buttons]="alertButton"
-    (didDismiss)="setAlertOpen()">
-  </ion-alert>
   <ion-grid fixed="true" *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; let frameIndex = index;">
     <ion-row>
       <ion-col class="middle frame">{{i}}</ion-col>
@@ -9,44 +6,29 @@
     <ion-row>
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
-        <ion-input type="number" [(ngModel)]="frames[frameIndex][0]"
-          (ionBlur)="simulateScore(frameIndex)"></ion-input>
+        <ion-input type="number" [(ngModel)]="bowlingService.frames[frameIndex][0]" (ionBlur)="simulateScore(frameIndex)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
-        <ion-input type="number" [(ngModel)]="frames[frameIndex][1]"
-          [disabled]="frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex)"></ion-input>
+        <ion-input type="number" [(ngModel)]="bowlingService.frames[frameIndex][1]"
+          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input type="number" [(ngModel)]="frames[frameIndex][1]"
-          [disabled]="frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex)"></ion-input>
+        <ion-input type="number" [(ngModel)]="bowlingService.frames[frameIndex][1]"
+          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input type="number" [(ngModel)]="frames[frameIndex][2]"
-          [disabled]="frames[frameIndex][0] !== 10 && frames[frameIndex][0] + (frames[frameIndex][1] || 0) !== 10"
+        <ion-input type="number" [(ngModel)]="bowlingService.frames[frameIndex][2]"
+          [disabled]="bowlingService.frames[frameIndex][0] !== 10 && bowlingService.frames[frameIndex][0] + (bowlingService.frames[frameIndex][1] || 0) !== 10"
           (ionBlur)="simulateScore(frameIndex)"></ion-input>
       </ion-col>
     </ion-row>
     <ion-row
-      *ngIf="(frames[frameIndex][0] !== undefined || frames[frameIndex][1] !== undefined || (i === 10 && frames[frameIndex][0] !== undefined)) &&  isNumber(frameScores[i - 1])">
-      <ion-col class="middle count">{{ frameScores[i - 1] }}</ion-col>
+      *ngIf="(bowlingService.frames[frameIndex][0] !== undefined || bowlingService.frames[frameIndex][1] !== undefined || (i === 10 && bowlingService.frames[frameIndex][0] !== undefined)) &&  isNumber(bowlingService.frameScores[i - 1])">
+      <ion-col class="middle count">{{ bowlingService.frameScores[i - 1] }}</ion-col>
     </ion-row>
     <ion-row
-      *ngIf="!((frames[frameIndex][0] !== undefined || frames[frameIndex][1] !== undefined || (i === 10 && frames[frameIndex][0] !== undefined)) && isNumber(frameScores[i - 1]))">
+      *ngIf="!((bowlingService.frames[frameIndex][0] !== undefined || bowlingService.frames[frameIndex][1] !== undefined || (i === 10 && bowlingService.frames[frameIndex][0] !== undefined)) && isNumber(bowlingService.frameScores[i - 1]))">
       <ion-col class="middle count" style="color: #294B29;">0</ion-col>
-    </ion-row>
-  </ion-grid>
-  <ion-grid>
-    <ion-row>
-      <ion-col class="middle count">Total Score: {{ totalScore }}</ion-col>
-      <ion-col class="middle count">Max Score: {{ maxScore }}</ion-col>
-    </ion-row>
-    <ion-row class="buttonRow">
-      <ion-col>
-        <ion-button (click)="clearFrames()">Clear Score</ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button (click)="calculateScore()">Save Score</ion-button>
-      </ion-col>
     </ion-row>
   </ion-grid>
 </div>

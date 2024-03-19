@@ -3,11 +3,23 @@
 
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-button for="upload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openFileInput()">
+      <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
+    </ion-button>
+    <input type="file" id="upload" style="display: none;" (change)="handleFileUpload($event)" placeholder="Upload file"
+      accept=".xlsx">
     <ion-title>
       Historie ({{gameHistory.length}})
     </ion-title>
+    <ion-button (click)="exportToExcel()" class="actionSheet" slot="end" fill="clear">
+      <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
+
+<ion-toast [isOpen]="isToastOpen" message="{{message}}" [duration]="3000"
+  (didDismiss)="setOpen(false)" class="customToast">
+</ion-toast>
 
 <ion-content [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>
@@ -15,13 +27,14 @@
     *ngIf="gameHistory.length === 0">
     Spiele erst ein paar Runden
   </ion-text>
-
+  <!-- <ion-button (click)="deleteAll()"> Alles löschen</ion-button> -->
   <div *ngIf="gameHistory.length > 0">
     <mat-expansion-panel *ngFor="let game of gameHistory; let i = index">
       <mat-expansion-panel-header class="padding">
         <mat-panel-title>
           <div class="title">Game {{i + 1}}</div>
           <div class="score">Score: {{game.totalScore}}</div>
+          <!-- <div class="score">{{game.date | date}}</div> -->
           <mat-panel-description>
             <ion-icon class="title" style="transform: translateY(-2px);" name="trash-outline"
               (click)="deleteGame(game.gameId); $event.stopPropagation();"></ion-icon>

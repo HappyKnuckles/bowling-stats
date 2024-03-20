@@ -17,9 +17,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-toast [isOpen]="isToastOpen" message="{{message}}" [duration]="3000"
-  (didDismiss)="setOpen(false)" class="customToast">
-</ion-toast>
+<app-alert [isOpen]="isToastOpen" [message]="this.message" [icon]="this.icon" [isError]="this.error"></app-alert>
 
 <ion-content [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>

@@ -1,0 +1,7 @@
+ion-toast.customToast {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-dark);
+}
+ion-toast.error{
+    --background: var(--ion-color-danger);
+}

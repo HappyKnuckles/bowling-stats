@@ -6,13 +6,15 @@ import { HistoryPage } from './history.page';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 
 import { HistoryPageRoutingModule } from './history-routing.module';
+import { AlertComponentModule } from '../components/alert/alert.component.module';
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
     HistoryPageRoutingModule,
-    MatExpansionModule
+    MatExpansionModule,
+    AlertComponentModule
   ],
   declarations: [HistoryPage]
 })

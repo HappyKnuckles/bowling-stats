@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { AddGamePageRoutingModule } from './add-game-routing.module';
 import { AddGamePage } from './add-game.page';
 import { TrackGridComponentModule } from '../components/track-grid/track-grid.component.module';
+import { AlertComponent } from '../components/alert/alert.component';
+import { AlertComponentModule } from '../components/alert/alert.component.module';
 
 
 @NgModule({
@@ -13,7 +15,8 @@ import { TrackGridComponentModule } from '../components/track-grid/track-grid.co
     CommonModule,
     FormsModule,
     AddGamePageRoutingModule,
-    TrackGridComponentModule
+    TrackGridComponentModule,
+    AlertComponentModule
   ],
   declarations: [AddGamePage]
 })

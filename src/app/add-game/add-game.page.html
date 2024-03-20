@@ -16,6 +16,8 @@
   (didDismiss)="setAlertOpen()">
 </ion-alert>
 
+<app-alert [isOpen]="isToastOpen" [message]="this.message" [icon]="this.icon" [isError]="this.error"></app-alert>
+
 <ng-container *ngFor="let mode of seriesMode; let i = index;">
   <ion-content [fullscreen]="true" *ngIf="mode">
     <ng-container *ngFor="let trackIndex of trackIndexes[i]; let j = index">

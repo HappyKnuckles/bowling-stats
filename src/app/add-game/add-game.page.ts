@@ -18,6 +18,11 @@ export class AddGamePage {
   sheetOpen: boolean = false;
   isAlertOpen: boolean = false;
   alertButton = ['Dismiss'];
+  isToastOpen: boolean = false;
+  message: string = "";
+  icon: string = "";
+  error?: boolean = false;
+
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
 
   constructor(private actionSheetCtrl: ActionSheetController, private bowlingService: BowlingCalculatorService) {
@@ -31,14 +36,14 @@ export class AddGamePage {
       // Clear frames for all components
       this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
         trackGrid.clearFrames();
-        console.log(trackGrid)
       });
     }
+    this.setToastOpen('Spiel wurde zurückgesetzt!', 'refresh-outline');
   }
-  
+
   calculateScore() {
     let allGamesValid = true;
-    
+
     this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
       if (!trackGrid.isGameValid()) {
         allGamesValid = false;
@@ -47,14 +52,26 @@ export class AddGamePage {
     });
 
     if (allGamesValid) {
-      this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
-        trackGrid.saveGameToLocalStorage();
-      });
+      try {
+        this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
+          trackGrid.saveGameToLocalStorage();
+        });
+        this.setToastOpen('Spiel wurde gespeichert!', 'add');
+      } catch (error) {
+        this.setToastOpen('Da ist was schief gelaufen', 'bug-outline', true)
+      }
     } else this.setAlertOpen();
   }
 
   setAlertOpen() {
     this.isAlertOpen = !this.isAlertOpen;
+  }
+
+  setToastOpen(message: string, icon: string, error?: boolean) {
+    this.message = message;
+    this.icon = icon; 
+    this.error = error;
+    this.isToastOpen = true;
   }
 
   onMaxScoreChanged(maxScore: number, index: number) {

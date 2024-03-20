@@ -13,7 +13,9 @@ export class HistoryPage implements OnInit, OnDestroy {
   arrayBuffer: any;
   file!: File;
   isToastOpen: boolean = false;
-  message?: string = "";
+  message: string = "";
+  icon: string = "";
+  error?: boolean = false;
 
   constructor(private alertController: AlertController) {
   }
@@ -64,6 +66,7 @@ export class HistoryPage implements OnInit, OnDestroy {
           handler: () => {
             const key = 'game' + gameId;
             localStorage.removeItem(key);
+            this.setToastOpen('Spiel wurde gelöscht!', 'checkmark-outline');
             window.dispatchEvent(new Event('dataDeleted'));
           }
         }
@@ -78,9 +81,11 @@ export class HistoryPage implements OnInit, OnDestroy {
     window.dispatchEvent(new Event('dataDeleted'));
   }
 
-  setOpen(open: boolean, message?: string) {
+  setToastOpen(message: string, icon: string, error?: boolean) {
     this.message = message;
-    this.isToastOpen = open;
+    this.icon = icon; 
+    this.error = error;
+    this.isToastOpen = true;
   }
 
   async ngOnInit() {
@@ -123,7 +128,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     this.saveExcelFile(excelBuffer, 'game_data.xlsx');
-    this.setOpen(true, 'Excel Datei wurde heruntegeladen!');
+    this.setToastOpen('Excel Datei wurde heruntegeladen!', 'checkmark-outline');
   }
 
   private getGameDataForExport(): any[] {
@@ -188,7 +193,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   handleFileUpload(event: any) {
     this.file = event.target.files[0];
     this.readExcelData();
-    this.setOpen(true, 'Excel Datei wurde hochgeladen!');
+    this.setToastOpen('Excel Datei wurde hochgeladen!', 'checkmark-outline');
   }
 
   readExcelData() {

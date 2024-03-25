@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BlobServiceClient } from "@azure/storage-blob";
+import { environment } from 'src/environments/environment';
 
 const ComputerVisionClient = require('@azure/cognitiveservices-computervision').ComputerVisionClient;
 const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
@@ -8,12 +9,12 @@ const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
   providedIn: 'root'
 })
 export class ImageProcesserService {
-  subKey: string = "401521a17e39486a8837f6b31c265f56";
-  endPointUrl: string = "https://happyknuckles.cognitiveservices.azure.com/";
+  subKey: string = environment.key;
+  endPointUrl: string =environment.endPoint;
   computerVisionClient = new ComputerVisionClient(
     new ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': this.subKey } }), this.endPointUrl);
-  sasUrl = "https://happyknucklesimages.blob.core.windows.net/?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2029-03-23T23:59:30Z&st=2024-03-23T15:59:30Z&spr=https&sig=7z6AssmXSPNU%2BdsZPDHd1ml9IlpxTCIOoxzFaLmtLwg%3D"
-  url = "https://happyknucklesimages.blob.core.windows.net/images/";
+  sasUrl: string = environment.sasUrl
+  url: string = environment.imagesUrl;
   imageUrl: any;
   constructor() { }
 
@@ -23,7 +24,6 @@ export class ImageProcesserService {
       const printedResult = await this.readTextFromURL(imageUrl);
       const extractedText = this.printRecognizedText(printedResult);
       // Delete the blob after extraction
-      console.log(extractedText)
       return extractedText;
     } catch (error) {
       console.error('Error performing OCR:', error);

@@ -1,4 +1,12 @@
-import { Component, OnChanges, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { BowlingCalculatorService } from '../services/bowling-calculator/bowling-calculator.service';
 import { TrackGridComponent } from '../components/track-grid/track-grid.component';
 import { Subscription } from 'rxjs';
@@ -7,7 +15,7 @@ import { ImageProcesserService } from '../services/image-processer/image-process
 @Component({
   selector: 'app-add-game',
   templateUrl: 'add-game.page.html',
-  styleUrls: ['add-game.page.scss']
+  styleUrls: ['add-game.page.scss'],
 })
 export class AddGamePage {
   totalScores: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -19,13 +27,17 @@ export class AddGamePage {
   isAlertOpen: boolean = false;
   alertButton = ['Dismiss'];
   isToastOpen: boolean = false;
-  message: string = "";
-  icon: string = "";
+  message: string = '';
+  icon: string = '';
   error?: boolean = false;
-
+  userName: string | null;
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
 
-  constructor(private actionSheetCtrl: ActionSheetController, private imageProcessingService: ImageProcesserService) {
+  constructor(
+    private actionSheetCtrl: ActionSheetController,
+    private imageProcessingService: ImageProcesserService
+  ) {
+    this.userName = localStorage.getItem('username');
   }
 
   openFileInput() {
@@ -34,10 +46,77 @@ export class AddGamePage {
       fileInput.click();
     }
   }
-  
-  handleImageUpload(event: any): void {
+
+  async handleImageUpload(event: any): Promise<void> {
     const imageFile = event.target.files[0];
-    this.imageProcessingService.performOCR(imageFile);
+    // const gameText = await this.imageProcessingService.performOCR(imageFile);
+    // localStorage.setItem("testdata", gameText!);
+    const gameText = localStorage.getItem('testdata');
+    console.log(gameText);
+    this.parseBowlingScores(gameText!);
+  }
+
+  parseBowlingScores(input: string) {
+    // Split the input into lines
+    const lines = input.split('\n');
+    console.log(lines);
+    // Find the lines with the user's scores
+    const index = lines.findIndex((line) =>
+      line.toLowerCase().includes('lotti'!.toLowerCase())
+    );
+    let linesAfterUsername = index >= 0 ? lines.slice(index + 1) : [];
+
+    const nextNonXLineIndex = linesAfterUsername.findIndex((line) => {
+      const firstChar = line.charAt(0).toLowerCase();
+      return firstChar >= 'a' && firstChar <= 'z' && firstChar !== 'x';
+    });
+
+    if (nextNonXLineIndex >= 0) {
+      linesAfterUsername = linesAfterUsername.slice(0, nextNonXLineIndex);
+    }
+
+    if (linesAfterUsername.length < 2) {
+      throw new Error(`Insufficient score data for user ${this.userName}`);
+    }
+    // Extract the throw values and frame scores from the user's lines
+    let throwValues;
+    if (linesAfterUsername.length > 3) {
+      throwValues = linesAfterUsername[0]
+        .split('')
+        .slice(0)
+        .concat(linesAfterUsername[1].split('').slice(0));
+    } else throwValues = linesAfterUsername[0].split('').slice(0);
+
+    let filteredThrowValues = throwValues.filter(
+      (value) => value.trim() !== ''
+    );
+
+    filteredThrowValues = filteredThrowValues.map((value) => {
+      if (value === 'X') {
+        return '10';
+      } else if (value === '-') {
+        return '0';
+      } else {
+        return value;
+      }
+    });
+
+    const frameScores = linesAfterUsername[2].split(' ').slice(0).map(Number);
+
+    console.log(filteredThrowValues);
+
+    // Calculate the total score
+    const totalScore = frameScores[9];
+    // Build the final game object
+    const game = {
+      gameId: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+      date: Date.now(),
+      frames,
+      frameScores,
+      totalScore,
+    };
+
+    console.log(game);
   }
 
   clearFrames(index?: number) {
@@ -70,7 +149,7 @@ export class AddGamePage {
         });
         this.setToastOpen('Spiel wurde gespeichert!', 'add');
       } catch (error) {
-        this.setToastOpen('Da ist was schief gelaufen', 'bug-outline', true)
+        this.setToastOpen('Da ist was schief gelaufen', 'bug-outline', true);
       }
     } else this.setAlertOpen();
   }
@@ -99,7 +178,12 @@ export class AddGamePage {
       return this.maxScores[1] + this.maxScores[2] + this.maxScores[3];
     }
     if (index === 2) {
-      return this.maxScores[4] + this.maxScores[5] + this.maxScores[6] + this.maxScores[7];
+      return (
+        this.maxScores[4] +
+        this.maxScores[5] +
+        this.maxScores[6] +
+        this.maxScores[7]
+      );
     }
     return 900;
   }
@@ -109,7 +193,12 @@ export class AddGamePage {
       return this.totalScores[1] + this.totalScores[2] + this.totalScores[3];
     }
     if (index === 2) {
-      return this.totalScores[4] + this.totalScores[5] + this.totalScores[6] + this.totalScores[7];
+      return (
+        this.totalScores[4] +
+        this.totalScores[5] +
+        this.totalScores[6] +
+        this.totalScores[7]
+      );
     }
     return 0;
   }

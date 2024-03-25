@@ -24,6 +24,7 @@ export class ImageProcesserService {
       const printedResult = await this.readTextFromURL(imageUrl);
       const extractedText = this.printRecognizedText(printedResult);
       // Delete the blob after extraction
+      console.log(extractedText)
       return extractedText;
     } catch (error) {
       console.error('Error performing OCR:', error);
@@ -62,12 +63,7 @@ export class ImageProcesserService {
           if (lineText.toLowerCase().includes('player')) {
             return recognizedText; // Exit and return the recognized text
           }
-          // if (startPrinting) {
             recognizedText += lineText + '\n'; // Append line text to recognized text
-          // }
-          // if (lineText.toLowerCase().includes('tot')) {
-          //   startPrinting = true; // Set the flag to start printing
-          // }
         }
       } else {
         console.log('No recognized text.\n');

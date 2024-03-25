@@ -9,7 +9,11 @@
     <input type="file" id="upload" style="display: none;" (change)="handleFileUpload($event)" placeholder="Upload file"
       accept=".xlsx">
     <ion-title>
-      Historie ({{gameHistory.length}})
+      Historie
+      <ion-badge
+        style="--padding-end: 8px;
+      --padding-start: 8px; --padding-top: 5px; --padding-bottom: 5px; font-size: 18px; vertical-align: sub;">{{gameHistory.length}}
+      </ion-badge>
     </ion-title>
     <ion-button (click)="exportToExcel()" class="actionSheet" slot="end" fill="clear">
       <ion-icon slot="icon-only" name="download-outline"></ion-icon>

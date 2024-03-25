@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-
+import { NONE_TYPE } from '@angular/compiler';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import Chart from 'chart.js/auto';
 @Component({
   selector: 'app-stats',
   templateUrl: 'stats.page.html',
@@ -12,12 +13,15 @@ export class StatsPage implements OnInit, OnDestroy {
   totalStrikes: number = 0;
   totalSpares: number = 0;
   totalOpens: number = 0;
+  firstThrowCount: number = 0;
+  averageFirstCount: number = 0;
   sparePercentage: any;
   strikePercentage: any;
   openPercentage: any;
   pinCounts: number[] = Array(11).fill(0);
   missedCounts: number[] = Array(11).fill(0);;
   gameHistoryChanged: boolean = true;
+  @ViewChild('scoreChart') scoreChart!: ElementRef;
 
   constructor() { }
 
@@ -25,7 +29,7 @@ export class StatsPage implements OnInit, OnDestroy {
     this.isLoading = true;
     // Clear the current game history
     this.gameHistory = [];
-
+  
     // Retrieve games from local storage
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -34,16 +38,28 @@ export class StatsPage implements OnInit, OnDestroy {
         if (gameDataString) {
           const gameData = JSON.parse(gameDataString);
           this.gameHistory.push(gameData);
-
         }
       }
     }
+  
+    // Sort game history by date
+    this.sortGameHistoryByDate();
+  
     this.isLoading = false;
   }
+  
+  // Function to sort game history by date
+  sortGameHistoryByDate(): void {
+    this.gameHistory.sort((a: any, b: any) => {
+      return b.date - a.date; // Assuming `date` is a numeric timestamp
+    });
+  }
+  
 
   async ngOnInit() {
     await this.loadDataAndCalculateStats();
     this.subscribeToDataEvents();
+    this.generateScoreChart();
   }
 
   private subscribeToDataEvents() {
@@ -79,6 +95,49 @@ export class StatsPage implements OnInit, OnDestroy {
     window.removeEventListener('dataDeleted', this.loadDataAndCalculateStats);
   }
 
+  generateScoreChart() {
+    const gameLabels = this.gameHistory.map((game: any, index: number) => `${index + 1}`);
+    const scores = this.gameHistory.map((game: any, index: number) => {
+      // Calculate the average score up to the current game index
+      const totalScoreSum = this.gameHistory.slice(0, index + 1).reduce((sum: number, currentGame: any) => {
+        return sum + currentGame.totalScore;
+      }, 0);
+      return totalScoreSum / (index + 1); // Calculate average
+    });
+      
+    const ctx = this.scoreChart.nativeElement;
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: gameLabels,
+        datasets: [{
+          label: 'Average',
+          data: scores,
+          backgroundColor: "#FFFFFf",
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: 300 // Set the maximum value to 300
+          }
+        },
+        plugins:{
+          title: {
+            display: true,
+            text: 'Score Average'
+          },
+          legend: {
+            display: false,
+          }
+        }
+      }
+    });
+  }
+  
   getAverage() {
     let totalScoreSum = 0;
     for (let i = 0; i < this.gameHistory.length; i++) {
@@ -130,13 +189,18 @@ export class StatsPage implements OnInit, OnDestroy {
           this.missedCounts[pinsLeft]++;
         }
       });
+      game.frames.forEach(frame => {
+        const throws = frame.throws;
+        this.firstThrowCount += throws[0].value;
+      });
     });
-
-
+    
     const totalFrames = (this.gameHistory.length * 10);
-    this.strikePercentage = (this.totalStrikes / (totalFrames + 2)) * 100;
+    const strikeChances = (this.gameHistory.length * 12)
+    this.strikePercentage = (this.totalStrikes / strikeChances ) * 100;
     this.sparePercentage = (this.totalSpares / totalFrames) * 100;
     this.openPercentage = (this.totalOpens / totalFrames) * 100;
+    this.averageFirstCount = (this.firstThrowCount / totalFrames);
   }
 
   countOccurrences(frames: any[], condition: (frame: any) => boolean): number {

@@ -9,12 +9,16 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true">  
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>
   <h2>Allgemein</h2>
   <div class="stats">
     <ion-text>Durchschnitt: </ion-text>
     <ion-text class="value">{{averageScore | number:'1.2-2' }}</ion-text>
+  </div>
+  <div class="stats">
+    <ion-text>Erster Ball Durchschnitt: </ion-text>
+    <ion-text class="value">{{averageFirstCount | number:'1.2-2' }}</ion-text>
   </div>
   <div class="stats">
     <ion-text>Strikes: </ion-text>
@@ -40,7 +44,9 @@
     <ion-text>Openwahrscheinlichkeit: </ion-text>
     <ion-text class="value">{{openPercentage | number:'1.2-2'}}%</ion-text>
   </div>
-  <div><mat-expansion-panel>
+
+  <div>
+    <mat-expansion-panel>
       <mat-expansion-panel-header class="padding">
         <mat-panel-title>Spares</mat-panel-title>
       </mat-expansion-panel-header>
@@ -60,12 +66,15 @@
           <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0" [ngClass]="{
            'green': (missedCounts[i] === 0 || (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) > 75),
            'orange': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) > 33 && (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 75,
-           'red': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 33
-         }">
-            {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) | number:'1.2-2'}}%
+           'red': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 33 }">
+            {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) |
+            number:'1.2-2'}}%
           </ion-col>
         </ion-row>
       </ion-grid>
     </mat-expansion-panel>
   </div>
+
+  <canvas #scoreChart style="width: 300px; height: 300px;"></canvas>
+
 </ion-content>

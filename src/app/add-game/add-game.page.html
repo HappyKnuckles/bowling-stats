@@ -1,13 +1,17 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-button for="upload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openFileInput()">
+      <ion-icon slot="icon-only" name="add"></ion-icon>
+    </ion-button>
+    <input type="file" id="upload" style="display: none;" (change)="handleImageUpload($event)" placeholder="Upload file" accept="image/*"/>
     <ion-title>
       Add Game
     </ion-title>
     <div slot="end">
       <ion-button class="actionSheet" (click)="presentActionSheet()" fill="clear">
         {{selectedModeText}}
-        <ion-icon *ngIf="!sheetOpen" name="chevron-down"></ion-icon>
-        <ion-icon *ngIf="sheetOpen" name="chevron-up"></ion-icon>
+        <ion-icon *ngIf="!sheetOpen" name="chevron-down" class="chevron"></ion-icon>
+        <ion-icon *ngIf="sheetOpen" name="chevron-up" class="chevron"></ion-icon>
       </ion-button>
     </div>
   </ion-toolbar>
@@ -19,7 +23,7 @@
 <app-alert [isOpen]="isToastOpen" [message]="this.message" [icon]="this.icon" [isError]="this.error"></app-alert>
 
 <ng-container *ngFor="let mode of seriesMode; let i = index;">
-  <ion-content [fullscreen]="true" *ngIf="mode">
+  <ion-content [fullscreen]="true" *ngIf="mode"> 
     <ng-container *ngFor="let trackIndex of trackIndexes[i]; let j = index">
       <h1 *ngIf="i !== 0">Game {{j + 1}}</h1>
       <app-track-grid (maxScoreChanged)="onMaxScoreChanged($event, trackIndex)"

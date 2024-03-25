@@ -32,9 +32,12 @@ ion-header {
         font-size: 22px;
         // TODO Margin angleichen
     }
-
 }
-
+ion-button{
+    --background-activated: none;
+    --background-hover: none;
+    --background-focused: none;
+}
 ion-content {
     --background: #020a06;
     letter-spacing: 1px;

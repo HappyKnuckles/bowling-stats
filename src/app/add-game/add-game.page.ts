@@ -3,7 +3,7 @@ import { BowlingCalculatorService } from '../services/bowling-calculator/bowling
 import { TrackGridComponent } from '../components/track-grid/track-grid.component';
 import { Subscription } from 'rxjs';
 import { ActionSheetController } from '@ionic/angular';
-
+import { ImageProcesserService } from '../services/image-processer/image-processer.service';
 @Component({
   selector: 'app-add-game',
   templateUrl: 'add-game.page.html',
@@ -25,7 +25,19 @@ export class AddGamePage {
 
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
 
-  constructor(private actionSheetCtrl: ActionSheetController, private bowlingService: BowlingCalculatorService) {
+  constructor(private actionSheetCtrl: ActionSheetController, private imageProcessingService: ImageProcesserService) {
+  }
+
+  openFileInput() {
+    const fileInput = document.getElementById('upload');
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
+  
+  handleImageUpload(event: any): void {
+    const imageFile = event.target.files[0];
+    this.imageProcessingService.performOCR(imageFile);
   }
 
   clearFrames(index?: number) {
@@ -69,7 +81,7 @@ export class AddGamePage {
 
   setToastOpen(message: string, icon: string, error?: boolean) {
     this.message = message;
-    this.icon = icon; 
+    this.icon = icon;
     this.error = error;
     this.isToastOpen = true;
   }

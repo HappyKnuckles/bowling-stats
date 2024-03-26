@@ -3,7 +3,8 @@
     <ion-button for="upload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openFileInput()">
       <ion-icon slot="icon-only" name="add"></ion-icon>
     </ion-button>
-    <input type="file" id="upload" style="display: none;" (change)="handleImageUpload($event)" placeholder="Upload file" accept="image/*"/>
+    <input type="file" id="upload" style="display: none;" (change)="handleImageUpload($event)" placeholder="Upload file"
+      accept="image/*" />
     <ion-title>
       Add Game
     </ion-title>
@@ -23,7 +24,7 @@
 <app-alert [isOpen]="isToastOpen" [message]="this.message" [icon]="this.icon" [isError]="this.error"></app-alert>
 
 <ng-container *ngFor="let mode of seriesMode; let i = index;">
-  <ion-content [fullscreen]="true" *ngIf="mode"> 
+  <ion-content [fullscreen]="true" *ngIf="mode">
     <ng-container *ngFor="let trackIndex of trackIndexes[i]; let j = index">
       <h1 *ngIf="i !== 0">Game {{j + 1}}</h1>
       <app-track-grid (maxScoreChanged)="onMaxScoreChanged($event, trackIndex)"
@@ -70,5 +71,57 @@
         </ion-col>
       </ion-row>
     </ion-grid>
+
+    <ion-modal [isOpen]="isModalOpen">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button (click)="cancel()">Abbrechen</ion-button>
+            </ion-buttons>
+            <ion-title>Dein Spiel</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="confirm()" [strong]="true">Speichern</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <h2>Passe hier falsche Spieldaten an</h2>
+          <div class="grid-container">
+            <ion-grid fixed="true" *ngFor="let frame of gameData.frames; let frameIndex = index;">
+              <ion-row>
+                <ion-col class="middle frame">{{frameIndex + 1}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="inputCol" *ngIf="frameIndex !== 9"></ion-col>
+                <ion-col class="inputCol">
+                  <ion-input type="number" [value]="frame.throws[0]?.value"
+                    (ionChange)="frame.throws[0].value = $event.target.value"></ion-input>
+                </ion-col>
+                <ion-col class="inputCol" *ngIf="frameIndex !== 9">
+                  <ion-input type="number" [value]="frame.throws[1]?.value"
+                    (ionChange)="frame.throws[1].value = $event.target.value"></ion-input>
+                </ion-col>
+                <ion-col class="inputCol" *ngIf="frameIndex === 9">
+                  <ion-input type="number" [value]="frame.throws[1]?.value"
+                    (ionChange)="frame.throws[1].value = $event.target.value"></ion-input>
+                </ion-col>
+                <ion-col class="inputCol" *ngIf="frameIndex === 9">
+                  <ion-input type="number" [value]="frame.throws[2]?.value"
+                    (ionChange)="frame.throws[2].value = $event.target.value"></ion-input>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col class="middle count">
+                  <ion-input type="text" class="frameScores" [value]="gameData.frameScores[frameIndex]"
+                    (ionChange)="updateFrameScore($event.target.value, frameIndex)">
+                  </ion-input>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
   </ion-content>
 </ng-container>

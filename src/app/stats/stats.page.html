@@ -25,6 +25,10 @@
     <ion-text class="value">{{totalStrikes}}</ion-text>
   </div>
   <div class="stats">
+    <ion-text>Strikes pro Spiel: </ion-text>
+    <ion-text class="value">{{averageStrikesPerGame | number:'1.2-2'}}</ion-text>
+  </div>
+  <div class="stats">
     <ion-text>Strikewahrscheinlichkeit: </ion-text>
     <ion-text class="value">{{strikePercentage | number:'1.2-2'}}%</ion-text>
   </div>

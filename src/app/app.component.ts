@@ -15,41 +15,57 @@ export class AppComponent {
     let name = localStorage.getItem('username');
 
     if (!name) {
-      const alert = await this.alertController.create({
-        header: 'Willkommen!',
-        message: 'Bitte Namen eingeben:',
-        inputs: [
-          {
-            name: 'username',
-            type: 'text',
-            placeholder: 'Dein Name',
-          },
-        ],
-        buttons: [
-          {
-            text: 'Submit',
-            handler: (data) => {
-              if (data.username) {
-                name = data.username;
-                localStorage.setItem('username', name!);
-              }
-            },
-          },
-        ],
-      });
-
-      await alert.present();
+      await this.showEnterNameAlert();
     } else {
       this.presentGreetingAlert(name);
     }
   }
 
-  async presentGreetingAlert(name: string) {
+  async showEnterNameAlert() {
     const alert = await this.alertController.create({
-      header: `Hallo ${name}!`,
-      buttons: ['OK'],
+      header: 'Willkommen!',
+      message: 'Bitte Namen eingeben:',
+      inputs: [
+        {
+          name: 'username',
+          type: 'text',
+          placeholder: 'Dein Name',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Bestätigen',
+          handler: (data) => {
+            if (data.username) {
+              const name = data.username;
+              localStorage.setItem('username', name);
+            }
+          },
+        },
+      ],
     });
 
     await alert.present();
   }
+
+  async presentGreetingAlert(name: string) {
+    const alert = await this.alertController.create({
+      header: `Hallo ${name}!`,
+      buttons: [
+        {
+          text: 'Hi',
+        },
+        {
+          text: 'Namen ändern',
+          handler: () => {
+            this.showEnterNameAlert(); // Call showEnterNameAlert function to allow the user to change their name
+          }
+        }
+      ],
+    });
+
+    await alert.present();
+  }
+
+
 }

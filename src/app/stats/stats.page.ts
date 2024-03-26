@@ -15,6 +15,7 @@ export class StatsPage implements OnInit, OnDestroy {
   totalOpens: number = 0;
   firstThrowCount: number = 0;
   averageFirstCount: number = 0;
+  averageStrikesPerGame: number = 0;
   sparePercentage: any;
   strikePercentage: any;
   openPercentage: any;
@@ -197,6 +198,7 @@ export class StatsPage implements OnInit, OnDestroy {
     
     const totalFrames = (this.gameHistory.length * 10);
     const strikeChances = (this.gameHistory.length * 12)
+    this.averageStrikesPerGame = (this.totalStrikes / this.gameHistory.length);
     this.strikePercentage = (this.totalStrikes / strikeChances ) * 100;
     this.sparePercentage = (this.totalSpares / totalFrames) * 100;
     this.openPercentage = (this.totalOpens / totalFrames) * 100;

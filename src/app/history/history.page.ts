@@ -93,7 +93,6 @@ export class HistoryPage implements OnInit, OnDestroy {
     }, 100);
   }
 
-
   async ngOnInit() {
     this.isLoading = true;
     await this.loadGameHistory();
@@ -135,28 +134,29 @@ export class HistoryPage implements OnInit, OnDestroy {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(gameData);
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const date = Date.now();
-    if (isPlatform('ios')) {
+    const date = new Date();
+    const formattedDate = date.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric'});    
+        if (isPlatform('ios')) {
       if ((await Filesystem.requestPermissions()).publicStorage === 'denied') {
         const permissionRequestResult = await Filesystem.requestPermissions();
         if (permissionRequestResult) {
           this.isLoading = true;
-          await this.saveExcelFile(excelBuffer, `game_data${date}.xlsx`, true);
+          await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`, true);
           this.isLoading = false;
         } else this.showPermissionDeniedAlert();
       } else {
         this.isLoading = true;
-        await this.saveExcelFile(excelBuffer, `game_data${date}.xlsx`, true);
+        await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`, true);
         this.isLoading = false;
       }
     } else if (isPlatform('android')) {
       // If running on an Android device, save the file without asking for permissions
       this.isLoading = true;
-      await this.saveExcelFile(excelBuffer, `game_data${date}.xlsx`, true);
+      await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`, true);
       this.isLoading = false;
     } else {
       // If running on a non-mobile platform, save the file
-      await this.saveExcelFile(excelBuffer, `game_data${date}.xlsx`, false);
+      await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`, false);
     }
   }
 
@@ -233,7 +233,13 @@ export class HistoryPage implements OnInit, OnDestroy {
 
   async saveExcelFile(buffer: any, fileName: string, isMobile: boolean): Promise<void> {
     try {
-      const base64Data = btoa(buffer); // Convert buffer to base64 string
+      let binary = '';
+      const bytes = new Uint8Array(buffer);
+      const length = bytes.byteLength;
+      for (let i = 0; i < length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64Data = btoa(binary);
       const dataUri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
 
       if (!isMobile) {

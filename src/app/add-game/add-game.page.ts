@@ -77,7 +77,7 @@ export class AddGamePage {
         const image = await Camera.getPhoto({
           quality: 90,
           allowEditing: false,
-          resultType: CameraResultType.Uri,
+          resultType: CameraResultType.Base64,
           source: CameraSource.Prompt,
         });
         return image;
@@ -242,7 +242,6 @@ export class AddGamePage {
       this.setToastOpen(`${error}`, 'bug-outline', true);
     }
   }
-
 
   cancel() {
     this.modal.dismiss(null, 'cancel');

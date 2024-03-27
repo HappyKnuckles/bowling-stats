@@ -10,7 +10,7 @@ const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
 })
 export class ImageProcesserService {
   subKey: string = environment.key;
-  endPointUrl: string =environment.endPoint;
+  endPointUrl: string = environment.endPoint;
   computerVisionClient = new ComputerVisionClient(
     new ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': this.subKey } }), this.endPointUrl);
   sasUrl: string = environment.sasUrl
@@ -27,8 +27,7 @@ export class ImageProcesserService {
       console.log(extractedText)
       return extractedText;
     } catch (error) {
-      console.error('Error performing OCR:', error);
-      return;
+      throw error;
     }
   }
 
@@ -63,7 +62,7 @@ export class ImageProcesserService {
           if (lineText.toLowerCase().includes('player')) {
             return recognizedText; // Exit and return the recognized text
           }
-            recognizedText += lineText + '\n'; // Append line text to recognized text
+          recognizedText += lineText + '\n'; // Append line text to recognized text
         }
       } else {
         console.log('No recognized text.\n');
@@ -76,14 +75,13 @@ export class ImageProcesserService {
     try {
       const blobServiceClient = new BlobServiceClient(this.sasUrl);
       const containerClient = blobServiceClient.getContainerClient("images");
-      const blobName = imageFile.name;
+      const blobName = 'bowling' + Date.now().toString();
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
       await blockBlobClient.uploadBrowserData(imageFile);
-      this.imageUrl = this.url + imageFile.name;
+      this.imageUrl = this.url + blobName;
       console.log(this.imageUrl)
       return this.imageUrl;
     } catch (error) {
-      console.error("Error uploading image:", error);
       throw error;
     }
   }

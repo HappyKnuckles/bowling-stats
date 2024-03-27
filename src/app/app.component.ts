@@ -54,7 +54,7 @@ export class AppComponent {
               return true;
             } else if (!oldName) {
               return false; // Verhindert das Schließen des Dialogs, wenn das Eingabefeld leer ist und kein Name gespeichert ist
-            }
+            } return true;
           },
         },
       ],
@@ -62,7 +62,6 @@ export class AppComponent {
 
     await alert.present();
   }
-
 
   setToastOpen(message: string, icon: string, error?: boolean) {
     this.message = message;

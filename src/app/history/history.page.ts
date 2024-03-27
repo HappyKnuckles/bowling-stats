@@ -241,7 +241,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         this.setToastOpen(`File saved at path: ${savedFile.uri}`, 'checkmark-outline');
       }
     } catch (error) {
-      this.setToastOpen(`${error}`, 'bug');
+      this.setToastOpen(`${error}`, 'bug', true);
     }
   }
 

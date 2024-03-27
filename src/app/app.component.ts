@@ -7,6 +7,11 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
+  icon: string = '';
+  error?: boolean = false;
+  message: string = '';
+  isToastOpen: boolean = false;
+
   constructor(private alertController: AlertController) {
     this.greetUser();
   }
@@ -30,6 +35,7 @@ export class AppComponent {
           name: 'username',
           type: 'text',
           placeholder: 'Dein Name',
+          cssClass: 'nameInput'
         },
       ],
       buttons: [
@@ -39,6 +45,7 @@ export class AppComponent {
             if (data.username) {
               const name = data.username;
               localStorage.setItem('username', name);
+              this.setToastOpen('Name geändert', 'reload-outline')
             }
           },
         },
@@ -48,6 +55,13 @@ export class AppComponent {
     await alert.present();
   }
 
+  setToastOpen(message: string, icon: string, error?: boolean) {
+    this.message = message;
+    this.icon = icon;
+    this.error = error;
+    this.isToastOpen = true;
+  }
+  
   async presentGreetingAlert(name: string) {
     const alert = await this.alertController.create({
       header: `Hallo ${name}!`,

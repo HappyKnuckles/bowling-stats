@@ -33,11 +33,18 @@ ion-header {
         // TODO Margin angleichen
     }
 }
-ion-button{
+
+.nameInput {
+    background-color: white !important;
+    color: black;
+}
+
+ion-button {
     --background-activated: none;
     --background-hover: none;
     --background-focused: none;
 }
+
 ion-content {
     --background: #020a06;
     font-size: 19px;

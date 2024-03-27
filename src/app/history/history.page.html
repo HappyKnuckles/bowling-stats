@@ -3,10 +3,10 @@
 
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-button for="upload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openFileInput()">
+    <ion-button for="excelUpload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openExcelFileInput()">
       <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
     </ion-button>
-    <input type="file" id="upload" style="display: none;" (change)="handleFileUpload($event)" placeholder="Upload file"
+    <input type="file" id="excelUpload" style="display: none;" (change)="handleFileUpload($event)" placeholder="Upload file"
       accept=".xlsx">
     <ion-title>
       Historie

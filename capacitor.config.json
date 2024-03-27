@@ -1,1 +1,8 @@
-{}
+{
+    "plugins": {
+      "Camera": {
+        "sync": true
+      }
+    }
+  }
+  

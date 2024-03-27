@@ -1,10 +1,12 @@
+<ion-backdrop *ngIf="isLoading" style="opacity: 0.3; z-index: 11;"></ion-backdrop>
+<ion-spinner *ngIf="isLoading" name="lines" color="primary" class="custom-loader"></ion-spinner>
+
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-button for="upload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openFileInput()">
+    <ion-button type="button" class="actionSheet" slot="start" fill="clear" (click)="takeOrChoosePicture()">
       <ion-icon slot="icon-only" name="add"></ion-icon>
     </ion-button>
-    <input type="file" id="upload" style="display: none;" (change)="handleImageUpload($event)" placeholder="Upload file"
-      accept="image/*" />
+    <input type="file" id="upload" style="display: none;" accept="image/*" />
     <ion-title>
       Add Game
     </ion-title>
@@ -20,7 +22,6 @@
 <ion-alert [isOpen]="isAlertOpen" header="Error" message="You didn't fill all inputs" [buttons]="alertButton"
   (didDismiss)="setAlertOpen()">
 </ion-alert>
-
 <app-alert [isOpen]="isToastOpen" [message]="this.message" [icon]="this.icon" [isError]="this.error"></app-alert>
 
 <ng-container *ngFor="let mode of seriesMode; let i = index;">

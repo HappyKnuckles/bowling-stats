@@ -15,6 +15,14 @@ app-track-grid {
   }
 }
 
+.custom-loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
 ion-modal {
   .grid-container {
     display: flex;
@@ -78,14 +86,6 @@ ion-modal {
 .pin-row {
   display: flex;
   justify-content: center;
-}
-
-.pin {
-  width: 50px;
-  height: 70px;
-  background-color: white;
-  border-radius: 50%;
-  margin: 5px;
 }
 
 ion-input:not(.frameScores) {

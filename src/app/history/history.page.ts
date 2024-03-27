@@ -1,6 +1,8 @@
 import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, isPlatform } from '@ionic/angular';
 import * as XLSX from 'xlsx';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Camera } from '@capacitor/camera';
 
 @Component({
   selector: 'app-history',
@@ -83,7 +85,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
   setToastOpen(message: string, icon: string, error?: boolean) {
     this.message = message;
-    this.icon = icon; 
+    this.icon = icon;
     this.error = error;
     this.isToastOpen = true;
   }
@@ -115,20 +117,46 @@ export class HistoryPage implements OnInit, OnDestroy {
     }, 100);
   }
 
-  openFileInput() {
-    const fileInput = document.getElementById('upload');
+  openExcelFileInput() {
+    const fileInput = document.getElementById('excelUpload');
     if (fileInput) {
       fileInput.click();
     }
   }
 
-  exportToExcel() {
+  async exportToExcel() {
     const gameData = this.getGameDataForExport();
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(gameData);
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    this.saveExcelFile(excelBuffer, 'game_data.xlsx');
+    if ((await Filesystem.requestPermissions()).publicStorage === 'denied') {
+      const permissionRequestResult = await Filesystem.requestPermissions();
+      if (permissionRequestResult) {
+        this.saveExcelFile(excelBuffer, 'game_data.xlsx');
+      } else this.showPermissionDeniedAlert();
+    }
     this.setToastOpen('Excel Datei wurde heruntegeladen!', 'checkmark-outline');
+  }
+
+  async showPermissionDeniedAlert() {
+    const alert = await this.alertController.create({
+      header: 'Permission Denied',
+      message: 'To save to Gamedata.xlsx, you need to give permissions!',
+      buttons: [
+        {
+          text: 'OK',
+          handler: async () => {
+            const permissionRequestResult = await Filesystem.requestPermissions();
+            if (permissionRequestResult.publicStorage === 'granted') {
+              this.exportToExcel();
+            } else {
+              this.showPermissionDeniedAlert();
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   private getGameDataForExport(): any[] {
@@ -181,13 +209,35 @@ export class HistoryPage implements OnInit, OnDestroy {
     return gameData;
   }
 
-  private saveExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-    const url: string = window.URL.createObjectURL(data);
-    const link: HTMLAnchorElement = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.click();
+  async saveExcelFile(buffer: any, fileName: string): Promise<void> {
+    try {
+      const base64Data = btoa(buffer); // Convert buffer to base64 string
+      const dataUri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
+
+      if (isPlatform('desktop')) {
+        const anchor = document.createElement('a');
+        anchor.href = dataUri;
+        anchor.download = fileName;
+
+        // Programmatically trigger a download
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+
+        this.setToastOpen(`File saved successfully`, 'add');
+      } else {
+        // Save file using Capacitor's Filesystem API on other platforms
+        const savedFile = await Filesystem.writeFile({
+          path: fileName,
+          data: dataUri,
+          directory: Directory.Documents,
+          recursive: true
+        });
+        this.setToastOpen(`File saved at path: ${savedFile.uri}`, 'add');
+      }
+    } catch (error) {
+      this.setToastOpen(`${error}`, 'bug');
+    }
   }
 
   handleFileUpload(event: any) {

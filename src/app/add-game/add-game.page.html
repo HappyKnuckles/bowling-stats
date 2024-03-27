@@ -3,10 +3,10 @@
 
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-button type="button" class="actionSheet" slot="start" fill="clear" (click)="takeOrChoosePicture()">
+    <ion-button type="button" class="actionSheet" slot="start" fill="clear" (click)="handleImageUpload()">
       <ion-icon slot="icon-only" name="add"></ion-icon>
     </ion-button>
-    <input type="file" id="upload" style="display: none;" accept="image/*" />
+    <input type="file" id="upload" style="display: none;" accept="image/*"/>
     <ion-title>
       Add Game
     </ion-title>

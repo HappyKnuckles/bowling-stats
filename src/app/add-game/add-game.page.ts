@@ -47,18 +47,22 @@ export class AddGamePage {
     this.userName = localStorage.getItem('username');
   }
 
-  openFileInput() {
-    const fileInput = document.getElementById('upload');
-    if (fileInput) {
+  async openFileInput(): Promise<File | undefined> {
+    return new Promise((resolve) => {
+      const fileInput = document.getElementById('upload') as HTMLInputElement;
+      fileInput.addEventListener('change', () => {
+        const selectedFile = fileInput.files?.[0];
+        resolve(selectedFile);
+      });
       fileInput.click();
-    }
+    });
   }
 
   async takeOrChoosePicture(): Promise<any> {
-    if ((await Camera.checkPermissions()).camera === 'denied') {
-      const permissionRequestResult = await Camera.requestPermissions();
-      if (permissionRequestResult) {
-        if (isPlatform('android') || isPlatform('ios')) {
+    if (isPlatform('android') || isPlatform('ios')) {
+      if ((await Camera.checkPermissions()).camera === 'denied') {
+        const permissionRequestResult = await Camera.requestPermissions();
+        if (permissionRequestResult) {
           // If running on a mobile device, use Camera plugin
           const image = await Camera.getPhoto({
             quality: 90,
@@ -67,10 +71,13 @@ export class AddGamePage {
             source: CameraSource.Prompt,
           });
           return image;
-        } else {
-          this.openFileInput();
-        }
-      } else this.showPermissionDeniedAlert();
+        } else this.showPermissionDeniedAlert();
+      }
+    } else {
+      const file = await this.openFileInput();
+      if (file) {
+        return file;
+      }
     }
   }
 
@@ -95,7 +102,6 @@ export class AddGamePage {
     await alert.present();
   }
 
-
   async handleImageUpload(): Promise<void> {
     try {
       const imageUrl = await this.takeOrChoosePicture();
@@ -106,9 +112,7 @@ export class AddGamePage {
         // localStorage.setItem("testdata", gameText!);
         // const gameText = localStorage.getItem('testdata');
         this.parseBowlingScores(gameText!);
-      } else {
-        this.setToastOpen("Kein Bild hochgeladen", "bug-outline");
-      }
+      } else this.setToastOpen("Kein Bild hochgeladen", "bug-outline");
     } catch (error) {
       // Handle error
       console.error("Error handling image upload:", error);

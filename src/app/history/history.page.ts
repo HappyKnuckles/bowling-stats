@@ -91,8 +91,10 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    this.isLoading = true;
     await this.loadGameHistory();
     this.subscribeToDataEvents();
+    this.isLoading = false;
   }
 
   private subscribeToDataEvents() {
@@ -129,13 +131,16 @@ export class HistoryPage implements OnInit, OnDestroy {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(gameData);
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    if ((await Filesystem.requestPermissions()).publicStorage === 'denied') {
-      const permissionRequestResult = await Filesystem.requestPermissions();
-      if (permissionRequestResult) {
-        this.saveExcelFile(excelBuffer, 'game_data.xlsx');
-      } else this.showPermissionDeniedAlert();
-    }
-    this.setToastOpen('Excel Datei wurde heruntegeladen!', 'checkmark-outline');
+    if (isPlatform('android') || isPlatform('ios')) {
+      if ((await Filesystem.requestPermissions()).publicStorage === 'denied') {
+        const permissionRequestResult = await Filesystem.requestPermissions();
+        if (permissionRequestResult) {
+          this.isLoading = true;
+          await this.saveExcelFile(excelBuffer, 'game_data.xlsx', true);
+          this.isLoading = false;
+        } else this.showPermissionDeniedAlert();
+      }
+    } else await this.saveExcelFile(excelBuffer, 'game_data.xlsx', false);
   }
 
   async showPermissionDeniedAlert() {
@@ -209,12 +214,12 @@ export class HistoryPage implements OnInit, OnDestroy {
     return gameData;
   }
 
-  async saveExcelFile(buffer: any, fileName: string): Promise<void> {
+  async saveExcelFile(buffer: any, fileName: string, isMobile: boolean): Promise<void> {
     try {
       const base64Data = btoa(buffer); // Convert buffer to base64 string
       const dataUri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
 
-      if (isPlatform('desktop')) {
+      if (!isMobile) {
         const anchor = document.createElement('a');
         anchor.href = dataUri;
         anchor.download = fileName;
@@ -224,7 +229,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         anchor.click();
         document.body.removeChild(anchor);
 
-        this.setToastOpen(`File saved successfully`, 'add');
+        this.setToastOpen(`File saved successfully`, 'checkmark-outline');
       } else {
         // Save file using Capacitor's Filesystem API on other platforms
         const savedFile = await Filesystem.writeFile({
@@ -233,20 +238,24 @@ export class HistoryPage implements OnInit, OnDestroy {
           directory: Directory.Documents,
           recursive: true
         });
-        this.setToastOpen(`File saved at path: ${savedFile.uri}`, 'add');
+        this.setToastOpen(`File saved at path: ${savedFile.uri}`, 'checkmark-outline');
       }
     } catch (error) {
       this.setToastOpen(`${error}`, 'bug');
     }
   }
 
-  handleFileUpload(event: any) {
+  async handleFileUpload(event: any) {
     this.file = event.target.files[0];
-    this.readExcelData();
+
+    this.isLoading = true;
+    await this.readExcelData();
+    this.isLoading = false;
+
     this.setToastOpen('Excel Datei wurde hochgeladen!', 'checkmark-outline');
   }
 
-  readExcelData() {
+  async readExcelData() {
     let fileReader = new FileReader();
     fileReader.onload = (e) => {
       this.arrayBuffer = fileReader.result;

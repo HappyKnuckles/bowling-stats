@@ -87,8 +87,12 @@ export class HistoryPage implements OnInit, OnDestroy {
     this.message = message;
     this.icon = icon;
     this.error = error;
-    this.isToastOpen = true;
+    this.isToastOpen = false;
+    setTimeout(() => {
+      this.isToastOpen = true;
+    }, 100);
   }
+
 
   async ngOnInit() {
     this.isLoading = true;
@@ -131,16 +135,29 @@ export class HistoryPage implements OnInit, OnDestroy {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(gameData);
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    if (isPlatform('android') || isPlatform('ios')) {
+    const date = Date.now();
+    if (isPlatform('ios')) {
       if ((await Filesystem.requestPermissions()).publicStorage === 'denied') {
         const permissionRequestResult = await Filesystem.requestPermissions();
         if (permissionRequestResult) {
           this.isLoading = true;
-          await this.saveExcelFile(excelBuffer, 'game_data.xlsx', true);
+          await this.saveExcelFile(excelBuffer, `game_data${date}.xlsx`, true);
           this.isLoading = false;
         } else this.showPermissionDeniedAlert();
+      } else {
+        this.isLoading = true;
+        await this.saveExcelFile(excelBuffer, `game_data${date}.xlsx`, true);
+        this.isLoading = false;
       }
-    } else await this.saveExcelFile(excelBuffer, 'game_data.xlsx', false);
+    } else if (isPlatform('android')) {
+      // If running on an Android device, save the file without asking for permissions
+      this.isLoading = true;
+      await this.saveExcelFile(excelBuffer, `game_data${date}.xlsx`, true);
+      this.isLoading = false;
+    } else {
+      // If running on a non-mobile platform, save the file
+      await this.saveExcelFile(excelBuffer, `game_data${date}.xlsx`, false);
+    }
   }
 
   async showPermissionDeniedAlert() {

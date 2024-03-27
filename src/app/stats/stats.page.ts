@@ -56,7 +56,6 @@ export class StatsPage implements OnInit, OnDestroy {
     });
   }
   
-
   async ngOnInit() {
     await this.loadDataAndCalculateStats();
     this.subscribeToDataEvents();

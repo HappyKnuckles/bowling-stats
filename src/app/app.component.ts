@@ -42,10 +42,18 @@ export class AppComponent {
         {
           text: 'Bestätigen',
           handler: (data) => {
-            if (data.username) {
+            const oldName = localStorage.getItem('username');
+            if (data.username && data.username.trim() !== '') {
               const name = data.username;
               localStorage.setItem('username', name);
-              this.setToastOpen('Name geändert', 'reload-outline')
+              if (oldName) {
+                this.setToastOpen('Name geändert', 'reload-outline');
+              } else {
+                this.setToastOpen('Name hinzugefügt', 'reload-outline');
+              }
+              return true;
+            } else if (!oldName) {
+              return false; // Verhindert das Schließen des Dialogs, wenn das Eingabefeld leer ist und kein Name gespeichert ist
             }
           },
         },
@@ -55,13 +63,17 @@ export class AppComponent {
     await alert.present();
   }
 
+
   setToastOpen(message: string, icon: string, error?: boolean) {
     this.message = message;
     this.icon = icon;
     this.error = error;
-    this.isToastOpen = true;
+    this.isToastOpen = false;
+    setTimeout(() => {
+      this.isToastOpen = true;
+    }, 100);
   }
-  
+
   async presentGreetingAlert(name: string) {
     const alert = await this.alertController.create({
       header: `Hallo ${name}!`,

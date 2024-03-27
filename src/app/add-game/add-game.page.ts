@@ -60,7 +60,7 @@ export class AddGamePage {
 
   async takeOrChoosePicture(): Promise<any> {
     if (isPlatform('android') || isPlatform('ios')) {
-      if ((await Camera.checkPermissions()).camera === 'denied') {
+      if (isPlatform('ios') && (await Camera.checkPermissions()).camera === 'denied') {
         const permissionRequestResult = await Camera.requestPermissions();
         if (permissionRequestResult) {
           // If running on a mobile device, use Camera plugin
@@ -72,6 +72,15 @@ export class AddGamePage {
           });
           return image;
         } else this.showPermissionDeniedAlert();
+      } else if (isPlatform('android')) {
+        // If running on an Android device, use Camera plugin without asking for permissions
+        const image = await Camera.getPhoto({
+          quality: 90,
+          allowEditing: false,
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Prompt,
+        });
+        return image;
       }
     } else {
       const file = await this.openFileInput();
@@ -108,15 +117,15 @@ export class AddGamePage {
       if (imageUrl) {
         this.isLoading = true;
         const gameText = await this.imageProcessingService.performOCR(imageUrl);
-        this.isLoading = false;
         // localStorage.setItem("testdata", gameText!);
         // const gameText = localStorage.getItem('testdata');
         this.parseBowlingScores(gameText!);
-      } else this.setToastOpen("Kein Bild hochgeladen", "bug-outline");
+        this.isLoading = false;
+      } else this.setToastOpen("Kein Bild hochgeladen", "bug-outline", true);
     } catch (error) {
       // Handle error
       console.error("Error handling image upload:", error);
-      this.setToastOpen("Fehler beim Hochladen des Bildes", "bug-outline");
+      this.setToastOpen("Fehler beim Hochladen des Bildes", "bug-outline", true);
     }
   }
 
@@ -228,9 +237,9 @@ export class AddGamePage {
       if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {
         this.isModalOpen = true;
       }
-      else this.setToastOpen('Spielinhalt wurde nicht richtig erkannt!', 'bug-outline');
+      else this.setToastOpen('Spielinhalt wurde nicht richtig erkannt!', 'bug-outline', true);
     } catch (error) {
-      this.setToastOpen(`${error}`, 'bug-outline');
+      this.setToastOpen(`${error}`, 'bug-outline', true);
     }
   }
 
@@ -300,7 +309,10 @@ export class AddGamePage {
     this.message = message;
     this.icon = icon;
     this.error = error;
-    this.isToastOpen = true;
+    this.isToastOpen = false;
+    setTimeout(() => {
+      this.isToastOpen = true;
+    }, 100);
   }
 
   onMaxScoreChanged(maxScore: number, index: number) {

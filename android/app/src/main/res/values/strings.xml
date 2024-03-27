@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">BowlingStats</string>
     <string name="title_activity_main">BowlingStats</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="package_name">io.ionic.bowling</string>
+    <string name="custom_url_scheme">io.ionic.bowling</string>
 </resources>

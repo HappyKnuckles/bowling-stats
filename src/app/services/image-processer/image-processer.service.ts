@@ -23,8 +23,6 @@ export class ImageProcesserService {
     try {
       const printedResult = await this.readTextFromURL(imageUrl);
       const extractedText = this.printRecognizedText(printedResult);
-      // Delete the blob after extraction
-      console.log(extractedText)
       return extractedText;
     } catch (error) {
       throw error;
@@ -79,7 +77,6 @@ export class ImageProcesserService {
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
       await blockBlobClient.uploadBrowserData(imageFile);
       this.imageUrl = this.url + blobName;
-      console.log(this.imageUrl)
       return this.imageUrl;
     } catch (error) {
       throw error;

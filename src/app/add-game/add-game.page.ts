@@ -120,12 +120,13 @@ export class AddGamePage {
         // localStorage.setItem("testdata", gameText!);
         // const gameText = localStorage.getItem('testdata');
         this.parseBowlingScores(gameText!);
-        this.isLoading = false;
       } else this.setToastOpen("Kein Bild hochgeladen", "bug-outline", true);
     } catch (error) {
       // Handle error
       console.error("Error handling image upload:", error);
       this.setToastOpen("Fehler beim Hochladen des Bildes", "bug-outline", true);
+    } finally {
+      this.isLoading = false;
     }
   }
 

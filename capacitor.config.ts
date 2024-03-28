@@ -1,3 +1,4 @@
+import { Camera } from '@capacitor/camera';
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {

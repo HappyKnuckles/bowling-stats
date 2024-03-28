@@ -1,6 +1,11 @@
-import { NONE_TYPE } from '@angular/compiler';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { GameHistoryService } from '../services/game-history/game-history.service';
+import { ToastService } from '../services/toast/toast.service';
+import { BowlingCalculatorService } from '../services/bowling-calculator/bowling-calculator.service';
+import { GameStatsService } from '../services/game-stats/game-stats.service';
+import { Subscription } from 'rxjs';
+import { SaveGameDataService } from '../services/save-game/save-game.service';
 @Component({
   selector: 'app-stats',
   templateUrl: 'stats.page.html',
@@ -9,53 +14,72 @@ import Chart from 'chart.js/auto';
 export class StatsPage implements OnInit, OnDestroy {
   gameHistory: any = [];
   isLoading: boolean = false;
-  averageScore: any;
+  averageScore: number = 0;
+  totalPins: number = 0;
   totalStrikes: number = 0;
   totalSpares: number = 0;
   totalOpens: number = 0;
   firstThrowCount: number = 0;
   averageFirstCount: number = 0;
   averageStrikesPerGame: number = 0;
-  sparePercentage: any;
-  strikePercentage: any;
-  openPercentage: any;
+  sparePercentage: number = 0;
+  strikePercentage: number = 0;
+  openPercentage: number = 0;
+  highGame: number = 0;
   pinCounts: number[] = Array(11).fill(0);
   missedCounts: number[] = Array(11).fill(0);;
   gameHistoryChanged: boolean = true;
+  newDataAddedSubscription!: Subscription;
+  dataDeletedSubscription!: Subscription;
   @ViewChild('scoreChart') scoreChart!: ElementRef;
 
-  constructor() { }
+  constructor(private statsService: GameStatsService, private toastService: ToastService, private gameHistoryService: GameHistoryService, private saveService: SaveGameDataService) { }
 
-  loadGameHistory() {
+  private async loadDataAndCalculateStats() {
     this.isLoading = true;
-    // Clear the current game history
-    this.gameHistory = [];
-  
-    // Retrieve games from local storage
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('game')) {
-        const gameDataString = localStorage.getItem(key);
-        if (gameDataString) {
-          const gameData = JSON.parse(gameDataString);
-          this.gameHistory.push(gameData);
-        }
+    if (this.gameHistoryChanged) {
+      try {
+        await this.loadGameHistory();
+        await this.loadStats();
+        this.gameHistoryChanged = false; // Reset the flag
+      } catch (error) {
+        // You can also display an error message to the user using a toast or similar mechanism
+        this.toastService.showToast(`Fehler beim Historie und Stats laden: ${error}`, 'bug-outline', true)
+      } finally {
+        this.isLoading = false;
       }
     }
-  
-    // Sort game history by date
-    this.sortGameHistoryByDate();
-  
-    this.isLoading = false;
   }
-  
-  // Function to sort game history by date
-  sortGameHistoryByDate(): void {
-    this.gameHistory.sort((a: any, b: any) => {
-      return b.date - a.date; // Assuming `date` is a numeric timestamp
-    });
+
+  async loadGameHistory() {
+    try {
+      this.gameHistory = await this.gameHistoryService.loadGameHistory();
+    } catch (error) {
+      this.toastService.showToast(`Fehler beim Historie laden: ${error}`, 'bug-outline', true)
+    }
   }
-  
+
+  async loadStats() {
+    try {
+      await this.statsService.calculateStats(this.gameHistory);
+      this.averageScore = this.statsService.averageScore;
+      this.averageFirstCount = this.statsService.averageFirstCount;
+      this.totalPins = this.statsService.totalScoreSum;
+      this.totalStrikes = this.statsService.totalStrikes;
+      this.averageStrikesPerGame = this.statsService.averageStrikesPerGame;
+      this.strikePercentage = this.statsService.strikePercentage;
+      this.totalSpares = this.statsService.totalSpares;
+      this.sparePercentage = this.statsService.sparePercentage;
+      this.totalOpens = this.statsService.totalOpens;
+      this.openPercentage = this.statsService.openPercentage;
+      this.missedCounts = this.statsService.missedCounts;
+      this.pinCounts = this.statsService.pinCounts;
+      this.highGame = this.statsService.highGame;
+    } catch (error) {
+      this.toastService.showToast(`Fehler beim Statistik laden: ${error}`, 'bug-outline', true)
+    }
+  }
+
   async ngOnInit() {
     await this.loadDataAndCalculateStats();
     this.subscribeToDataEvents();
@@ -63,12 +87,12 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents() {
-    window.addEventListener('newDataAdded', () => {
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats();
     });
 
-    window.addEventListener('dataDeleted', () => {
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats();
     });
@@ -81,18 +105,9 @@ export class StatsPage implements OnInit, OnDestroy {
     }, 100);
   }
 
-  private async loadDataAndCalculateStats() {
-    if (this.gameHistoryChanged) {
-      this.loadGameHistory();
-      this.getAverage();
-      this.calculateStats();
-      this.gameHistoryChanged = false; // Reset the flag
-    }
-  }
-
   ngOnDestroy() {
-    window.removeEventListener('newDataAdded', this.loadDataAndCalculateStats);
-    window.removeEventListener('dataDeleted', this.loadDataAndCalculateStats);
+    this.newDataAddedSubscription.unsubscribe();
+    this.dataDeletedSubscription.unsubscribe();
   }
 
   generateScoreChart() {
@@ -104,7 +119,7 @@ export class StatsPage implements OnInit, OnDestroy {
       }, 0);
       return totalScoreSum / (index + 1); // Calculate average
     });
-      
+
     const ctx = this.scoreChart.nativeElement;
     new Chart(ctx, {
       type: 'line',
@@ -125,7 +140,7 @@ export class StatsPage implements OnInit, OnDestroy {
             suggestedMax: 300 // Set the maximum value to 300
           }
         },
-        plugins:{
+        plugins: {
           title: {
             display: true,
             text: 'Score Average'
@@ -136,75 +151,5 @@ export class StatsPage implements OnInit, OnDestroy {
         }
       }
     });
-  }
-  
-  getAverage() {
-    let totalScoreSum = 0;
-    for (let i = 0; i < this.gameHistory.length; i++) {
-      totalScoreSum += this.gameHistory[i].totalScore;
-    }
-    this.averageScore = totalScoreSum / this.gameHistory.length;
-  }
-
-  calculateStats() {
-    this.totalStrikes = 0;
-    this.totalSpares = 0;
-    this.totalOpens = 0;
-    this.pinCounts = Array(11).fill(0);
-    this.missedCounts = Array(11).fill(0);
-    this.gameHistory.forEach((game: { frames: any[]; }) => {
-      this.totalStrikes += this.countOccurrences(game.frames, frame => frame.throws[0].value === 10);
-      this.totalSpares += this.countOccurrences(game.frames, frame => frame.throws[0].value !== 10 && frame.throws[0].value + frame.throws[1]?.value === 10 || frame.throws[0].value === 10 && frame.throws[1]?.value !== 10 && frame.throws[1]?.value + frame.throws[2]?.value === 10);
-      this.totalOpens += this.countOccurrences(game.frames, frame => frame.throws.length === 2 && frame.throws[0].value + frame.throws[1]?.value < 10);
-
-      game.frames.forEach(frame => {
-        const throws = frame.throws;
-        if (throws.length === 2 && throws[0].value + throws[1].value === 10) {
-          const pinsLeft = 10 - throws[0].value;
-          this.pinCounts[pinsLeft]++;
-        } else if (throws.length === 3) {
-          if (throws[1].value + throws[2].value === 10) {
-            const pinsLeft = 10 - throws[1].value;
-            this.pinCounts[pinsLeft]++;
-          } else if (throws[0].value + throws[1].value === 10) {
-            const pinsLeft = 10 - throws[0].value;
-            this.pinCounts[pinsLeft]++;
-          }
-        }
-      });
-      // Additional logic for counting strikes in the 10th frame
-      if (game.frames.length === 10) {
-        const tenthFrame = game.frames[9]; // Get the 10th frame
-        const throws = tenthFrame.throws;
-        if (throws.length === 3 && throws[0].value === 10 && throws[1]?.value === 10) {
-          this.totalStrikes += 2; // Increment by 2 if both throws are strikes
-        } else if (throws.length === 3 && throws[0].value === 10) {
-          this.totalStrikes++; // Increment by 1 if first throw is a strike
-        }
-      }
-      game.frames.forEach(frame => {
-        const throws = frame.throws;
-        if (throws.length === 2 && throws[0].value + throws[1].value != 10) {
-          const pinsLeft = 10 - throws[0].value;
-          this.missedCounts[pinsLeft]++;
-        }
-      });
-      game.frames.forEach(frame => {
-        const throws = frame.throws;
-        this.firstThrowCount += throws[0].value;
-      });
-    });
-    
-    const totalFrames = (this.gameHistory.length * 10);
-    const strikeChances = (this.gameHistory.length * 12)
-    this.averageStrikesPerGame = (this.totalStrikes / this.gameHistory.length);
-    this.strikePercentage = (this.totalStrikes / strikeChances ) * 100;
-    this.sparePercentage = (this.totalSpares / totalFrames) * 100;
-    this.openPercentage = (this.totalOpens / totalFrames) * 100;
-    this.averageFirstCount = (this.firstThrowCount / totalFrames);
-  }
-
-  countOccurrences(frames: any[], condition: (frame: any) => boolean): number {
-    return frames.reduce((acc, frame) => acc + (condition(frame) ? 1 : 0), 0);
   }
 }

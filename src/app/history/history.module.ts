@@ -3,10 +3,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HistoryPage } from './history.page';
-import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { HistoryPageRoutingModule } from './history-routing.module';
-import { AlertComponentModule } from '../components/alert/alert.component.module';
+import { ToastComponentModule } from '../components/toast/toast.component.module';
 @NgModule({
   imports: [
     IonicModule,
@@ -14,7 +14,7 @@ import { AlertComponentModule } from '../components/alert/alert.component.module
     FormsModule,
     HistoryPageRoutingModule,
     MatExpansionModule,
-    AlertComponentModule
+    ToastComponentModule
   ],
   declarations: [HistoryPage]
 })

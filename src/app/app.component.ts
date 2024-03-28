@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { ToastService } from './services/toast/toast.service';
 
 @Component({
   selector: 'app-root',
@@ -7,12 +8,8 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  icon: string = '';
-  error?: boolean = false;
-  message: string = '';
-  isToastOpen: boolean = false;
 
-  constructor(private alertController: AlertController) {
+  constructor(private alertController: AlertController, private toastService: ToastService) {
     this.greetUser();
   }
 
@@ -47,9 +44,9 @@ export class AppComponent {
               const name = data.username;
               localStorage.setItem('username', name);
               if (oldName) {
-                this.setToastOpen('Name geändert', 'reload-outline');
+                this.toastService.showToast('Name geändert', 'reload-outline');
               } else {
-                this.setToastOpen('Name hinzugefügt', 'reload-outline');
+                this.toastService.showToast('Name hinzugefügt', 'reload-outline');
               }
               return true;
             } else if (!oldName) {
@@ -61,16 +58,6 @@ export class AppComponent {
     });
 
     await alert.present();
-  }
-
-  setToastOpen(message: string, icon: string, error?: boolean) {
-    this.message = message;
-    this.icon = icon;
-    this.error = error;
-    this.isToastOpen = false;
-    setTimeout(() => {
-      this.isToastOpen = true;
-    }, 100);
   }
 
   async presentGreetingAlert(name: string) {
@@ -91,6 +78,4 @@ export class AppComponent {
 
     await alert.present();
   }
-
-
 }

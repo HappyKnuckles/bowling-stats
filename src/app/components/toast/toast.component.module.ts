@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { AlertComponent } from './alert.component';
+import { ToastComponent } from './toast.component';
 
 
 @NgModule({
@@ -11,7 +11,7 @@ import { AlertComponent } from './alert.component';
     IonicModule,
     FormsModule
   ],
-  declarations: [AlertComponent],
-  exports: [AlertComponent]
+  declarations: [ToastComponent],
+  exports: [ToastComponent]
 })
-export class AlertComponentModule {}
+export class ToastComponentModule {}

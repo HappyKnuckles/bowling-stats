@@ -1,5 +1,4 @@
-import { Injectable, SecurityContext } from '@angular/core';
-import { Subject, first, max } from 'rxjs';
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -124,10 +123,16 @@ export class BowlingCalculatorService {
       if (this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
         return this.maxScore -= 10;
       }
-      if (this.isStrike(firstThrow) && !this.isStrike(secondThrow)) {
+      if (this.isStrike(firstThrow) && !this.isStrike(secondThrow) && secondThrow !== undefined) {
         if (this.isPreviousStrike(frameIndex)) {
           return this.maxScore -= 20 - 2 * secondThrow;
         } else return this.maxScore -= 10;
+      }
+      if (this.isStrike(firstThrow)) {
+        return this.maxScore;
+      }
+      if (!this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
+        return this.maxScore = this.totalScore;
       }
       if (thirdThrow != undefined) {
         return this.maxScore = this.totalScore;
@@ -135,6 +140,26 @@ export class BowlingCalculatorService {
     }
 
     return this.maxScore;
+  }
+
+  getSeriesMaxScore(index: number, maxScores: number[]): number {
+    if (index === 1) {
+      return maxScores[1] + maxScores[2] + maxScores[3];
+    }
+    if (index === 2) {
+      return maxScores[4] + maxScores[5] + maxScores[6] + maxScores[7];
+    }
+    return 900;
+  }
+
+  getSeriesCurrentScore(index: number, totalScores: number[]): number {
+    if (index === 1) {
+      return totalScores[1] + totalScores[2] + totalScores[3];
+    }
+    if (index === 2) {
+      return totalScores[4] + totalScores[5] + totalScores[6] + totalScores[7];
+    }
+    return 0;
   }
 
   isStrike(roll: number): boolean {

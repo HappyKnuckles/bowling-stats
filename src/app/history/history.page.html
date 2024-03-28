@@ -21,7 +21,7 @@
   </ion-toolbar>
 </ion-header>
 
-<app-alert [isOpen]="isToastOpen" [message]="this.message" [icon]="this.icon" [isError]="this.error"></app-alert>
+<app-toast></app-toast>
 
 <ion-content [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>

@@ -1,8 +1,12 @@
-import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AlertController, isPlatform } from '@ionic/angular';
 import * as XLSX from 'xlsx';
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { Camera } from '@capacitor/camera';
+import { ToastService } from '../services/toast/toast.service';
+import { GameHistoryService } from '../services/game-history/game-history.service';
+import { SaveGameDataService } from '../services/save-game/save-game.service';
+import { Subscription } from 'rxjs';
+import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
 
 @Component({
   selector: 'app-history',
@@ -14,40 +18,24 @@ export class HistoryPage implements OnInit, OnDestroy {
   isLoading: boolean = false;
   arrayBuffer: any;
   file!: File;
-  isToastOpen: boolean = false;
-  message: string = "";
-  icon: string = "";
-  error?: boolean = false;
+  newDataAddedSubscription!: Subscription;
+  dataDeletedSubscription!: Subscription;
 
-  constructor(private alertController: AlertController) {
+  constructor(private alertController: AlertController, 
+    private toastService: ToastService, 
+    private gameHistoryService: GameHistoryService, 
+    private saveService: SaveGameDataService) {
   }
 
   async loadGameHistory() {
     this.isLoading = true;
-    // Clear the current game history
-    this.gameHistory = [];
-
-    // Retrieve games from local storage
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('game')) {
-        const gameDataString = localStorage.getItem(key);
-        if (gameDataString) {
-          const gameData = JSON.parse(gameDataString);
-          this.gameHistory.push(gameData);
-        }
-      }
+    try {
+      this.gameHistory = await this.gameHistoryService.loadGameHistory();
+    } catch (error) {
+      this.toastService.showToast(`Fehler beim Historie laden ${error}`, 'bug-outline', true)
+    } finally {
+      this.isLoading = false;
     }
-    this.sortGameHistoryByDate();
-
-    this.isLoading = false;
-  }
-
-  // Function to sort game history by date
-  sortGameHistoryByDate(): void {
-    this.gameHistory.sort((a: { date: number; }, b: { date: number; }) => {
-      return a.date - b.date; // Sorting in descending order based on date
-    });
   }
 
   async deleteGame(gameId: string) {
@@ -67,9 +55,8 @@ export class HistoryPage implements OnInit, OnDestroy {
           text: 'Delete',
           handler: () => {
             const key = 'game' + gameId;
-            localStorage.removeItem(key);
-            this.setToastOpen('Spiel wurde gelöscht!', 'checkmark-outline');
-            window.dispatchEvent(new Event('dataDeleted'));
+            this.saveService.deleteGame(key);
+            this.toastService.showToast('Spiel wurde gelöscht!', 'checkmark-outline');
           }
         }
       ]
@@ -83,16 +70,6 @@ export class HistoryPage implements OnInit, OnDestroy {
     window.dispatchEvent(new Event('dataDeleted'));
   }
 
-  setToastOpen(message: string, icon: string, error?: boolean) {
-    this.message = message;
-    this.icon = icon;
-    this.error = error;
-    this.isToastOpen = false;
-    setTimeout(() => {
-      this.isToastOpen = true;
-    }, 100);
-  }
-
   async ngOnInit() {
     this.isLoading = true;
     await this.loadGameHistory();
@@ -101,18 +78,18 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents() {
-    window.addEventListener('newDataAdded', () => {
-      this.loadGameHistory();
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(async () => {
+      await this.loadGameHistory();
     });
 
-    window.addEventListener('dataDeleted', () => {
-      this.loadGameHistory();
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(async () => {
+      await this.loadGameHistory();
     });
   }
 
   ngOnDestroy() {
-    window.removeEventListener('newDataAdded', this.loadGameHistory);
-    window.removeEventListener('dataDeleted', this.loadGameHistory);
+    this.newDataAddedSubscription.unsubscribe();
+    this.dataDeletedSubscription.unsubscribe();
   }
 
   handleRefresh(event: any) {
@@ -135,50 +112,22 @@ export class HistoryPage implements OnInit, OnDestroy {
     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const date = new Date();
-    const formattedDate = date.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric'});    
-        if (isPlatform('ios')) {
-      if ((await Filesystem.requestPermissions()).publicStorage === 'denied') {
-        const permissionRequestResult = await Filesystem.requestPermissions();
-        if (permissionRequestResult) {
-          this.isLoading = true;
-          await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`, true);
-          this.isLoading = false;
-        } else this.showPermissionDeniedAlert();
-      } else {
-        this.isLoading = true;
-        await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`, true);
-        this.isLoading = false;
-      }
-    } else if (isPlatform('android')) {
-      // If running on an Android device, save the file without asking for permissions
-      this.isLoading = true;
-      await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`, true);
-      this.isLoading = false;
-    } else {
-      // If running on a non-mobile platform, save the file
-      await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`, false);
-    }
-  }
+    const formattedDate = date.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-  async showPermissionDeniedAlert() {
-    const alert = await this.alertController.create({
-      header: 'Permission Denied',
-      message: 'To save to Gamedata.xlsx, you need to give permissions!',
-      buttons: [
-        {
-          text: 'OK',
-          handler: async () => {
-            const permissionRequestResult = await Filesystem.requestPermissions();
-            if (permissionRequestResult.publicStorage === 'granted') {
-              this.exportToExcel();
-            } else {
-              this.showPermissionDeniedAlert();
-            }
-          }
-        }
-      ]
-    });
-    await alert.present();
+    const isIos = isPlatform('ios');
+    const permissionsGranted = isIos ? (await Filesystem.requestPermissions()).publicStorage === 'granted' : true;
+
+    if (isIos && !permissionsGranted) {
+      const permissionRequestResult = await Filesystem.requestPermissions();
+      if (!permissionRequestResult) {
+        return this.showPermissionDeniedAlert();
+      }
+    }
+
+    // If running on an Android device, save the file without asking for permissions
+    this.isLoading = true;
+    await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`);
+    this.isLoading = false;
   }
 
   private getGameDataForExport(): any[] {
@@ -231,7 +180,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     return gameData;
   }
 
-  async saveExcelFile(buffer: any, fileName: string, isMobile: boolean): Promise<void> {
+  async saveExcelFile(buffer: any, fileName: string): Promise<void> {
     try {
       let binary = '';
       const bytes = new Uint8Array(buffer);
@@ -242,7 +191,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       const base64Data = btoa(binary);
       const dataUri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
 
-      if (!isMobile) {
+      if (isPlatform('desktop')) {
         const anchor = document.createElement('a');
         anchor.href = dataUri;
         anchor.download = fileName;
@@ -252,7 +201,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         anchor.click();
         document.body.removeChild(anchor);
 
-        this.setToastOpen(`File saved successfully`, 'checkmark-outline');
+        this.toastService.showToast(`File saved successfully`, 'checkmark-outline');
       } else {
         // Save file using Capacitor's Filesystem API on other platforms
         const savedFile = await Filesystem.writeFile({
@@ -261,21 +210,24 @@ export class HistoryPage implements OnInit, OnDestroy {
           directory: Directory.Documents,
           recursive: true
         });
-        this.setToastOpen(`File saved at path: ${savedFile.uri}`, 'checkmark-outline');
+        this.toastService.showToast(`File saved at path: ${savedFile.uri}`, 'checkmark-outline');
       }
     } catch (error) {
-      this.setToastOpen(`${error}`, 'bug', true);
+      this.toastService.showToast(`${error}`, 'bug', true);
     }
   }
 
   async handleFileUpload(event: any) {
-    this.file = event.target.files[0];
-
-    this.isLoading = true;
-    await this.readExcelData();
-    this.isLoading = false;
-
-    this.setToastOpen('Excel Datei wurde hochgeladen!', 'checkmark-outline');
+    try {
+      this.file = event.target.files[0];
+      this.isLoading = true;
+      await this.readExcelData();
+      this.toastService.showToast('Excel Datei wurde hochgeladen!', 'checkmark-outline');
+    } catch (error) {
+      this.toastService.showToast(`Error: ${error}`, 'bug', true);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   async readExcelData() {
@@ -329,11 +281,27 @@ export class HistoryPage implements OnInit, OnDestroy {
         frameScores: data[i]['13'].split(", ").map((score: string) => parseInt(score))
       };
 
-      const gameDataString = JSON.stringify(game);
-      const key = 'game' + game.gameId;
-      localStorage.setItem(key, gameDataString);
+      this.saveService.saveGameToLocalStorage(game);
       gameData.push(game);
     }
-    window.dispatchEvent(new Event('newDataAdded'));
+  }
+
+  async showPermissionDeniedAlert() {
+    const alert = await this.alertController.create({
+      header: 'Permission Denied',
+      message: 'To save to Gamedata.xlsx, you need to give permissions!',
+      buttons: [
+        {
+          text: 'OK',
+          handler: async () => {
+            const permissionRequestResult = await Filesystem.requestPermissions();
+            if (permissionRequestResult.publicStorage === 'granted') {
+              this.exportToExcel();
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

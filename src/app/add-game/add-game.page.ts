@@ -66,7 +66,7 @@ export class AddGamePage {
       const permissionRequestResult = (await Camera.checkPermissions());
 
       if (permissionRequestResult.photos === 'prompt') {
-        await Camera.requestPermissions();
+        (await Camera.requestPermissions()).photos;
         await this.handleImageUpload();
       } else if (permissionRequestResult.photos === 'denied') {
         this.showPermissionDeniedAlert();

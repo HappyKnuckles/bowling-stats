@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { ToastService } from './services/toast/toast.service';
+import { LoadingService } from './services/loader/loading.service';
 
 @Component({
   selector: 'app-root',
@@ -8,9 +9,16 @@ import { ToastService } from './services/toast/toast.service';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
+  isLoading = false;
 
-  constructor(private alertController: AlertController, private toastService: ToastService) {
+  constructor(private alertController: AlertController, private toastService: ToastService, private loadingService: LoadingService) {
     this.greetUser();
+  }
+
+  ngOnInit() {
+    this.loadingService.isLoading$.subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
   }
 
   async greetUser() {

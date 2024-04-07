@@ -13,6 +13,7 @@ import { SeriesMode } from './seriesModeEnum';
 import { BowlingCalculatorService } from '../services/bowling-calculator/bowling-calculator.service';
 import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
 import { SaveGameDataService } from '../services/save-game/save-game.service';
+import { LoadingService } from '../services/loader/loading.service';
 
 @Component({
   selector: 'app-add-game',
@@ -45,7 +46,8 @@ export class AddGamePage {
     private toastService: ToastService,
     private bowlingService: BowlingCalculatorService,
     private saveGameService: SaveGameDataService,
-    private transformGameService: GameDataTransformerService
+    private transformGameService: GameDataTransformerService,
+    private loadingService: LoadingService
   ) {
     this.userName = localStorage.getItem('username');
   }
@@ -111,7 +113,7 @@ export class AddGamePage {
     try {
       const imageUrl = await this.takeOrChoosePicture();
       if (imageUrl) {
-        this.isLoading = true;
+        this.loadingService.setLoading(true);
         const gameText = await this.imageProcessingService.performOCR(imageUrl);
         // localStorage.setItem("testdata", gameText!);
         // const gameText = localStorage.getItem('testdata');
@@ -120,7 +122,7 @@ export class AddGamePage {
     } catch (error) {
       this.toastService.showToast(`Fehler beim Hochladen des Bildes ${error}`, "bug-outline", true);
     } finally {
-      this.isLoading = false;
+      this.loadingService.setLoading(false);
     }
   }
 

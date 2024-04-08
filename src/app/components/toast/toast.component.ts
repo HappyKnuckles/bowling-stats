@@ -23,7 +23,7 @@ export class ToastComponent implements OnDestroy {
       this.isOpen = true;
       setTimeout(() => {
         this.isOpen = false;
-      }, 3000);
+      }, 4000);
     });
   }
 

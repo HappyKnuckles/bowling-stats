@@ -80,7 +80,10 @@ export class AddGamePage {
           resultType: CameraResultType.Uri,
           source: CameraSource.Prompt,
         });
-        return image;
+
+        let blob = await fetch(image.webPath!).then(r => r.blob());
+
+        return blob;
       }
     } else {
       const file = await this.openFileInput();
@@ -115,8 +118,6 @@ export class AddGamePage {
       if (imageUrl) {
         this.loadingService.setLoading(true);
         const gameText = await this.imageProcessingService.performOCR(imageUrl);
-        // localStorage.setItem("testdata", gameText!);
-        // const gameText = localStorage.getItem('testdata');
         this.parseBowlingScores(gameText!);
       } else this.toastService.showToast("Kein Bild hochgeladen", "bug-outline", true);
     } catch (error) {
@@ -193,7 +194,7 @@ export class AddGamePage {
       if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {
         this.isModalOpen = true;
       } else {
-        this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt!', 'bug-outline', true);
+        this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt! Probiere einen anderen Winkel.', 'bug-outline', true);
       }
     } catch (error) {
       this.toastService.showToast(`${error}`, 'bug-outline', true);

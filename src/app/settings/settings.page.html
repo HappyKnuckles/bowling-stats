@@ -1,0 +1,16 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item>
+    <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+    <ion-input label="Your name" type="text" [value]="name" placeholder="{{name}}" (ionChange)="name = $event.target.value!.toString()" (ionBlur)="changeName()"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-icon name="color-palette-outline" slot="start"></ion-icon>
+    <ion-select label="Color Theme"></ion-select>
+  </ion-item>
+</ion-content>

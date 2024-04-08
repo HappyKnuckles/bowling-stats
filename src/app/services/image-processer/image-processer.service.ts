@@ -28,10 +28,12 @@ export class ImageProcesserService {
     try {
       const printedResult = await this.readTextFromURL(imageUrl);
       const extractedText = this.printRecognizedText(printedResult);
-      await this.deleteImageFromStorage(imageUrl);
       return extractedText;
     } catch (error) {
       throw error;
+    }
+    finally {
+      await this.deleteImageFromStorage(imageUrl);
     }
   }
 
@@ -77,7 +79,7 @@ export class ImageProcesserService {
     }
     return recognizedText; // Return the recognized text
   }
-  
+
 
   async uploadImageToStorage(imageFile: File): Promise<string> {
     try {

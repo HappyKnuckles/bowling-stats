@@ -7,6 +7,7 @@ import { GameHistoryService } from '../services/game-history/game-history.servic
 import { SaveGameDataService } from '../services/save-game/save-game.service';
 import { Subscription } from 'rxjs';
 import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
+import { LoadingService } from '../services/loader/loading.service';
 
 @Component({
   selector: 'app-history',
@@ -24,17 +25,18 @@ export class HistoryPage implements OnInit, OnDestroy {
   constructor(private alertController: AlertController,
     private toastService: ToastService,
     private gameHistoryService: GameHistoryService,
-    private saveService: SaveGameDataService) {
+    private saveService: SaveGameDataService,
+    private loadingService: LoadingService) {
   }
 
   async loadGameHistory() {
-    this.isLoading = true;
+    this.loadingService.setLoading(true)    
     try {
       this.gameHistory = await this.gameHistoryService.loadGameHistory();
     } catch (error) {
       this.toastService.showToast(`Fehler beim Historie laden ${error}`, 'bug-outline', true)
     } finally {
-      this.isLoading = false;
+      this.loadingService.setLoading(false)    
     }
   }
 

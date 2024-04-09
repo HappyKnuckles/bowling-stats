@@ -194,7 +194,8 @@ export class AddGamePage {
       if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {
         this.isModalOpen = true;
       } else {
-        this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt! Probiere einen anderen Winkel.', 'bug-outline', true);
+        //this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt! Probiere einen anderen Winkel.', 'bug-outline', true);
+        this.isModalOpen = true;
       }
     } catch (error) {
       this.toastService.showToast(`${error}`, 'bug-outline', true);

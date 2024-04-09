@@ -14,6 +14,7 @@ import { BowlingCalculatorService } from '../services/bowling-calculator/bowling
 import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
 import { SaveGameDataService } from '../services/save-game/save-game.service';
 import { LoadingService } from '../services/loader/loading.service';
+import { UserService } from '../services/user/user.service';
 
 @Component({
   selector: 'app-add-game',
@@ -31,7 +32,7 @@ export class AddGamePage {
   isAlertOpen: boolean = false;
   alertButton = ['Dismiss'];
   isModalOpen: boolean = false;
-  userName: string | null;
+  username = "";
   gameData: any;
   isLoading: boolean = false;
 
@@ -47,9 +48,15 @@ export class AddGamePage {
     private bowlingService: BowlingCalculatorService,
     private saveGameService: SaveGameDataService,
     private transformGameService: GameDataTransformerService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private userService: UserService
   ) {
-    this.userName = localStorage.getItem('username');
+  }
+
+  ngOnInit() {
+    this.userService.getUsername().subscribe((username: string) => {
+      this.username = username;
+    });
   }
 
   async openFileInput(): Promise<File | undefined> {
@@ -129,22 +136,23 @@ export class AddGamePage {
 
   parseBowlingScores(input: string) {
     try {
+      console.log(input)
       const lines = input.split('\n');
-      const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.userName!.toLowerCase()));
+      const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.username!.toLowerCase()));
       const linesAfterUsername = userIndex >= 0 ? lines.slice(userIndex + 1) : [];
 
       const nextNonXLineIndex = linesAfterUsername.findIndex(line => /^[a-wyz]/i.test(line));
 
       const relevantLines = nextNonXLineIndex >= 0 ? linesAfterUsername.slice(0, nextNonXLineIndex) : linesAfterUsername;
-
+      console.log(relevantLines)
       if (relevantLines.length < 2) {
-        throw new Error(`Insufficient score data for user ${this.userName}`);
+        throw new Error(`Insufficient score data for user ${this.username}`);
       }
-
+      // Anpassen, nur concat wenn relevantLines[0] weniger als 10 Zeichen
       let throwValues = relevantLines[0].split('').concat(relevantLines[1].split(''));
 
       throwValues = throwValues.filter(value => value.trim() !== '');
-
+      console.log(throwValues)
       let prevValue: number | undefined;
 
       throwValues = throwValues.map(value => {
@@ -194,7 +202,8 @@ export class AddGamePage {
       if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {
         this.isModalOpen = true;
       } else {
-        this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt! Probiere einen anderen Winkel.', 'bug-outline', true);
+        // this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt! Probiere einen anderen Winkel.', 'bug-outline', true);
+        this.isModalOpen = true;
       }
     } catch (error) {
       this.toastService.showToast(`${error}`, 'bug-outline', true);

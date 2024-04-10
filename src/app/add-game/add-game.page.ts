@@ -13,6 +13,8 @@ import { SeriesMode } from './seriesModeEnum';
 import { BowlingCalculatorService } from '../services/bowling-calculator/bowling-calculator.service';
 import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
 import { SaveGameDataService } from '../services/save-game/save-game.service';
+import { LoadingService } from '../services/loader/loading.service';
+import { UserService } from '../services/user/user.service';
 
 @Component({
   selector: 'app-add-game',
@@ -30,7 +32,7 @@ export class AddGamePage {
   isAlertOpen: boolean = false;
   alertButton = ['Dismiss'];
   isModalOpen: boolean = false;
-  userName: string | null;
+  username = "";
   gameData: any;
   isLoading: boolean = false;
 
@@ -45,9 +47,16 @@ export class AddGamePage {
     private toastService: ToastService,
     private bowlingService: BowlingCalculatorService,
     private saveGameService: SaveGameDataService,
-    private transformGameService: GameDataTransformerService
+    private transformGameService: GameDataTransformerService,
+    private loadingService: LoadingService,
+    private userService: UserService
   ) {
-    this.userName = localStorage.getItem('username');
+  }
+
+  ngOnInit() {
+    this.userService.getUsername().subscribe((username: string) => {
+      this.username = username;
+    });
   }
 
   async openFileInput(): Promise<File | undefined> {
@@ -66,7 +75,7 @@ export class AddGamePage {
       const permissionRequestResult = (await Camera.checkPermissions());
 
       if (permissionRequestResult.photos === 'prompt') {
-        await Camera.requestPermissions();
+        (await Camera.requestPermissions()).photos;
         await this.handleImageUpload();
       } else if (permissionRequestResult.photos === 'denied') {
         this.showPermissionDeniedAlert();
@@ -78,7 +87,10 @@ export class AddGamePage {
           resultType: CameraResultType.Uri,
           source: CameraSource.Prompt,
         });
-        return image;
+
+        let blob = await fetch(image.webPath!).then(r => r.blob());
+
+        return blob;
       }
     } else {
       const file = await this.openFileInput();
@@ -111,23 +123,23 @@ export class AddGamePage {
     try {
       const imageUrl = await this.takeOrChoosePicture();
       if (imageUrl) {
-        this.isLoading = true;
+        this.loadingService.setLoading(true);
         const gameText = await this.imageProcessingService.performOCR(imageUrl);
-        // localStorage.setItem("testdata", gameText!);
-        // const gameText = localStorage.getItem('testdata');
         this.parseBowlingScores(gameText!);
       } else this.toastService.showToast("Kein Bild hochgeladen", "bug-outline", true);
     } catch (error) {
       this.toastService.showToast(`Fehler beim Hochladen des Bildes ${error}`, "bug-outline", true);
     } finally {
-      this.isLoading = false;
+      this.loadingService.setLoading(false);
     }
   }
 
   parseBowlingScores(input: string) {
     try {
-      const lines = input.split('\n');
-      const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.userName!.toLowerCase()));
+      const lines = input.split('\n').filter(line => line.trim() !== '');      console.log(lines)
+
+      const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.username!.toLowerCase()));
+
       const linesAfterUsername = userIndex >= 0 ? lines.slice(userIndex + 1) : [];
 
       const nextNonXLineIndex = linesAfterUsername.findIndex(line => /^[a-wyz]/i.test(line));
@@ -135,17 +147,28 @@ export class AddGamePage {
       const relevantLines = nextNonXLineIndex >= 0 ? linesAfterUsername.slice(0, nextNonXLineIndex) : linesAfterUsername;
 
       if (relevantLines.length < 2) {
-        throw new Error(`Insufficient score data for user ${this.userName}`);
+        throw new Error(`Insufficient score data for user ${this.username}`);
       }
 
-      let throwValues = relevantLines[0].split('').concat(relevantLines[1].split(''));
+      let throwValues = relevantLines[0].split('');
+      let frameScores;
+      
+      if (throwValues.length < 10) {
+        throwValues = throwValues.concat(relevantLines[1].split(''));
+        frameScores = relevantLines.slice(2).map(line => line.split(' ').map(Number));
+      } else {
+        frameScores = relevantLines.slice(1).map(line => line.split(' ').map(Number));
+      }
+      
+      // Flatten the array of arrays, remove duplicates, then sort it
+      frameScores = frameScores.flat().filter((value, index, self) => self.indexOf(value) === index).sort((a, b) => a - b);
+      
 
       throwValues = throwValues.filter(value => value.trim() !== '');
-
       let prevValue: number | undefined;
 
       throwValues = throwValues.map(value => {
-        if (value === 'X') {
+        if (value === 'X' || value === '×') {
           prevValue = 10;
           return '10';
         } else if (value === '-') {
@@ -182,8 +205,6 @@ export class AddGamePage {
         frames.push([...currentFrame]);
       }
 
-      const frameScores = relevantLines[2].split(' ').map(Number);
-
       const totalScore = frameScores[9];
 
       this.gameData = this.transformGameService.transformGameData(frames, frameScores, totalScore);
@@ -191,7 +212,8 @@ export class AddGamePage {
       if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {
         this.isModalOpen = true;
       } else {
-        this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt!', 'bug-outline', true);
+        // this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt! Probiere einen anderen Winkel.', 'bug-outline', true);
+        this.isModalOpen = true;
       }
     } catch (error) {
       this.toastService.showToast(`${error}`, 'bug-outline', true);

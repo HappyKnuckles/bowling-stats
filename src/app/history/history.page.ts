@@ -7,6 +7,7 @@ import { GameHistoryService } from '../services/game-history/game-history.servic
 import { SaveGameDataService } from '../services/save-game/save-game.service';
 import { Subscription } from 'rxjs';
 import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
+import { LoadingService } from '../services/loader/loading.service';
 
 @Component({
   selector: 'app-history',
@@ -21,20 +22,21 @@ export class HistoryPage implements OnInit, OnDestroy {
   newDataAddedSubscription!: Subscription;
   dataDeletedSubscription!: Subscription;
 
-  constructor(private alertController: AlertController, 
-    private toastService: ToastService, 
-    private gameHistoryService: GameHistoryService, 
-    private saveService: SaveGameDataService) {
+  constructor(private alertController: AlertController,
+    private toastService: ToastService,
+    private gameHistoryService: GameHistoryService,
+    private saveService: SaveGameDataService,
+    private loadingService: LoadingService) {
   }
 
   async loadGameHistory() {
-    this.isLoading = true;
+    this.loadingService.setLoading(true)    
     try {
       this.gameHistory = await this.gameHistoryService.loadGameHistory();
     } catch (error) {
       this.toastService.showToast(`Fehler beim Historie laden ${error}`, 'bug-outline', true)
     } finally {
-      this.isLoading = false;
+      this.loadingService.setLoading(false)    
     }
   }
 
@@ -126,7 +128,15 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     // If running on an Android device, save the file without asking for permissions
     this.isLoading = true;
-    await this.saveExcelFile(excelBuffer, `game_data${formattedDate}.xlsx`);
+    let suffix = '';
+    let fileName = `game_data_${formattedDate}`;
+    let i = 1;
+
+    while (await this.fileExists(fileName + suffix)) {
+      suffix = `(${i++})`;
+    }
+
+    await this.saveExcelFile(excelBuffer, `${fileName + suffix}.xlsx`);
     this.isLoading = false;
   }
 
@@ -185,9 +195,11 @@ export class HistoryPage implements OnInit, OnDestroy {
       let binary = '';
       const bytes = new Uint8Array(buffer);
       const length = bytes.byteLength;
+
       for (let i = 0; i < length; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
+
       const base64Data = btoa(binary);
       const dataUri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
 
@@ -216,6 +228,19 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.toastService.showToast(`${error}`, 'bug', true);
     }
   }
+
+  async fileExists(path: string): Promise<boolean> {
+    try {
+      await Filesystem.stat({
+        path: path + '.xlsx',
+        directory: Directory.Documents
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
 
   async handleFileUpload(event: any) {
     try {

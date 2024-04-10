@@ -1,5 +1,3 @@
-<ion-backdrop *ngIf="isLoading" style="opacity: 0.3; z-index: 11;"></ion-backdrop>
-<ion-spinner *ngIf="isLoading" name="lines" color="primary" class="custom-loader"></ion-spinner>
 
 <ion-header [translucent]="true">
   <ion-toolbar>
@@ -53,25 +51,25 @@
             <ion-col class="inputCol"></ion-col>
             <ion-col class="inputCol">
               <ion-input readonly="true" type="text"
-                [value]="frame.throws[0]?.value === 10 ? 'X' : frame.throws[0]?.value"></ion-input>
+                [value]="frame.throws[0]?.value === 10 ? 'X' : frame.throws[0]?.value === 0 ? '–' : frame.throws[0]?.value"></ion-input>
             </ion-col>
             <ion-col class="inputCol">
-              <ion-input type="text" readonly="true"
-                [value]="(frame.throws[0]?.value !== 10 && frame.throws[0]?.value + (frame.throws[1]?.value || 0) === 10) ? '/' : frame.throws[1]?.value"></ion-input>
-            </ion-col>
+              <ion-input readonly="true" type="text"
+                [value]="(frame.throws[0]?.value !== 10 && frame.throws[0]?.value + (frame.throws[1]?.value || 0) === 10) ? '/' : frame.throws[1]?.value === 0 ? '–' : frame.throws[1]?.value"></ion-input>
+            </ion-col>            
           </ion-row>
           <ion-row *ngIf="j === 9">
             <ion-col class="inputCol">
-              <ion-input type="text" readonly="true"
-                [value]="frame.throws[0]?.value === 10 ? 'X' : frame.throws[0]?.value"></ion-input>
+              <ion-input readonly="true" type="text"
+                [value]="frame.throws[0]?.value === 10 ? 'X' : frame.throws[0]?.value === 0 ? '–' : frame.throws[0]?.value"></ion-input>
             </ion-col>
             <ion-col class="inputCol">
-              <ion-input type="text" readonly="true"
-                [value]="frame.throws[1]?.value === 10 ? 'X' : (frame.throws[0]?.value !== 10 && frame.throws[0]?.value + frame.throws[1]?.value === 10) ? '/' : frame.throws[1]?.value"></ion-input>
+              <ion-input readonly="true" type="text"
+              [value]="frame.throws[1]?.value === 10 ? 'X' : (frame.throws[0]?.value !== 10 && frame.throws[0]?.value + frame.throws[1]?.value === 10) ? '/' : frame.throws[1]?.value === 0 ? '–' : frame.throws[1]?.value"></ion-input>
             </ion-col>
             <ion-col class="inputCol" *ngIf="j === 9">
-              <ion-input type="text" readonly="true"
-                [value]="(frame.throws[0]?.value === 10 && frame.throws[1]?.value !== 10 && frame.throws[1]?.value + frame.throws[2]?.value === 10) ? '/' : frame.throws[2]?.value === 10 ? 'X' : frame.throws[2]?.value"></ion-input>
+              <ion-input readonly="true" type="text"
+                [value]="(frame.throws[0]?.value === 10 && frame.throws[1]?.value !== 10 && frame.throws[1]?.value + frame.throws[2]?.value === 10) ? '/' : frame.throws[2]?.value === 10 ? 'X' : frame.throws[2]?.value === 0 ? '–' : frame.throws[2]?.value"></ion-input>
             </ion-col>
           </ion-row>
           <ion-row>

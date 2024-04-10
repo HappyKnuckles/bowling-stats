@@ -1,57 +1,66 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { ToastService } from './services/toast/toast.service';
+import { LoadingService } from './services/loader/loading.service';
+import { UserService } from './services/user/user.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  isLoading = false;
+  username = '';
 
-  constructor(private alertController: AlertController, private toastService: ToastService) {
+  constructor(
+    private alertController: AlertController,
+    private toastService: ToastService,
+    private loadingService: LoadingService,
+    private userService: UserService
+  ) {}
+
+  ngOnInit() {
+    this.loadingService.isLoading$.subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
+
+    this.userService.getUsername().subscribe((username: string) => {
+      this.username = username;
+    });
+
     this.greetUser();
   }
 
   async greetUser() {
-    let name = localStorage.getItem('username');
-
-    if (!name) {
+    if (!this.username) {
       await this.showEnterNameAlert();
     } else {
-      this.presentGreetingAlert(name);
+      this.presentGreetingAlert(this.username);
     }
   }
 
   async showEnterNameAlert() {
     const alert = await this.alertController.create({
-      header: 'Willkommen!',
-      message: 'Bitte Namen eingeben:',
+      header: 'Welcome!',
+      message: 'Please enter your name:',
       inputs: [
         {
           name: 'username',
           type: 'text',
-          placeholder: 'Dein Name',
+          placeholder: 'Your Name',
           cssClass: 'nameInput'
         },
       ],
       buttons: [
         {
-          text: 'Bestätigen',
+          text: 'Confirm',
           handler: (data) => {
-            const oldName = localStorage.getItem('username');
-            if (data.username && data.username.trim() !== '') {
-              const name = data.username;
-              localStorage.setItem('username', name);
-              if (oldName) {
-                this.toastService.showToast('Name geändert', 'reload-outline');
-              } else {
-                this.toastService.showToast('Name hinzugefügt', 'reload-outline');
-              }
-              return true;
-            } else if (!oldName) {
-              return false; // Verhindert das Schließen des Dialogs, wenn das Eingabefeld leer ist und kein Name gespeichert ist
-            } return true;
+            const newName = data.username.trim();
+            if (newName !== '') {
+              this.userService.setUsername(newName);
+              this.toastService.showToast(`Name updated to ${this.username}`, 'reload-outline');
+            }
           },
         },
       ],
@@ -62,15 +71,15 @@ export class AppComponent {
 
   async presentGreetingAlert(name: string) {
     const alert = await this.alertController.create({
-      header: `Hallo ${name}!`,
+      header: `Hello ${name}!`,
       buttons: [
         {
           text: 'Hi',
         },
         {
-          text: 'Namen ändern',
+          text: 'Change Name',
           handler: () => {
-            this.showEnterNameAlert(); // Call showEnterNameAlert function to allow the user to change their name
+            this.showEnterNameAlert();
           }
         }
       ],

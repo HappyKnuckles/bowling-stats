@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../services/user/user.service';
 
 @Component({
   selector: 'app-settings',
@@ -6,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements OnInit {
-  name: string | null = '';
+  username: string | null = '';
   currentColor: string | null = '';
   optionsWithClasses: { name: string; class: string }[] = [
     { name: 'Blue', class: 'blue-option' },
@@ -15,21 +16,23 @@ export class SettingsPage implements OnInit {
     { name: 'Red', class: 'red-option' },
     { name: 'Gray', class: 'gray-option' }
   ];
-    constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit() {
     this.currentColor = localStorage.getItem('theme');
-    if(this.currentColor === null){
+    if (this.currentColor === null) {
       this.currentColor = 'Green';
     }
-    this.name = localStorage.getItem('username');
+    this.userService.getUsername().subscribe((username: string) => {
+      this.username = username;
+    });
   }
 
-  changeName(){
-    localStorage.setItem('username', this.name!);
+  changeName() {
+    this.userService.setUsername(this.username!);
   }
 
-  changeColor(){
+  changeColor() {
     localStorage.setItem('theme', this.currentColor!);
   }
 }

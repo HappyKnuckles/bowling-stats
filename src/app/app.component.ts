@@ -33,7 +33,6 @@ export class AppComponent implements OnInit {
   }
 
   async greetUser() {
-    this.username = localStorage.getItem('username') || '';
     if (!this.username) {
       await this.showEnterNameAlert();
     } else {
@@ -59,7 +58,6 @@ export class AppComponent implements OnInit {
           handler: (data) => {
             const newName = data.username.trim();
             if (newName !== '') {
-              localStorage.setItem('username', newName);
               this.userService.setUsername(newName);
               this.toastService.showToast(`Name updated to ${this.username}`, 'reload-outline');
             }

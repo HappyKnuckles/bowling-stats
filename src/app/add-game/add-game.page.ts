@@ -136,31 +136,39 @@ export class AddGamePage {
 
   parseBowlingScores(input: string) {
     try {
-      console.log(input)
-      const lines = input.split('\n');
+      const lines = input.split('\n').filter(line => line.trim() !== '');      console.log(lines)
+
       const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.username!.toLowerCase()));
+
       const linesAfterUsername = userIndex >= 0 ? lines.slice(userIndex + 1) : [];
 
       const nextNonXLineIndex = linesAfterUsername.findIndex(line => /^[a-wyz]/i.test(line));
 
       const relevantLines = nextNonXLineIndex >= 0 ? linesAfterUsername.slice(0, nextNonXLineIndex) : linesAfterUsername;
-      console.log(relevantLines)
+
       if (relevantLines.length < 2) {
         throw new Error(`Insufficient score data for user ${this.username}`);
       }
-      
-      let throwValues = relevantLines[0].split('');
 
-      if(throwValues.length < 10){
+      let throwValues = relevantLines[0].split('');
+      let frameScores;
+      
+      if (throwValues.length < 10) {
         throwValues = throwValues.concat(relevantLines[1].split(''));
+        frameScores = relevantLines.slice(2).map(line => line.split(' ').map(Number));
+      } else {
+        frameScores = relevantLines.slice(1).map(line => line.split(' ').map(Number));
       }
+      
+      // Flatten the array of arrays, remove duplicates, then sort it
+      frameScores = frameScores.flat().filter((value, index, self) => self.indexOf(value) === index).sort((a, b) => a - b);
+      
 
       throwValues = throwValues.filter(value => value.trim() !== '');
-      console.log(throwValues)
       let prevValue: number | undefined;
 
       throwValues = throwValues.map(value => {
-        if (value === 'X') {
+        if (value === 'X' || value === '×') {
           prevValue = 10;
           return '10';
         } else if (value === '-') {
@@ -196,8 +204,6 @@ export class AddGamePage {
       if (currentFrame.length > 0) {
         frames.push([...currentFrame]);
       }
-      // Spezifieren check nach länge oder größe der zahlen
-      const frameScores = relevantLines[2].split(' ').map(Number);
 
       const totalScore = frameScores[9];
 

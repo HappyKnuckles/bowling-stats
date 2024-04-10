@@ -7,13 +7,18 @@ import { BehaviorSubject } from 'rxjs';
 export class UserService {
   private usernameSubject = new BehaviorSubject<string>('');
 
-  constructor() {}
+  constructor() { }
 
   getUsername() {
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername !== null) {
+      this.usernameSubject.next(storedUsername);
+    }
     return this.usernameSubject.asObservable();
   }
 
   setUsername(username: string) {
+    localStorage.setItem('username', username);
     this.usernameSubject.next(username);
   }
 }

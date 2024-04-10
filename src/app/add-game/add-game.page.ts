@@ -148,8 +148,12 @@ export class AddGamePage {
       if (relevantLines.length < 2) {
         throw new Error(`Insufficient score data for user ${this.username}`);
       }
-      // Anpassen, nur concat wenn relevantLines[0] weniger als 10 Zeichen
-      let throwValues = relevantLines[0].split('').concat(relevantLines[1].split(''));
+      
+      let throwValues = relevantLines[0].split('');
+
+      if(throwValues.length < 10){
+        throwValues = throwValues.concat(relevantLines[1].split(''));
+      }
 
       throwValues = throwValues.filter(value => value.trim() !== '');
       console.log(throwValues)
@@ -192,7 +196,7 @@ export class AddGamePage {
       if (currentFrame.length > 0) {
         frames.push([...currentFrame]);
       }
-
+      // Spezifieren check nach länge oder größe der zahlen
       const frameScores = relevantLines[2].split(' ').map(Number);
 
       const totalScore = frameScores[9];

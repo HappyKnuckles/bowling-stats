@@ -31,7 +31,6 @@ export class SettingsPage implements OnInit {
 
   changeName() {
     this.userService.setUsername(this.username!);
-    this.toastService.showToast(`Changed name to ${this.username}`, 'checkmark');
   }
 
   changeColor() {

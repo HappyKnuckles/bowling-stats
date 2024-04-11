@@ -59,7 +59,6 @@ export class AppComponent implements OnInit {
             const newName = data.username.trim();
             if (newName !== '') {
               this.userService.setUsername(newName);
-              this.toastService.showToast(`Name updated to ${this.username}`, 'reload-outline');
             }
           },
         },

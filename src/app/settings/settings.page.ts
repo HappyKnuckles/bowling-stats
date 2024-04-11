@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user/user.service';
+import { ToastService } from '../services/toast/toast.service';
 
 @Component({
   selector: 'app-settings',
@@ -16,7 +17,7 @@ export class SettingsPage implements OnInit {
     { name: 'Red', class: 'red-option' },
     { name: 'Gray', class: 'gray-option' }
   ];
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private toastService: ToastService) { }
 
   ngOnInit() {
     this.currentColor = localStorage.getItem('theme');
@@ -30,9 +31,12 @@ export class SettingsPage implements OnInit {
 
   changeName() {
     this.userService.setUsername(this.username!);
+    this.toastService.showToast(`Changed name to ${this.username}`, 'checkmark');
   }
 
   changeColor() {
     localStorage.setItem('theme', this.currentColor!);
+    this.toastService.showToast(`Changed theme to ${this.currentColor}`, 'checkmark');
+
   }
 }

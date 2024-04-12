@@ -153,16 +153,19 @@ export class AddGamePage {
       let throwValues = relevantLines[0].split('');
       let frameScores;
       
-      if (throwValues.length < 10) {
+      if (throwValues.length < 12) {
         throwValues = throwValues.concat(relevantLines[1].split(''));
         frameScores = relevantLines.slice(2).map(line => line.split(' ').map(Number));
       } else {
         frameScores = relevantLines.slice(1).map(line => line.split(' ').map(Number));
       }
       
-      // Flatten the array of arrays, remove duplicates, then sort it
-      frameScores = frameScores.flat().filter((value, index, self) => self.indexOf(value) === index).sort((a, b) => a - b);
-      
+      // Scores können doppelt vorkommen, endScore immer zweimal (erscheinen der höchsten Zahl immer unm 1 reduzieren)
+      frameScores = frameScores.flat().sort((a, b) => a - b);
+
+      if (frameScores[9] === frameScores[10]){
+        frameScores.splice(frameScores.length - 1, 1);
+      }
 
       throwValues = throwValues.filter(value => value.trim() !== '');
       let prevValue: number | undefined;
@@ -189,15 +192,16 @@ export class AddGamePage {
       let currentFrame: any[] = [];
 
       throwValues.forEach((value) => {
-        const isNinthFrame = frames.length === 9;
-        currentFrame.push(value);
-
-        if ((currentFrame.length === 2 && !isNinthFrame) || (isNinthFrame && currentFrame.length === 3)) {
-          frames.push([...currentFrame]);
-          currentFrame = [];
-        } else if (value === '10' && !isNinthFrame) {
-          frames.push([...currentFrame]);
-          currentFrame = [];
+        const isNinthFrame = frames.length === 9;    
+        if (frames.length < 10){
+          currentFrame.push(value);
+          if ((currentFrame.length === 2 && !isNinthFrame) || (isNinthFrame && currentFrame.length === 3)) {
+            frames.push([...currentFrame]);
+            currentFrame = [];
+          } else if (value === '10' && !isNinthFrame) {
+            frames.push([...currentFrame]);
+            currentFrame = [];
+          }
         }
       });
 

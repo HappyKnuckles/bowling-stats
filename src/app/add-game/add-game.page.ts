@@ -136,7 +136,7 @@ export class AddGamePage {
 
   parseBowlingScores(input: string) {
     try {
-      const lines = input.split('\n').filter(line => line.trim() !== '');      console.log(lines)
+      const lines = input.split('\n').filter(line => line.trim() !== ''); console.log(lines)
 
       const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.username!.toLowerCase()));
 
@@ -152,18 +152,19 @@ export class AddGamePage {
 
       let throwValues = relevantLines[0].split('');
       let frameScores;
-      
-      if (throwValues.length < 12) {
-        throwValues = throwValues.concat(relevantLines[1].split(''));
-        frameScores = relevantLines.slice(2).map(line => line.split(' ').map(Number));
-      } else {
-        frameScores = relevantLines.slice(1).map(line => line.split(' ').map(Number));
+      let startIndex = 1;
+
+      while (throwValues.length < 12) {
+        throwValues = throwValues.concat(relevantLines[startIndex].split(''));
+        startIndex++;
       }
-      
+
+      frameScores = relevantLines.slice(startIndex).map(line => line.split(' ').map(Number));
+
       // Scores können doppelt vorkommen, endScore immer zweimal (erscheinen der höchsten Zahl immer unm 1 reduzieren)
       frameScores = frameScores.flat().sort((a, b) => a - b);
 
-      if (frameScores[9] === frameScores[10]){
+      if (frameScores[9] === frameScores[10]) {
         frameScores.splice(frameScores.length - 1, 1);
       }
 
@@ -191,22 +192,48 @@ export class AddGamePage {
       const frames: any[] = [];
       let currentFrame: any[] = [];
 
+      // throwValues.forEach((value) => {
+      //   const isNinthFrame = frames.length === 9;
+      //   if (frames.length < 10) {
+      //     currentFrame.push(value);
+      //     if ((currentFrame.length === 2 && !isNinthFrame) || (isNinthFrame && currentFrame.length === 3)) {
+      //       frames.push([...currentFrame]);
+      //       currentFrame = [];
+      //     } else if (value === '10' && !isNinthFrame) {
+      //       frames.push([...currentFrame]);
+      //       currentFrame = [];
+      //     }
+      //   }
+      // });
+
       throwValues.forEach((value) => {
-        const isNinthFrame = frames.length === 9;    
-        if (frames.length < 10){
-          currentFrame.push(value);
-          if ((currentFrame.length === 2 && !isNinthFrame) || (isNinthFrame && currentFrame.length === 3)) {
-            frames.push([...currentFrame]);
-            currentFrame = [];
-          } else if (value === '10' && !isNinthFrame) {
-            frames.push([...currentFrame]);
-            currentFrame = [];
+        const isNinthFrame = frames.length === 9;
+        if (frames.length < 10) {
+          if (currentFrame.length === 1 && value === '10') {
+            // Replace the 10 with 0 in the current frame
+            currentFrame[1] = '0';
+            frames.push([...currentFrame]); // Push current frame to frames
+            frames.push(['10']); // Push new frame with 10
+            currentFrame = []; // Start a new current frame
+          } else {
+            currentFrame.push(value);
+            if ((currentFrame.length === 2 && !isNinthFrame) || (isNinthFrame && currentFrame.length === 3)) {
+              frames.push([...currentFrame]);
+              currentFrame = [];
+            } else if (value === '10' && !isNinthFrame) {
+              frames.push([...currentFrame]);
+              currentFrame = [];
+            }
           }
         }
       });
 
       if (currentFrame.length > 0) {
         frames.push([...currentFrame]);
+      }
+
+      while (frames.length < 10) {
+        frames.push([0, 0]);
       }
 
       const totalScore = frameScores[9];
@@ -226,6 +253,7 @@ export class AddGamePage {
 
   cancel() {
     this.modal.dismiss(null, 'cancel');
+    this.isModalOpen = false;
   }
 
   confirm() {
@@ -235,6 +263,8 @@ export class AddGamePage {
       this.modal.dismiss(null, 'confirm');
     } catch (error) {
       this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug-outline', true);
+    } finally {
+      this.isModalOpen = false;
     }
   }
 

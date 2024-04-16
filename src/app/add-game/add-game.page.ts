@@ -233,7 +233,9 @@ export class AddGamePage {
       }
 
       while (frames.length < 10) {
-        frames.push([0, 0]);
+        if (frames.length === 9) {
+          frames.push([0, 0, 0]);
+        } else frames.push([0, 0]);
       }
 
       const totalScore = frameScores[9];

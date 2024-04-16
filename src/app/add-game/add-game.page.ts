@@ -209,7 +209,7 @@ export class AddGamePage {
       throwValues.forEach((value) => {
         const isNinthFrame = frames.length === 9;
         if (frames.length < 10) {
-          if (currentFrame.length === 1 && value === '10') {
+          if (currentFrame.length === 1 && value === '10' && !isNinthFrame) {
             // Replace the 10 with 0 in the current frame
             currentFrame[1] = '0';
             frames.push([...currentFrame]); // Push current frame to frames

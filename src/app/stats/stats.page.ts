@@ -43,7 +43,6 @@ export class StatsPage implements OnInit, OnDestroy {
         await this.loadStats();
         this.gameHistoryChanged = false; // Reset the flag
       } catch (error) {
-        // You can also display an error message to the user using a toast or similar mechanism
         this.toastService.showToast(`Fehler beim Historie und Stats laden: ${error}`, 'bug-outline', true)
       } finally {
         this.isLoading = false;

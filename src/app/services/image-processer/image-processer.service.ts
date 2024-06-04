@@ -41,9 +41,9 @@ export class ImageProcesserService {
     let result = await this.computerVisionClient.read(url);
     let operation = result.operationLocation.split('/').slice(-1)[0];
 
-    // Continuously check the status until it succeeds
+    // Continuously check the status until it succeeds, slep 1sec against excessive API Calls
     while (result.status !== "succeeded") {
-      await this.sleep(1000); // Sleep for 1 second
+      await this.sleep(1000); 
       result = await this.computerVisionClient.getReadResult(operation);
     }
 
@@ -55,7 +55,7 @@ export class ImageProcesserService {
   }
 
   printRecognizedText(readResults: any[]): string {
-    let recognizedText = ''; // Variable to store the recognized text
+    let recognizedText = ''; 
     try {
       for (const page in readResults) {
         if (readResults.length > 1) {
@@ -77,7 +77,7 @@ export class ImageProcesserService {
     } catch (error) {
       throw new Error('Error while processing recognized text: ' + error);
     }
-    return recognizedText; // Return the recognized text
+    return recognizedText; 
   }
 
 
@@ -95,7 +95,7 @@ export class ImageProcesserService {
 
   async deleteImageFromStorage(imageUrl: string): Promise<void> {
     try {
-      const blobName = imageUrl.substring(this.url.length); // Extract blob name from the URL
+      const blobName = imageUrl.substring(this.url.length);
       const blockBlobClient = this.containerClient.getBlockBlobClient(blobName);
       await blockBlobClient.delete();
     } catch (error) {

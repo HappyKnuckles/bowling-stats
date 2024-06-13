@@ -28,7 +28,7 @@ export class BowlingCalculatorService {
     this.addFrame();
     // Recalculate the score and max score
     this.totalScore = 0;
-    this.maxScore = 300; // Maximum possible score is 300 for 10 strikes
+    this.maxScore = 300; 
   }
 
   calculateScore() {
@@ -53,7 +53,6 @@ export class BowlingCalculatorService {
         score += this.sumOfBallsInFrame(frameIndex, this.rolls);
         frameIndex += 2;
       }
-      // Update frame score
       this.frameScores[frame] = score;
     }
     this.totalScore = score;

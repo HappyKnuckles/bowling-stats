@@ -24,7 +24,7 @@ export class GameHistoryService {
 
   async sortGameHistoryByDate(gameHistory: any[]): Promise<void> {
     gameHistory.sort((a: { date: number }, b: { date: number }) => {
-      return a.date - b.date; // Sorting in ascending order based on date
+      return a.date - b.date;
     });
   }
 }

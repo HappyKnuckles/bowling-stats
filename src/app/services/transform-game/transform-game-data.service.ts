@@ -18,7 +18,7 @@ export class GameDataTransformerService {
         value: parseInt(throwValue),
         throwIndex: throwIndex + 1 // Add 1 to make it 1-based index
       })),
-      frameIndex: frameIndex + 1 // Add 1 to make it 1-based index
+      frameIndex: frameIndex + 1 
     })),
     frameScores: frameScores,
     totalScore: totalScore

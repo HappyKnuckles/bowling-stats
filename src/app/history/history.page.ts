@@ -50,7 +50,6 @@ export class HistoryPage implements OnInit, OnDestroy {
           text: 'Cancel',
           role: 'cancel',
           handler: () => {
-            // Do nothing if canceled
           }
         },
         {
@@ -208,14 +207,12 @@ export class HistoryPage implements OnInit, OnDestroy {
         anchor.href = dataUri;
         anchor.download = fileName;
 
-        // Programmatically trigger a download
         document.body.appendChild(anchor);
         anchor.click();
         document.body.removeChild(anchor);
 
         this.toastService.showToast(`File saved successfully`, 'checkmark-outline');
       } else {
-        // Save file using Capacitor's Filesystem API on other platforms
         const savedFile = await Filesystem.writeFile({
           path: fileName,
           data: dataUri,
@@ -300,7 +297,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
       const game = {
         gameId: data[i]['0'],
-        date: data[i]['1'], // convert date to integer
+        date: data[i]['1'],
         frames: frames,
         totalScore: parseInt(data[i]['12']),
         frameScores: data[i]['13'].split(", ").map((score: string) => parseInt(score))

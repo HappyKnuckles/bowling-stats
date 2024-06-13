@@ -307,7 +307,7 @@ export class AddGamePage {
           this.seriesMode[0] = true;
           this.seriesMode[1] = false;
           this.seriesMode[2] = false;
-          this.selectedModeText = SeriesMode.Single; // Update selected mode text
+          this.selectedModeText = SeriesMode.Single; 
         },
       });
     }
@@ -319,7 +319,7 @@ export class AddGamePage {
           this.seriesMode[0] = false;
           this.seriesMode[1] = true;
           this.seriesMode[2] = false;
-          this.selectedModeText = SeriesMode.Series3; // Update selected mode text
+          this.selectedModeText = SeriesMode.Series3; 
         },
       });
     }
@@ -331,7 +331,7 @@ export class AddGamePage {
           this.seriesMode[0] = false;
           this.seriesMode[1] = false;
           this.seriesMode[2] = true;
-          this.selectedModeText = SeriesMode.Series4; // Update selected mode text
+          this.selectedModeText = SeriesMode.Series4; 
         },
       });
     }

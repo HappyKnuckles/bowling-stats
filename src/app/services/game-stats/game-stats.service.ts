@@ -53,7 +53,7 @@ export class GameStatsService {
 
       // Additional logic for counting strikes in the 10th frame
       if (game.frames.length === 10) {
-        const tenthFrame = game.frames[9]; // Get the 10th frame
+        const tenthFrame = game.frames[9];
         const throws = tenthFrame.throws;
         if (throws.length === 3 && throws[0].value === 10 && throws[1]?.value === 10) {
           this.totalStrikes += 2; // Increment by 2 if both throws are strikes

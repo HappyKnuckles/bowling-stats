@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AlertController, isPlatform } from '@ionic/angular';
-import * as XLSX from 'xlsx';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { ToastService } from '../services/toast/toast.service';
 import { GameHistoryService } from '../services/game-history/game-history.service';
@@ -8,6 +7,8 @@ import { SaveGameDataService } from '../services/save-game/save-game.service';
 import { Subscription } from 'rxjs';
 import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
 import { LoadingService } from '../services/loader/loading.service';
+import * as ExcelJS from 'exceljs';
+import { readFile } from 'fs/promises';
 
 @Component({
   selector: 'app-history',
@@ -107,35 +108,41 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
   }
 
+
   async exportToExcel() {
     const gameData = this.getGameDataForExport();
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(gameData);
-    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('data');
+  
+    // Assuming gameData is an array of objects
+    worksheet.columns = Object.keys(gameData[0]).map(key => ({ header: key, key }));
+    worksheet.addRows(gameData);
+  
     const date = new Date();
     const formattedDate = date.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
+  
     const isIos = isPlatform('ios');
     const permissionsGranted = isIos ? (await Filesystem.requestPermissions()).publicStorage === 'granted' : true;
-
+  
     if (isIos && !permissionsGranted) {
       const permissionRequestResult = await Filesystem.requestPermissions();
       if (!permissionRequestResult) {
         return this.showPermissionDeniedAlert();
       }
     }
-
+  
     // If running on an Android device, save the file without asking for permissions
     this.isLoading = true;
     let suffix = '';
     let fileName = `game_data_${formattedDate}`;
     let i = 1;
-
+  
     while (await this.fileExists(fileName + suffix)) {
       suffix = `(${i++})`;
     }
-
-    await this.saveExcelFile(excelBuffer, `${fileName + suffix}.xlsx`);
+  
+    const buffer = await workbook.xlsx.writeBuffer();
+    await this.saveExcelFile(buffer, `${fileName + suffix}.xlsx`);
     this.isLoading = false;
   }
 
@@ -245,6 +252,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.isLoading = true;
       await this.readExcelData();
       this.toastService.showToast('Excel Datei wurde hochgeladen!', 'checkmark-outline');
+      event.target.value = '';
     } catch (error) {
       this.toastService.showToast(`Error: ${error}`, 'bug', true);
     } finally {
@@ -253,20 +261,28 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   async readExcelData() {
-    let fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      this.arrayBuffer = fileReader.result;
-      var data = new Uint8Array(this.arrayBuffer);
-      var arr = new Array();
-      for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-      var bstr = arr.join("");
-      var workbook = XLSX.read(bstr, { type: "binary" });
-      var first_sheet_name = workbook.SheetNames[0];
-      var worksheet = workbook.Sheets[first_sheet_name];
-      const gameData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-      this.transformData(gameData);
-    }
-    fileReader.readAsArrayBuffer(this.file);
+    let workbook = new ExcelJS.Workbook();
+    let buffer = await this.fileToBuffer(this.file);
+    await workbook.xlsx.load(buffer);
+    let worksheet = workbook.worksheets[0];
+    let gameData: any[] = [];
+    worksheet.eachRow((row, rowNumber) => {
+      let rowData: { [key: string]: any } = {};
+      row.eachCell((cell, colNumber) => {
+        rowData[worksheet.getRow(1).getCell(colNumber).value as string] = cell.value;
+      });
+      if (rowNumber !== 1) gameData.push(rowData);
+    });
+    this.transformData(gameData);
+  }
+  
+  fileToBuffer(file: File): Promise<ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader();
+      reader.onload = (event: any) => resolve(event.target.result);
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
   }
 
   transformData(data: any[]) {

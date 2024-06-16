@@ -4,7 +4,8 @@
     <ion-button for="excelUpload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openExcelFileInput()">
       <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
     </ion-button>
-    <input type="file" id="excelUpload" style="display: none;" (change)="handleFileUpload($event)" placeholder="Upload file"
+    <!-- Clear Input on Upload-->
+    <input type="file" id="excelUpload" style="display: none;" (input)="handleFileUpload($event)" placeholder="Upload file"
       accept=".xlsx">
     <ion-title>
       Historie

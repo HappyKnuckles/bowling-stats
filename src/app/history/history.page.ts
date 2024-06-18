@@ -13,7 +13,7 @@ import { readFile } from 'fs/promises';
 @Component({
   selector: 'app-history',
   templateUrl: 'history.page.html',
-  styleUrls: ['history.page.scss']
+  styleUrls: ['history.page.scss'],
 })
 export class HistoryPage implements OnInit, OnDestroy {
   gameHistory: any = [];
@@ -23,21 +23,26 @@ export class HistoryPage implements OnInit, OnDestroy {
   newDataAddedSubscription!: Subscription;
   dataDeletedSubscription!: Subscription;
 
-  constructor(private alertController: AlertController,
+  constructor(
+    private alertController: AlertController,
     private toastService: ToastService,
     private gameHistoryService: GameHistoryService,
     private saveService: SaveGameDataService,
-    private loadingService: LoadingService) {
-  }
+    private loadingService: LoadingService
+  ) {}
 
   async loadGameHistory() {
-    this.loadingService.setLoading(true)    
+    this.loadingService.setLoading(true);
     try {
       this.gameHistory = await this.gameHistoryService.loadGameHistory();
     } catch (error) {
-      this.toastService.showToast(`Fehler beim Historie laden ${error}`, 'bug-outline', true)
+      this.toastService.showToast(
+        `Fehler beim Historie laden ${error}`,
+        'bug-outline',
+        true
+      );
     } finally {
-      this.loadingService.setLoading(false)    
+      this.loadingService.setLoading(false);
     }
   }
 
@@ -50,18 +55,20 @@ export class HistoryPage implements OnInit, OnDestroy {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => {
-          }
+          handler: () => {},
         },
         {
           text: 'Delete',
           handler: () => {
             const key = 'game' + gameId;
             this.saveService.deleteGame(key);
-            this.toastService.showToast('Spiel wurde gelöscht!', 'checkmark-outline');
-          }
-        }
-      ]
+            this.toastService.showToast(
+              'Spiel wurde gelöscht!',
+              'checkmark-outline'
+            );
+          },
+        },
+      ],
     });
 
     await alert.present();
@@ -80,13 +87,17 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents() {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(async () => {
-      await this.loadGameHistory();
-    });
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(
+      async () => {
+        await this.loadGameHistory();
+      }
+    );
 
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(async () => {
-      await this.loadGameHistory();
-    });
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(
+      async () => {
+        await this.loadGameHistory();
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -108,39 +119,46 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
   }
 
-
   async exportToExcel() {
     const gameData = this.getGameDataForExport();
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('data');
-  
-    // Assuming gameData is an array of objects
-    worksheet.columns = Object.keys(gameData[0]).map(key => ({ header: key, key }));
+    const worksheet = workbook.addWorksheet('Game History');
+
+    worksheet.columns = Object.keys(gameData[0]).map((key) => ({
+      header: key,
+      key,
+    }));
     worksheet.addRows(gameData);
-  
+
     const date = new Date();
-    const formattedDate = date.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  
+    const formattedDate = date.toLocaleString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
     const isIos = isPlatform('ios');
-    const permissionsGranted = isIos ? (await Filesystem.requestPermissions()).publicStorage === 'granted' : true;
-  
+    const permissionsGranted = isIos
+      ? (await Filesystem.requestPermissions()).publicStorage === 'granted'
+      : true;
+
     if (isIos && !permissionsGranted) {
       const permissionRequestResult = await Filesystem.requestPermissions();
       if (!permissionRequestResult) {
         return this.showPermissionDeniedAlert();
       }
     }
-  
+
     // If running on an Android device, save the file without asking for permissions
     this.isLoading = true;
     let suffix = '';
     let fileName = `game_data_${formattedDate}`;
     let i = 1;
-  
+
     while (await this.fileExists(fileName + suffix)) {
       suffix = `(${i++})`;
     }
-  
+
     const buffer = await workbook.xlsx.writeBuffer();
     await this.saveExcelFile(buffer, `${fileName + suffix}.xlsx`);
     this.isLoading = false;
@@ -155,7 +173,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       headerRow.push(`Frame ${i}`);
     }
     headerRow.push('Total Score');
-    headerRow.push('FrameScores')
+    headerRow.push('FrameScores');
     gameData.push(headerRow);
 
     // Iterate through game history and format data for export
@@ -207,7 +225,9 @@ export class HistoryPage implements OnInit, OnDestroy {
       }
 
       const base64Data = btoa(binary);
-      const dataUri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
+      const dataUri =
+        'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' +
+        base64Data;
 
       if (isPlatform('desktop')) {
         const anchor = document.createElement('a');
@@ -218,15 +238,21 @@ export class HistoryPage implements OnInit, OnDestroy {
         anchor.click();
         document.body.removeChild(anchor);
 
-        this.toastService.showToast(`File saved successfully`, 'checkmark-outline');
+        this.toastService.showToast(
+          `File saved successfully`,
+          'checkmark-outline'
+        );
       } else {
         const savedFile = await Filesystem.writeFile({
           path: fileName,
           data: dataUri,
           directory: Directory.Documents,
-          recursive: true
+          recursive: true,
         });
-        this.toastService.showToast(`File saved at path: ${savedFile.uri}`, 'checkmark-outline');
+        this.toastService.showToast(
+          `File saved at path: ${savedFile.uri}`,
+          'checkmark-outline'
+        );
       }
     } catch (error) {
       this.toastService.showToast(`${error}`, 'bug', true);
@@ -237,7 +263,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     try {
       await Filesystem.stat({
         path: path + '.xlsx',
-        directory: Directory.Documents
+        directory: Directory.Documents,
       });
       return true;
     } catch (error) {
@@ -245,13 +271,15 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
   }
 
-
   async handleFileUpload(event: any) {
     try {
       this.file = event.target.files[0];
       this.isLoading = true;
       await this.readExcelData();
-      this.toastService.showToast('Excel Datei wurde hochgeladen!', 'checkmark-outline');
+      this.toastService.showToast(
+        'Excel Datei wurde hochgeladen!',
+        'checkmark-outline'
+      );
       event.target.value = '';
     } catch (error) {
       this.toastService.showToast(`Error: ${error}`, 'bug', true);
@@ -269,13 +297,14 @@ export class HistoryPage implements OnInit, OnDestroy {
     worksheet.eachRow((row, rowNumber) => {
       let rowData: { [key: string]: any } = {};
       row.eachCell((cell, colNumber) => {
-        rowData[worksheet.getRow(1).getCell(colNumber).value as string] = cell.value;
+        rowData[worksheet.getRow(1).getCell(colNumber).value as string] =
+          cell.value;
       });
       if (rowNumber !== 1) gameData.push(rowData);
     });
     this.transformData(gameData);
   }
-  
+
   fileToBuffer(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
       let reader = new FileReader();
@@ -293,13 +322,15 @@ export class HistoryPage implements OnInit, OnDestroy {
       for (let j = 2; j <= 11; j++) {
         const frame = {
           frameIndex: j,
-          throws: [] as { value: number; throwIndex: number }[]
+          throws: [] as { value: number; throwIndex: number }[],
         };
 
         const throwsData = data[i][j.toString()];
         if (typeof throwsData === 'string') {
           if (throwsData.includes('/')) {
-            const throws = throwsData.split(' / ').map(value => parseInt(value));
+            const throws = throwsData
+              .split(' / ')
+              .map((value) => parseInt(value));
             for (let k = 0; k < throws.length; k++) {
               frame.throws.push({ value: throws[k], throwIndex: k + 1 });
             }
@@ -316,7 +347,9 @@ export class HistoryPage implements OnInit, OnDestroy {
         date: data[i]['1'],
         frames: frames,
         totalScore: parseInt(data[i]['12']),
-        frameScores: data[i]['13'].split(", ").map((score: string) => parseInt(score))
+        frameScores: data[i]['13']
+          .split(', ')
+          .map((score: string) => parseInt(score)),
       };
 
       this.saveService.saveGameToLocalStorage(game);
@@ -332,13 +365,14 @@ export class HistoryPage implements OnInit, OnDestroy {
         {
           text: 'OK',
           handler: async () => {
-            const permissionRequestResult = await Filesystem.requestPermissions();
+            const permissionRequestResult =
+              await Filesystem.requestPermissions();
             if (permissionRequestResult.publicStorage === 'granted') {
               this.exportToExcel();
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     await alert.present();
   }

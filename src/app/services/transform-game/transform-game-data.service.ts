@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Game } from 'src/app/models/game-model';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +8,7 @@ export class GameDataTransformerService {
 
   constructor() { }
 
-  transformGameData(frames: any, frameScores: any, totalScore: any): any{
+  transformGameData(frames: any, frameScores: any, totalScore: any): Game{
   const gameId = Date.now() + '_' + Math.random().toString(36).substr(2, 9); // Generate a unique gameId
   const date = Date.now();
   return  {

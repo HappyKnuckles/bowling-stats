@@ -15,6 +15,7 @@ import { GameDataTransformerService } from '../services/transform-game/transform
 import { SaveGameDataService } from '../services/save-game/save-game.service';
 import { LoadingService } from '../services/loader/loading.service';
 import { UserService } from '../services/user/user.service';
+import { Game } from '../models/game-model';
 
 @Component({
   selector: 'app-add-game',
@@ -33,7 +34,7 @@ export class AddGamePage {
   alertButton = ['Dismiss'];
   isModalOpen: boolean = false;
   username = "";
-  gameData: any;
+  gameData!: Game;
 
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
   @ViewChild(IonModal) modal!: IonModal;

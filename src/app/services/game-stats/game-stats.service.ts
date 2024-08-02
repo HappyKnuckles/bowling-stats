@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Game } from 'src/app/models/game-model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class GameStatsService {
   highGame: number = 0;
   constructor() { }
 
-  async calculateStats(gameHistory: any[]): Promise<void> {
+  async calculateStats(gameHistory: Game[]): Promise<void> {
     this.totalStrikes = 0;
     this.totalSpares = 0;
     this.totalOpens = 0;
@@ -87,7 +88,7 @@ export class GameStatsService {
     this.averageFirstCount = firstThrowCount / totalFrames;
   }
 
-  getAverage(gameHistory: any[]): number {
+  getAverage(gameHistory: Game[]): number {
     this.totalScoreSum = gameHistory.reduce((sum, game) => sum + game.totalScore, 0);
     return this.totalScoreSum / gameHistory.length;
   }
@@ -96,7 +97,7 @@ export class GameStatsService {
     return frames.reduce((acc, frame) => acc + (condition(frame) ? 1 : 0), 0);
   }
 
-  getGameWithHighestScore(gameHistory: any[]): number {
+  getGameWithHighestScore(gameHistory: Game[]): number {
     let highestScore = -1;
 
     gameHistory.forEach((game: { totalScore: number }) => {

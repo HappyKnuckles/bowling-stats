@@ -9,6 +9,7 @@ import { GameDataTransformerService } from '../services/transform-game/transform
 import { LoadingService } from '../services/loader/loading.service';
 import * as ExcelJS from 'exceljs';
 import { readFile } from 'fs/promises';
+import { Game } from '../models/game-model';
 
 @Component({
   selector: 'app-history',
@@ -16,7 +17,7 @@ import { readFile } from 'fs/promises';
   styleUrls: ['history.page.scss'],
 })
 export class HistoryPage implements OnInit, OnDestroy {
-  gameHistory: any = [];
+  gameHistory: Game[] = [];
   arrayBuffer: any;
   file!: File;
   newDataAddedSubscription!: Subscription;
@@ -171,8 +172,8 @@ export class HistoryPage implements OnInit, OnDestroy {
     this.loadingService.setLoading(false)
   }
 
-  private getGameDataForExport(): any[] {
-    const gameData: any[] = [];
+  private getGameDataForExport(): String[][] {
+    const gameData: string[][] = [];
 
     // Add header row
     const headerRow = ['Game', 'Date'];
@@ -184,7 +185,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     gameData.push(headerRow);
 
     // Iterate through game history and format data for export
-    this.gameHistory.forEach((game: any) => {
+    this.gameHistory.forEach((game: Game) => {
       const gameId = game.gameId;
       const gameDate = game.date;
 
@@ -309,8 +310,29 @@ export class HistoryPage implements OnInit, OnDestroy {
       });
       if (rowNumber !== 1) gameData.push(rowData);
     });
+    // TODO so umändern - Testen
+    // let gameData: Game[] = [];
+    // worksheet.eachRow((row, rowNumber) => {
+    //   if (rowNumber !== 1) {
+    //     let game: Game = {
+    //       gameId: row.getCell(1).value as string,
+    //       date: row.getCell(2).value as string,
+    //       frames: this.parseFrames(row.getCell(3).value), // Assuming frames are in the 3rd column
+    //       totalScore: parseInt(row.getCell(13).value as string),
+    //       frameScores: (row.getCell(14).value as string)
+    //         .split(', ')
+    //         .map((score: string) => parseInt(score)),
+    //     };
+    //     gameData.push(game);
+    //   }
+    // });
     this.transformData(gameData);
   }
+
+  // parseFrames(framesData: any): any {
+  //   // Implement this function to parse frames data if necessary
+  //   return framesData;
+  // }
 
   fileToBuffer(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
@@ -349,7 +371,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         frames.push(frame);
       }
 
-      const game = {
+      const game: Game = {
         gameId: data[i]['0'],
         date: data[i]['1'],
         frames: frames,

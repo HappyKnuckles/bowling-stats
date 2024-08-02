@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Game } from 'src/app/models/game-model';
 
 @Injectable({
   providedIn: 'root'
@@ -6,8 +7,8 @@ import { Injectable } from '@angular/core';
 export class GameHistoryService {
   constructor() {}
 
-  async loadGameHistory(): Promise<any[]> {
-    const gameHistory: any[] = [];
+  async loadGameHistory(): Promise<Game[]> {
+    const gameHistory: Game[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith('game')) {
@@ -22,7 +23,7 @@ export class GameHistoryService {
     return gameHistory;
   }
 
-  async sortGameHistoryByDate(gameHistory: any[]): Promise<void> {
+  async sortGameHistoryByDate(gameHistory: Game[]): Promise<void> {
     gameHistory.sort((a: { date: number }, b: { date: number }) => {
       return a.date - b.date;
     });

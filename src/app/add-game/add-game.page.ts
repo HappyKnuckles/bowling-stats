@@ -34,7 +34,6 @@ export class AddGamePage {
   isModalOpen: boolean = false;
   username = "";
   gameData: any;
-  isLoading: boolean = false;
 
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
   @ViewChild(IonModal) modal!: IonModal;
@@ -53,7 +52,7 @@ export class AddGamePage {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.userService.getUsername().subscribe((username: string) => {
       this.username = username;
     });
@@ -70,10 +69,10 @@ export class AddGamePage {
     });
   }
 
-  async takeOrChoosePicture(): Promise<any> {
+  async takeOrChoosePicture(): Promise<File | Blob | undefined> {
     if (isPlatform('android') || isPlatform('ios') || isPlatform('mobile')) {
       const permissionRequestResult = (await Camera.checkPermissions());
-
+  
       if (permissionRequestResult.photos === 'prompt') {
         (await Camera.requestPermissions()).photos;
         await this.handleImageUpload();
@@ -87,9 +86,9 @@ export class AddGamePage {
           resultType: CameraResultType.Uri,
           source: CameraSource.Prompt,
         });
-
+  
         let blob = await fetch(image.webPath!).then(r => r.blob());
-
+  
         return blob;
       }
     } else {
@@ -98,9 +97,11 @@ export class AddGamePage {
         return file;
       }
     }
+  
+    return undefined;
   }
 
-  async showPermissionDeniedAlert() {
+  async showPermissionDeniedAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Permission Denied',
       message: 'To take or choose a picture, you need to grant camera access permission. Please enable camera access in your device settings.',
@@ -121,8 +122,8 @@ export class AddGamePage {
 
   async handleImageUpload(): Promise<void> {
     try {
-      const imageUrl = await this.takeOrChoosePicture();
-      if (imageUrl) {
+      const imageUrl: File | Blob | undefined = await this.takeOrChoosePicture();
+      if (imageUrl instanceof File) {
         this.loadingService.setLoading(true);
         const gameText = await this.imageProcessingService.performOCR(imageUrl);
         this.parseBowlingScores(gameText!);
@@ -134,7 +135,7 @@ export class AddGamePage {
     }
   }
 
-  parseBowlingScores(input: string) {
+  parseBowlingScores(input: string): void {
     try {
       const lines = input.split('\n').filter(line => line.trim() !== '');      console.log(lines)
 
@@ -224,11 +225,11 @@ export class AddGamePage {
     }
   }
 
-  cancel() {
+  cancel(): void {
     this.modal.dismiss(null, 'cancel');
   }
 
-  confirm() {
+  confirm(): void {
     try {
       this.saveGameService.saveGameToLocalStorage(this.gameData);
       this.toastService.showToast("Spiel hinzugefügt", "add");
@@ -238,11 +239,11 @@ export class AddGamePage {
     }
   }
 
-  updateFrameScore(value: any, index: number) {
+  updateFrameScore(value: any, index: number): void {
     this.gameData.frameScores[index] = value;
   }
 
-  clearFrames(index?: number) {
+  clearFrames(index?: number): void {
     if (index !== undefined && index >= 0 && index < this.trackGrids.length) {
       // Clear frames for the specified index
       this.trackGrids.toArray()[index].clearFrames();
@@ -255,7 +256,7 @@ export class AddGamePage {
     this.toastService.showToast('Spiel wurde zurückgesetzt!', 'refresh-outline');
   }
 
-  calculateScore() {
+  calculateScore(): void {
     let allGamesValid = true;
 
     this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
@@ -277,15 +278,15 @@ export class AddGamePage {
     } else this.setAlertOpen();
   }
 
-  setAlertOpen() {
+  setAlertOpen(): void {
     this.isAlertOpen = !this.isAlertOpen;
   }
 
-  onMaxScoreChanged(maxScore: number, index: number) {
+  onMaxScoreChanged(maxScore: number, index: number): void {
     this.maxScores[index] = maxScore;
   }
 
-  onTotalScoreChange(totalScore: number, index: number) {
+  onTotalScoreChange(totalScore: number, index: number): void {
     this.totalScores[index] = totalScore;
   }
 
@@ -297,7 +298,7 @@ export class AddGamePage {
     return this.bowlingService.getSeriesCurrentScore(index, this.totalScores);
   }
 
-  async presentActionSheet() {
+  async presentActionSheet(): Promise<void> {
     const buttons = [];
     this.sheetOpen = true;
     if (!this.seriesMode[0]) {

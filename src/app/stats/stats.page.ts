@@ -6,6 +6,7 @@ import { BowlingCalculatorService } from '../services/bowling-calculator/bowling
 import { GameStatsService } from '../services/game-stats/game-stats.service';
 import { Subscription } from 'rxjs';
 import { SaveGameDataService } from '../services/save-game/save-game.service';
+import { LoadingService } from '../services/loader/loading.service';
 @Component({
   selector: 'app-stats',
   templateUrl: 'stats.page.html',
@@ -13,7 +14,6 @@ import { SaveGameDataService } from '../services/save-game/save-game.service';
 })
 export class StatsPage implements OnInit, OnDestroy {
   gameHistory: any = [];
-  isLoading: boolean = false;
   averageScore: number = 0;
   totalPins: number = 0;
   totalStrikes: number = 0;
@@ -33,10 +33,10 @@ export class StatsPage implements OnInit, OnDestroy {
   dataDeletedSubscription!: Subscription;
   @ViewChild('scoreChart') scoreChart!: ElementRef;
 
-  constructor(private statsService: GameStatsService, private toastService: ToastService, private gameHistoryService: GameHistoryService, private saveService: SaveGameDataService) { }
+  constructor(private loadingService: LoadingService,
+    private statsService: GameStatsService, private toastService: ToastService, private gameHistoryService: GameHistoryService, private saveService: SaveGameDataService) { }
 
   private async loadDataAndCalculateStats() {
-    this.isLoading = true;
     if (this.gameHistoryChanged) {
       try {
         await this.loadGameHistory();
@@ -44,8 +44,6 @@ export class StatsPage implements OnInit, OnDestroy {
         this.gameHistoryChanged = false; // Reset the flag
       } catch (error) {
         this.toastService.showToast(`Fehler beim Historie und Stats laden: ${error}`, 'bug-outline', true)
-      } finally {
-        this.isLoading = false;
       }
     }
   }
@@ -79,13 +77,22 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  async ngOnInit() {
-    await this.loadDataAndCalculateStats();
-    this.subscribeToDataEvents();
-    this.generateScoreChart();
+  async ngOnInit(): Promise<void> {
+    try {
+      this.loadingService.setLoading(true);
+      await this.loadDataAndCalculateStats();
+      this.subscribeToDataEvents();
+      this.generateScoreChart();
+    }
+    catch (error) {
+      console.log(error);
+    }
+    finally {
+      this.loadingService.setLoading(false);
+    }
   }
 
-  private subscribeToDataEvents() {
+  private subscribeToDataEvents(): void {
     this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats();
@@ -97,19 +104,26 @@ export class StatsPage implements OnInit, OnDestroy {
     });
   }
 
-  handleRefresh(event: any) {
-    setTimeout(() => {
-      this.loadDataAndCalculateStats();
-      event.target.complete();
-    }, 100);
+  handleRefresh(event: any): void {
+    try {
+      this.loadingService.setLoading(true);
+      setTimeout(async () => {
+        await this.loadDataAndCalculateStats();
+        event.target.complete();
+      }, 100);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.loadingService.setLoading(false);
+    }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.newDataAddedSubscription.unsubscribe();
     this.dataDeletedSubscription.unsubscribe();
   }
 
-  generateScoreChart() {
+  generateScoreChart(): void {
     const gameLabels = this.gameHistory.map((game: any, index: number) => `${index + 1}`);
     const scores = this.gameHistory.map((game: any, index: number) => {
       // Calculate the average score up to the current game index

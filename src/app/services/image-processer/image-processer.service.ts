@@ -23,7 +23,7 @@ export class ImageProcesserService {
     this.containerClient = blobServiceClient.getContainerClient("images");
   }
 
-  async performOCR(image: File) {
+  async performOCR(image: File): Promise<string> {
     const imageUrl = await this.uploadImageToStorage(image);
     try {
       const printedResult = await this.readTextFromURL(imageUrl);
@@ -37,7 +37,7 @@ export class ImageProcesserService {
     }
   }
 
-  async readTextFromURL(url: string) {
+  async readTextFromURL(url: string): Promise<any> {
     let result = await this.computerVisionClient.read(url);
     let operation = result.operationLocation.split('/').slice(-1)[0];
 

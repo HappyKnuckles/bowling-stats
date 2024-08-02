@@ -7,7 +7,7 @@ export class GameDataTransformerService {
 
   constructor() { }
 
-  transformGameData(frames: any, frameScores: any, totalScore: any){
+  transformGameData(frames: any, frameScores: any, totalScore: any): any{
   const gameId = Date.now() + '_' + Math.random().toString(36).substr(2, 9); // Generate a unique gameId
   const date = Date.now();
   return  {

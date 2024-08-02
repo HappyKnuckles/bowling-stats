@@ -17,7 +17,6 @@ import { readFile } from 'fs/promises';
 })
 export class HistoryPage implements OnInit, OnDestroy {
   gameHistory: any = [];
-  isLoading: boolean = false;
   arrayBuffer: any;
   file!: File;
   newDataAddedSubscription!: Subscription;
@@ -29,10 +28,9 @@ export class HistoryPage implements OnInit, OnDestroy {
     private gameHistoryService: GameHistoryService,
     private saveService: SaveGameDataService,
     private loadingService: LoadingService
-  ) {}
+  ) { }
 
-  async loadGameHistory() {
-    this.loadingService.setLoading(true);
+  async loadGameHistory(): Promise<void> {
     try {
       this.gameHistory = await this.gameHistoryService.loadGameHistory();
     } catch (error) {
@@ -41,12 +39,10 @@ export class HistoryPage implements OnInit, OnDestroy {
         'bug-outline',
         true
       );
-    } finally {
-      this.loadingService.setLoading(false);
     }
   }
 
-  async deleteGame(gameId: string) {
+  async deleteGame(gameId: string): Promise<void> {
     console.log(gameId);
     const alert = await this.alertController.create({
       header: 'Confirm Deletion',
@@ -55,7 +51,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => {},
+          handler: () => { },
         },
         {
           text: 'Delete',
@@ -74,16 +70,20 @@ export class HistoryPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  deleteAll() {
+  deleteAll(): void {
     localStorage.clear();
     window.dispatchEvent(new Event('dataDeleted'));
   }
 
-  async ngOnInit() {
-    this.isLoading = true;
-    await this.loadGameHistory();
-    this.subscribeToDataEvents();
-    this.isLoading = false;
+  async ngOnInit(): Promise<void> {
+    try {
+      this.loadingService.setLoading(true); await this.loadGameHistory();
+      this.subscribeToDataEvents();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.loadingService.setLoading(false);
+    }
   }
 
   private subscribeToDataEvents() {
@@ -100,26 +100,33 @@ export class HistoryPage implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.newDataAddedSubscription.unsubscribe();
     this.dataDeletedSubscription.unsubscribe();
   }
 
-  handleRefresh(event: any) {
-    setTimeout(() => {
-      this.loadGameHistory();
-      event.target.complete();
-    }, 100);
+  handleRefresh(event: any): void {
+    try {
+      this.loadingService.setLoading(true);
+      setTimeout(async () => {
+        await this.loadGameHistory();
+        event.target.complete();
+      }, 100);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.loadingService.setLoading(false);
+    }
   }
 
-  openExcelFileInput() {
+  openExcelFileInput(): void {
     const fileInput = document.getElementById('excelUpload');
     if (fileInput) {
       fileInput.click();
     }
   }
 
-  async exportToExcel() {
+  async exportToExcel(): Promise<void> {
     const gameData = this.getGameDataForExport();
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Game History');
@@ -150,7 +157,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
 
     // If running on an Android device, save the file without asking for permissions
-    this.isLoading = true;
+    this.loadingService.setLoading(true);
     let suffix = '';
     let fileName = `game_data_${formattedDate}`;
     let i = 1;
@@ -161,7 +168,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     const buffer = await workbook.xlsx.writeBuffer();
     await this.saveExcelFile(buffer, `${fileName + suffix}.xlsx`);
-    this.isLoading = false;
+    this.loadingService.setLoading(false)
   }
 
   private getGameDataForExport(): any[] {
@@ -271,10 +278,10 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
   }
 
-  async handleFileUpload(event: any) {
+  async handleFileUpload(event: any): Promise<void> {
     try {
+      this.loadingService.setLoading(true);
       this.file = event.target.files[0];
-      this.isLoading = true;
       await this.readExcelData();
       this.toastService.showToast(
         'Excel Datei wurde hochgeladen!',
@@ -284,11 +291,11 @@ export class HistoryPage implements OnInit, OnDestroy {
     } catch (error) {
       this.toastService.showToast(`Error: ${error}`, 'bug', true);
     } finally {
-      this.isLoading = false;
+      this.loadingService.setLoading(false);
     }
   }
 
-  async readExcelData() {
+  async readExcelData(): Promise<void> {
     let workbook = new ExcelJS.Workbook();
     let buffer = await this.fileToBuffer(this.file);
     await workbook.xlsx.load(buffer);
@@ -314,7 +321,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     });
   }
 
-  transformData(data: any[]) {
+  transformData(data: any[]): void {
     const gameData = [];
 
     for (let i = 1; i < data.length; i++) {
@@ -357,7 +364,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
   }
 
-  async showPermissionDeniedAlert() {
+  async showPermissionDeniedAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Permission Denied',
       message: 'To save to Gamedata.xlsx, you need to give permissions!',

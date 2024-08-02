@@ -1,16 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { ToastService } from './services/toast/toast.service';
 import { LoadingService } from './services/loader/loading.service';
 import { UserService } from './services/user/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   isLoading = false;
+  private loadingSubscription: Subscription;
+  private userNameSubscription: Subscription;
+
   username = '';
 
   constructor(
@@ -18,21 +22,26 @@ export class AppComponent implements OnInit {
     private toastService: ToastService,
     private loadingService: LoadingService,
     private userService: UserService
-  ) {}
-
-  ngOnInit() {
-    this.loadingService.isLoading$.subscribe(isLoading => {
+  ) {
+    this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
       this.isLoading = isLoading;
     });
-
-    this.userService.getUsername().subscribe((username: string) => {
+    this.userNameSubscription = this.userService.getUsername().subscribe((username: string) => {
       this.username = username;
     });
+  }
 
+  ngOnInit(): void {
     this.greetUser();
   }
 
-  async greetUser() {
+  ngOnDestroy(): void {
+    this.loadingSubscription.unsubscribe();
+    this.userNameSubscription.unsubscribe();
+
+  }
+
+  async greetUser(): Promise<void> {
     if (!this.username) {
       await this.showEnterNameAlert();
     } else {
@@ -69,7 +78,7 @@ export class AppComponent implements OnInit {
     await alert.present();
   }
 
-  async presentGreetingAlert(name: string) {
+  async presentGreetingAlert(name: string): Promise<void> {
     const alert = await this.alertController.create({
       header: `Hello ${name}!`,
       buttons: [

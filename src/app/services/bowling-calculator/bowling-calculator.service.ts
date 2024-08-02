@@ -14,13 +14,13 @@ export class BowlingCalculatorService {
     this.addFrame();
   }
 
-  addFrame() {
+  addFrame(): void {
     for (let i = 1; i < 10; i++) {
       this.frames.push([]);
     }
   }
 
-  clearRolls() {
+  clearRolls(): void {
     // Reset rolls array
     this.rolls = Array.from({ length: 21 }, () => 0);
     this.frames = [[]];
@@ -31,7 +31,7 @@ export class BowlingCalculatorService {
     this.maxScore = 300; 
   }
 
-  calculateScore() {
+  calculateScore(): void {
     let index = 0;
     this.frames.forEach(frame => {
       frame.forEach(value => {

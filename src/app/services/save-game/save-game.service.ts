@@ -9,14 +9,14 @@ export class SaveGameDataService {
 
   constructor() { }
 
-  saveGameToLocalStorage(gameData: any) {
+  saveGameToLocalStorage(gameData: any): void {
     const gameDataString = JSON.stringify(gameData);
     const key = 'game' + gameData.gameId; // Generate key using index
     localStorage.setItem(key, gameDataString);
     this.newDataAdded.emit();
   }
 
-  deleteGame(key: string) {
+  deleteGame(key: string): void {
     localStorage.removeItem(key);
     this.dataDeleted.emit();
   }

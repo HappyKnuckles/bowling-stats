@@ -10,7 +10,7 @@ export class ToastService {
 
   constructor() { }
 
-  showToast(message: string, icon: string, error?: boolean) {
+  showToast(message: string, icon: string, error?: boolean): void {
     this.toastSubject.next({ message, icon, error });
   }
 }

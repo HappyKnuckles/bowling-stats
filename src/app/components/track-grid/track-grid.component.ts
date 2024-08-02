@@ -22,7 +22,7 @@ export class TrackGridComponent implements OnInit {
     private transformGameService: GameDataTransformerService,
     private toastService: ToastService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // Check if gameIndex exists in local storage
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;
@@ -30,7 +30,7 @@ export class TrackGridComponent implements OnInit {
     this.totalScoreChanged.emit(this.totalScore);
   }
 
-  simulateScore(index: number, event: any) {
+  simulateScore(index: number, event: any): void {
     const inputValue = parseInt(event.target.value, 10);
     if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 10) {
       this.bowlingService.calculateScore();
@@ -41,7 +41,7 @@ export class TrackGridComponent implements OnInit {
     }
   }
 
-  saveGameToLocalStorage() {
+  saveGameToLocalStorage(): void {
     try {
       const gameData = this.transformGameService.transformGameData(this.bowlingService.frames, this.bowlingService.frameScores, this.bowlingService.totalScore);
       this.saveGameService.saveGameToLocalStorage(gameData);
@@ -73,7 +73,7 @@ export class TrackGridComponent implements OnInit {
     return !isNaN(parseFloat(value)) && isFinite(value);
   }
 
-  clearFrames() {
+  clearFrames(): void {
     this.bowlingService.clearRolls();
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;

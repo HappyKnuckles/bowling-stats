@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Game } from 'src/app/models/game-model';
+import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
   providedIn: 'root'
@@ -8,18 +9,22 @@ export class SaveGameDataService {
   newDataAdded = new EventEmitter<void>();
   dataDeleted = new EventEmitter<void>();
 
-  constructor() { }
+  constructor(private storage: Storage) {
+    this.init();
+  }
 
-  // TODO Use IonicStorage instead
-  saveGameToLocalStorage(gameData: Game): void {
-    const gameDataString = JSON.stringify(gameData);
+  async init() {
+    await this.storage.create();
+  }
+
+  async saveGameToLocalStorage(gameData: Game): Promise<void> {
     const key = 'game' + gameData.gameId; // Generate key using index
-    localStorage.setItem(key, gameDataString);
+    await this.storage.set(key, gameData);
     this.newDataAdded.emit();
   }
 
-  deleteGame(key: string): void {
-    localStorage.removeItem(key);
+  async deleteGame(key: string): Promise<void> {
+    await this.storage.remove(key);
     this.dataDeleted.emit();
   }
 }

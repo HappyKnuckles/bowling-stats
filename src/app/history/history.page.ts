@@ -5,10 +5,8 @@ import { ToastService } from '../services/toast/toast.service';
 import { GameHistoryService } from '../services/game-history/game-history.service';
 import { SaveGameDataService } from '../services/save-game/save-game.service';
 import { Subscription } from 'rxjs';
-import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
 import { LoadingService } from '../services/loader/loading.service';
 import * as ExcelJS from 'exceljs';
-import { readFile } from 'fs/promises';
 import { Game } from '../models/game-model';
 
 @Component({

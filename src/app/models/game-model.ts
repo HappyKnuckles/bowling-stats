@@ -5,3 +5,25 @@ export interface Game{
     totalScore: number;
     frameScores: number[];
 }
+
+// TODO adjust code to use frame interface instead
+
+// interface Frames {
+//     frameIndex: number;
+//     throws: Throws[];
+// }
+
+// export interface Throws {
+//     throwIndex: number;
+//     value: number;
+// }
+
+// export type ThrowsArray = [Throws, Throws];
+
+// export interface Game {
+//     gameId: string;
+//     date: number;
+//     frames: Frames[];
+//     totalScore: number;
+//     frameScores: number[];
+// }

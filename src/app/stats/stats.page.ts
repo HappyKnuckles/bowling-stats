@@ -7,13 +7,14 @@ import { GameStatsService } from '../services/game-stats/game-stats.service';
 import { Subscription } from 'rxjs';
 import { SaveGameDataService } from '../services/save-game/save-game.service';
 import { LoadingService } from '../services/loader/loading.service';
+import { Game } from '../models/game-model';
 @Component({
   selector: 'app-stats',
   templateUrl: 'stats.page.html',
   styleUrls: ['stats.page.scss']
 })
 export class StatsPage implements OnInit, OnDestroy {
-  gameHistory: any = [];
+  gameHistory: Game[] = [];
   averageScore: number = 0;
   totalPins: number = 0;
   totalStrikes: number = 0;

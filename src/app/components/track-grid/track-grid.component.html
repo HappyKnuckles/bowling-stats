@@ -1,4 +1,3 @@
-<!-- TODO add inputmode=numeric to all inputs-->
 <div class="grid-container">
   <ion-grid fixed="true" *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; let frameIndex = index;">
     <ion-row>
@@ -7,18 +6,18 @@
     <ion-row>
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
-        <ion-input type="number" [(ngModel)]="bowlingService.frames[frameIndex][0]" (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
+        <ion-input type="number" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][0]" (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
-        <ion-input type="number" [(ngModel)]="bowlingService.frames[frameIndex][1]"
+        <ion-input type="number" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][1]"
           [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input type="number" [(ngModel)]="bowlingService.frames[frameIndex][1]"
+        <ion-input type="number" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][1]"
           [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input type="number" [(ngModel)]="bowlingService.frames[frameIndex][2]"
+        <ion-input type="number" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][2]"
           [disabled]="bowlingService.frames[frameIndex][0] !== 10 && bowlingService.frames[frameIndex][0] + (bowlingService.frames[frameIndex][1] || 0) !== 10"
           (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
       </ion-col>

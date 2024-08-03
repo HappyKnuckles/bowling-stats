@@ -94,25 +94,25 @@
               <ion-row>
                 <ion-col class="inputCol" *ngIf="frameIndex !== 9"></ion-col>
                 <ion-col class="inputCol">
-                  <ion-input type="number" [value]="frame.throws[0]?.value"
+                  <ion-input type="number" [value]="frame.throws[0]?.value" inputmode="numeric"
                     (ionChange)="frame.throws[0].value = $event.target.value"></ion-input>
                 </ion-col>
                 <ion-col class="inputCol" *ngIf="frameIndex !== 9">
-                  <ion-input type="number" [value]="frame.throws[1]?.value"
+                  <ion-input type="number" [value]="frame.throws[1]?.value" inputmode="numeric"
                     (ionChange)="frame.throws[1].value = $event.target.value"></ion-input>
                 </ion-col>
                 <ion-col class="inputCol" *ngIf="frameIndex === 9">
-                  <ion-input type="number" [value]="frame.throws[1]?.value"
+                  <ion-input type="number" [value]="frame.throws[1]?.value" inputmode="numeric"
                     (ionChange)="frame.throws[1].value = $event.target.value"></ion-input>
                 </ion-col>
                 <ion-col class="inputCol" *ngIf="frameIndex === 9">
-                  <ion-input type="number" [value]="frame.throws[2]?.value"
+                  <ion-input type="number" [value]="frame.throws[2]?.value" inputmode="numeric"
                     (ionChange)="frame.throws[2].value = $event.target.value"></ion-input>
                 </ion-col>
               </ion-row>
               <ion-row>
                 <ion-col class="middle count">
-                  <ion-input type="text" class="frameScores" [value]="gameData.frameScores[frameIndex]"
+                  <ion-input type="text" class="frameScores" [value]="gameData.frameScores[frameIndex]" inputmode="numeric"
                     (ionChange)="updateFrameScore($event.target.value, frameIndex)">
                   </ion-input>
                 </ion-col>

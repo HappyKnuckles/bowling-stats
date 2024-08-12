@@ -15,6 +15,7 @@ import { Game } from '../models/game-model';
 })
 export class StatsPage implements OnInit, OnDestroy {
   gameHistory: Game[] = [];
+  totalGames: number = 0;
   averageScore: number = 0;
   totalPins: number = 0;
   totalStrikes: number = 0;
@@ -23,12 +24,17 @@ export class StatsPage implements OnInit, OnDestroy {
   firstThrowCount: number = 0;
   averageFirstCount: number = 0;
   averageStrikesPerGame: number = 0;
-  sparePercentage: number = 0;
+  averageSparesPerGame: number = 0;
+  averageOpensPerGame: number = 0;
   strikePercentage: number = 0;
+  sparePercentage: number = 0;
   openPercentage: number = 0;
+  spareConversionPercentage: number = 0;
   highGame: number = 0;
   pinCounts: number[] = Array(11).fill(0);
-  missedCounts: number[] = Array(11).fill(0);;
+  missedCounts: number[] = Array(11).fill(0);
+  totalMissed: number = 0;
+  totalConverted: number = 0;
   gameHistoryChanged: boolean = true;
   newDataAddedSubscription!: Subscription;
   dataDeletedSubscription!: Subscription;
@@ -60,6 +66,7 @@ export class StatsPage implements OnInit, OnDestroy {
   async loadStats() {
     try {
       await this.statsService.calculateStats(this.gameHistory);
+      this.totalGames = this.statsService.totalGames;
       this.averageScore = this.statsService.averageScore;
       this.averageFirstCount = this.statsService.averageFirstCount;
       this.totalPins = this.statsService.totalScoreSum;
@@ -67,8 +74,10 @@ export class StatsPage implements OnInit, OnDestroy {
       this.averageStrikesPerGame = this.statsService.averageStrikesPerGame;
       this.strikePercentage = this.statsService.strikePercentage;
       this.totalSpares = this.statsService.totalSpares;
+      this.averageSparesPerGame = this.statsService.averageSparesPerGame;
       this.sparePercentage = this.statsService.sparePercentage;
       this.totalOpens = this.statsService.totalOpens;
+      this.averageOpensPerGame = this.statsService.averageOpensPerGame;
       this.openPercentage = this.statsService.openPercentage;
       this.missedCounts = this.statsService.missedCounts;
       this.pinCounts = this.statsService.pinCounts;
@@ -116,6 +125,39 @@ export class StatsPage implements OnInit, OnDestroy {
       console.log(error);
     } finally {
       this.loadingService.setLoading(false);
+    }
+  }
+
+  getOverallMissedAndConverted(): void {
+    this.totalMissed = 0;
+    this.totalConverted = 0;
+    for (let i = 1; i <= 10; i++) {
+      this.totalMissed += this.missedCounts[i] || 0;
+      this.totalConverted += this.pinCounts[i] || 0;
+    }
+  }
+
+  getOverallConversionRate(): { rate: string, class: string } {
+    this.getOverallMissedAndConverted();
+
+    const totalAttempts = this.totalMissed + this.totalConverted;
+    if (totalAttempts === 0) {
+      return { rate: '0.00', class: 'red' };
+    }
+
+    const conversionRate = (this.totalConverted / totalAttempts) * 100;
+    const rateClass = this.getRateClass(conversionRate);
+
+    return { rate: conversionRate.toFixed(2), class: rateClass };
+  }
+
+  getRateClass(conversionRate: number): string {
+    if (conversionRate > 75) {
+      return 'green';
+    } else if (conversionRate > 33) {
+      return 'orange';
+    } else {
+      return 'red';
     }
   }
 

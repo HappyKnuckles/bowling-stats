@@ -5,15 +5,19 @@ import { Game } from 'src/app/models/game-model';
   providedIn: 'root'
 })
 export class GameStatsService {
+  totalGames: number = 0;
   totalStrikes: number = 0;
   totalSpares: number = 0;
   totalOpens: number = 0;
   pinCounts: number[] = Array(11).fill(0);
   missedCounts: number[] = Array(11).fill(0);
   averageStrikesPerGame: number = 0;
+  averageSparesPerGame: number = 0;
+  averageOpensPerGame: number = 0;
   strikePercentage: number = 0;
   sparePercentage: number = 0;
-  openPercentage: number = 0;
+  openPercentage: number = 0;  
+  spareConversionPercentage: number = 0;
   averageFirstCount: number = 0;
   averageScore: number = 0;
   totalScoreSum: number = 0;
@@ -77,14 +81,21 @@ export class GameStatsService {
       });
     });
 
+    this.totalGames = gameHistory.length;
     this.averageScore = this.getAverage(gameHistory);
     this.highGame = this.getGameWithHighestScore(gameHistory);
+
     const totalFrames = gameHistory.length * 10;
     const strikeChances = gameHistory.length * 12;
+
     this.averageStrikesPerGame = this.totalStrikes / gameHistory.length;
+    this.averageSparesPerGame = this.totalSpares / gameHistory.length;
+    this.averageOpensPerGame = this.totalOpens / gameHistory.length;
+
     this.strikePercentage = (this.totalStrikes / strikeChances) * 100;
     this.sparePercentage = (this.totalSpares / totalFrames) * 100;
     this.openPercentage = (this.totalOpens / totalFrames) * 100;
+    
     this.averageFirstCount = firstThrowCount / totalFrames;
   }
 

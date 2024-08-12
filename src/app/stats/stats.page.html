@@ -15,6 +15,10 @@
   <div *ngIf="gameHistory.length > 0">
     <h2>Allgemein</h2>
     <div class="stats">
+      <ion-text>Games: </ion-text>
+      <ion-text class="value">{{totalGames }}</ion-text>
+    </div>
+    <div class="stats">
       <ion-text>Durchschnitt: </ion-text>
       <ion-text class="value">{{averageScore | number:'1.2-2' }}</ion-text>
     </div>
@@ -47,12 +51,20 @@
       <ion-text class="value">{{totalSpares}}</ion-text>
     </div>
     <div class="stats">
+      <ion-text>Spares pro Spiel: </ion-text>
+      <ion-text class="value">{{averageSparesPerGame | number:'1.2-2'}}</ion-text>
+    </div>
+    <div class="stats">
       <ion-text>Sparewahrscheinlichkeit: </ion-text>
       <ion-text class="value">{{sparePercentage | number:'1.2-2'}}%</ion-text>
     </div>
     <div class="stats">
       <ion-text>Opens: </ion-text>
       <ion-text class="value">{{totalOpens}}</ion-text>
+    </div>
+    <div class="stats">
+      <ion-text>Opens pro Spiel: </ion-text>
+      <ion-text class="value">{{averageOpensPerGame | number:'1.2-2'}}</ion-text>
     </div>
     <div class="stats">
       <ion-text>Openwahrscheinlichkeit: </ion-text>
@@ -71,24 +83,25 @@
             <ion-col>Converted</ion-col>
             <ion-col>Rate</ion-col>
           </ion-row>
-          <ion-row *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];">
+          <ion-row *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];">
+            <ion-col *ngIf="i === 0">Overall</ion-col>
             <ion-col *ngIf="i === 1">{{ i }} Pin</ion-col>
             <ion-col *ngIf="i > 1">{{ i }} Pins</ion-col>
-            <ion-col>{{ missedCounts[i] }}</ion-col>
-            <ion-col>{{ pinCounts[i] }}</ion-col>
-            <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
-            <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0" [ngClass]="{
-           'green': (missedCounts[i] === 0 || (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) > 75),
-           'orange': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) > 33 && (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 75,
-           'red': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 33 }">
-              {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) |
-              number:'1.2-2'}}%
+            <ion-col *ngIf="i > 0">{{ missedCounts[i] }}</ion-col>
+            <ion-col *ngIf="i > 0">{{ pinCounts[i] }}</ion-col>
+            <ion-col *ngIf="i === 0"> {{ totalMissed }}</ion-col>
+            <ion-col *ngIf="i === 0">{{ totalConverted }}</ion-col>
+            <ion-col *ngIf="i === 0" [ngClass]="getOverallConversionRate().class">
+              {{ getOverallConversionRate().rate }}%
             </ion-col>
+            <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0 && i > 0"></ion-col>
+            <ion-col *ngIf="(pinCounts[i] !== 0 || missedCounts[i] !== 0) && i > 0" [ngClass]="getRateClass((pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100))">
+              {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) | number:'1.2-2' }}%
+            </ion-col>          
           </ion-row>
         </ion-grid>
       </mat-expansion-panel>
     </div>
-
     <canvas #scoreChart style="width: 300px; height: 300px;"></canvas>
   </div>
 </ion-content>

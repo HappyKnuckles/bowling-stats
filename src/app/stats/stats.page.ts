@@ -20,6 +20,8 @@ export class StatsPage implements OnInit, OnDestroy {
   totalPins: number = 0;
   totalStrikes: number = 0;
   totalSpares: number = 0;
+  totalSparesMissed: number = 0;
+  totalSparesConverted: number = 0;
   totalOpens: number = 0;
   firstThrowCount: number = 0;
   averageFirstCount: number = 0;
@@ -66,24 +68,48 @@ export class StatsPage implements OnInit, OnDestroy {
   async loadStats() {
     try {
       await this.statsService.calculateStats(this.gameHistory);
-      this.totalGames = this.statsService.totalGames;
-      this.averageScore = this.statsService.averageScore;
-      this.averageFirstCount = this.statsService.averageFirstCount;
-      this.totalPins = this.statsService.totalScoreSum;
-      this.totalStrikes = this.statsService.totalStrikes;
-      this.averageStrikesPerGame = this.statsService.averageStrikesPerGame;
-      this.strikePercentage = this.statsService.strikePercentage;
-      this.totalSpares = this.statsService.totalSpares;
-      this.averageSparesPerGame = this.statsService.averageSparesPerGame;
-      this.sparePercentage = this.statsService.sparePercentage;
-      this.totalOpens = this.statsService.totalOpens;
-      this.averageOpensPerGame = this.statsService.averageOpensPerGame;
-      this.openPercentage = this.statsService.openPercentage;
-      this.missedCounts = this.statsService.missedCounts;
-      this.pinCounts = this.statsService.pinCounts;
-      this.highGame = this.statsService.highGame;
+      
+      const {
+        totalGames,
+        averageScore,
+        averageFirstCount,
+        totalScoreSum: totalPins,
+        totalStrikes,
+        averageStrikesPerGame,
+        strikePercentage,
+        totalSpares,
+        totalSparesConverted,
+        totalSparesMissed,
+        averageSparesPerGame,
+        sparePercentage,
+        totalOpens,
+        averageOpensPerGame,
+        openPercentage,
+        missedCounts,
+        pinCounts,
+        highGame
+      } = this.statsService;
+  
+      this.totalGames = totalGames;
+      this.averageScore = averageScore;
+      this.averageFirstCount = averageFirstCount;
+      this.totalPins = totalPins;
+      this.totalStrikes = totalStrikes;
+      this.averageStrikesPerGame = averageStrikesPerGame;
+      this.strikePercentage = strikePercentage;
+      this.totalSpares = totalSpares;
+      this.totalSparesConverted = totalSparesConverted;
+      this.totalSparesMissed = totalSparesMissed;
+      this.averageSparesPerGame = averageSparesPerGame;
+      this.sparePercentage = sparePercentage;
+      this.totalOpens = totalOpens;
+      this.averageOpensPerGame = averageOpensPerGame;
+      this.openPercentage = openPercentage;
+      this.missedCounts = missedCounts;
+      this.pinCounts = pinCounts;
+      this.highGame = highGame;
     } catch (error) {
-      this.toastService.showToast(`Fehler beim Statistik laden: ${error}`, 'bug-outline', true)
+      this.toastService.showToast(`Fehler beim Statistik laden: ${error}`, 'bug-outline', true);
     }
   }
 
@@ -128,27 +154,14 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  getOverallMissedAndConverted(): void {
-    this.totalMissed = 0;
-    this.totalConverted = 0;
-    for (let i = 1; i <= 10; i++) {
-      this.totalMissed += this.missedCounts[i] || 0;
-      this.totalConverted += this.pinCounts[i] || 0;
-    }
+  getLabel(i: number): string {
+    if (i === 0) return 'Overall';
+    if (i === 1) return `${i} Pin`;
+    return `${i} Pins`;
   }
 
-  getOverallConversionRate(): { rate: string, class: string } {
-    this.getOverallMissedAndConverted();
-
-    const totalAttempts = this.totalMissed + this.totalConverted;
-    if (totalAttempts === 0) {
-      return { rate: '0.00', class: 'red' };
-    }
-
-    const conversionRate = (this.totalConverted / totalAttempts) * 100;
-    const rateClass = this.getRateClass(conversionRate);
-
-    return { rate: conversionRate.toFixed(2), class: rateClass };
+  getRate(converted: number, missed: number): number {
+    return (converted / (converted + missed)) * 100;
   }
 
   getRateClass(conversionRate: number): string {

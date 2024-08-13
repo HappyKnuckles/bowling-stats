@@ -8,6 +8,8 @@ export class GameStatsService {
   totalGames: number = 0;
   totalStrikes: number = 0;
   totalSpares: number = 0;
+  totalSparesMissed: number = 0;
+  totalSparesConverted: number = 0; 
   totalOpens: number = 0;
   pinCounts: number[] = Array(11).fill(0);
   missedCounts: number[] = Array(11).fill(0);
@@ -34,10 +36,11 @@ export class GameStatsService {
 
     gameHistory.forEach((game: { frames: any[] }) => {
       this.totalStrikes += this.countOccurrences(game.frames, frame => frame.throws[0].value === 10);
-      this.totalSpares += this.countOccurrences(game.frames, frame => {
-        const throws = frame.throws;
-        return throws[0].value !== 10 && (throws[0].value + throws[1]?.value === 10 || throws[0].value === 10 && throws[1]?.value !== 10 && throws[1]?.value + throws[2]?.value === 10);
-      });
+      // this.totalSpares += this.countOccurrences(game.frames, frame => {
+      //   const throws = frame.throws;
+      //   return throws[0].value !== 10 && (throws[0].value + throws[1]?.value === 10 || (throws[0].value === 10 && throws[1]?.value !== 10 && throws[1]?.value + throws[2]?.value === 10));
+      // });
+      
       this.totalOpens += this.countOccurrences(game.frames, frame => frame.throws.length === 2 && frame.throws[0].value + (frame.throws[1]?.value || 0) < 10);
 
       game.frames.forEach(frame => {
@@ -81,6 +84,12 @@ export class GameStatsService {
       });
     });
 
+    for (let i = 1; i <= 10; i++) {
+      this.totalSparesMissed += this.missedCounts[i] || 0;
+      this.totalSparesConverted += this.pinCounts[i] || 0;
+    }
+
+    this.totalSpares = this.totalSparesConverted;
     this.totalGames = gameHistory.length;
     this.averageScore = this.getAverage(gameHistory);
     this.highGame = this.getGameWithHighestScore(gameHistory);

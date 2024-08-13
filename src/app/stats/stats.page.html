@@ -84,23 +84,21 @@
             <ion-col>Rate</ion-col>
           </ion-row>
           <ion-row *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];">
-            <ion-col *ngIf="i === 0">Overall</ion-col>
-            <ion-col *ngIf="i === 1">{{ i }} Pin</ion-col>
-            <ion-col *ngIf="i > 1">{{ i }} Pins</ion-col>
+            <ion-col>{{ getLabel(i) }}</ion-col>
             <ion-col *ngIf="i > 0">{{ missedCounts[i] }}</ion-col>
             <ion-col *ngIf="i > 0">{{ pinCounts[i] }}</ion-col>
-            <ion-col *ngIf="i === 0"> {{ totalMissed }}</ion-col>
-            <ion-col *ngIf="i === 0">{{ totalConverted }}</ion-col>
-            <ion-col *ngIf="i === 0" [ngClass]="getOverallConversionRate().class">
-              {{ getOverallConversionRate().rate }}%
+            <ion-col *ngIf="i === 0">{{ totalSparesMissed }}</ion-col>
+            <ion-col *ngIf="i === 0">{{ totalSparesConverted }}</ion-col>
+            <ion-col *ngIf="i === 0" [ngClass]="getRateClass(getRate(totalSparesConverted, totalSparesMissed))">
+              {{ getRate(totalSparesConverted, totalSparesMissed) | number:'1.2-2' }}%
             </ion-col>
-            <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0 && i > 0"></ion-col>
-            <ion-col *ngIf="(pinCounts[i] !== 0 || missedCounts[i] !== 0) && i > 0" [ngClass]="getRateClass((pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100))">
-              {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) | number:'1.2-2' }}%
-            </ion-col>          
+            <ion-col *ngIf="i > 0 && pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
+            <ion-col *ngIf="i > 0 && (pinCounts[i] !== 0 || missedCounts[i] !== 0)"
+              [ngClass]="getRateClass(getRate(pinCounts[i], missedCounts[i]))">
+              {{ missedCounts[i] === 0 ? '100.00' : getRate(pinCounts[i], missedCounts[i]) | number:'1.2-2' }}%
+            </ion-col>
           </ion-row>
-        </ion-grid>
-      </mat-expansion-panel>
+        </ion-grid>      </mat-expansion-panel>
     </div>
     <canvas #scoreChart style="width: 300px; height: 300px;"></canvas>
   </div>

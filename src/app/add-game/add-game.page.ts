@@ -69,11 +69,11 @@ export class AddGamePage {
       fileInput.click();
     });
   }
-  // TODO adjust so it works on mobileweb
+
   async takeOrChoosePicture(): Promise<File | Blob | undefined> {
-    if (isPlatform('android') || isPlatform('ios') || isPlatform('mobile')) {
+    if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
       const permissionRequestResult = (await Camera.checkPermissions());
-  
+
       if (permissionRequestResult.photos === 'prompt') {
         (await Camera.requestPermissions()).photos;
         await this.handleImageUpload();
@@ -87,9 +87,9 @@ export class AddGamePage {
           resultType: CameraResultType.Uri,
           source: CameraSource.Prompt,
         });
-  
+
         let blob = await fetch(image.webPath!).then(r => r.blob());
-  
+
         return blob;
       }
     } else {
@@ -98,7 +98,7 @@ export class AddGamePage {
         return file;
       }
     }
-  
+
     return undefined;
   }
 
@@ -138,7 +138,7 @@ export class AddGamePage {
 
   parseBowlingScores(input: string): void {
     try {
-      const lines = input.split('\n').filter(line => line.trim() !== '');      console.log(lines)
+      const lines = input.split('\n').filter(line => line.trim() !== ''); console.log(lines)
 
       const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.username!.toLowerCase()));
 
@@ -154,18 +154,18 @@ export class AddGamePage {
 
       let throwValues = relevantLines[0].split('');
       let frameScores;
-      
+
       if (throwValues.length < 12) {
         throwValues = throwValues.concat(relevantLines[1].split(''));
         frameScores = relevantLines.slice(2).map(line => line.split(' ').map(Number));
       } else {
         frameScores = relevantLines.slice(1).map(line => line.split(' ').map(Number));
       }
-      
+
       // Scores können doppelt vorkommen, endScore immer zweimal (erscheinen der höchsten Zahl immer unm 1 reduzieren)
       frameScores = frameScores.flat().sort((a, b) => a - b);
 
-      if (frameScores[9] === frameScores[10]){
+      if (frameScores[9] === frameScores[10]) {
         frameScores.splice(frameScores.length - 1, 1);
       }
 
@@ -194,8 +194,8 @@ export class AddGamePage {
       let currentFrame: any[] = [];
 
       throwValues.forEach((value) => {
-        const isNinthFrame = frames.length === 9;    
-        if (frames.length < 10){
+        const isNinthFrame = frames.length === 9;
+        if (frames.length < 10) {
           currentFrame.push(value);
           if ((currentFrame.length === 2 && !isNinthFrame) || (isNinthFrame && currentFrame.length === 3)) {
             frames.push([...currentFrame]);
@@ -309,7 +309,7 @@ export class AddGamePage {
           this.seriesMode[0] = true;
           this.seriesMode[1] = false;
           this.seriesMode[2] = false;
-          this.selectedModeText = SeriesMode.Single; 
+          this.selectedModeText = SeriesMode.Single;
         },
       });
     }
@@ -321,7 +321,7 @@ export class AddGamePage {
           this.seriesMode[0] = false;
           this.seriesMode[1] = true;
           this.seriesMode[2] = false;
-          this.selectedModeText = SeriesMode.Series3; 
+          this.selectedModeText = SeriesMode.Series3;
         },
       });
     }
@@ -333,7 +333,7 @@ export class AddGamePage {
           this.seriesMode[0] = false;
           this.seriesMode[1] = false;
           this.seriesMode[2] = true;
-          this.selectedModeText = SeriesMode.Series4; 
+          this.selectedModeText = SeriesMode.Series4;
         },
       });
     }

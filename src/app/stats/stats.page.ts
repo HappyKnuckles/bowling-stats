@@ -217,7 +217,6 @@ export class StatsPage implements OnInit, OnDestroy {
 
     // Create labels and scores arrays
     const gameLabels = Object.keys(scoresByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-    console.log(gameLabels);
 
     // Calculate overall average up to each date
     let cumulativeSum = 0;

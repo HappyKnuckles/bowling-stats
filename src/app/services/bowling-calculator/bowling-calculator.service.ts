@@ -31,7 +31,7 @@ export class BowlingCalculatorService {
     this.maxScore = 300; 
   }
 
-  calculateScore(): void {
+  calculateScore(): number {
     let index = 0;
     this.frames.forEach(frame => {
       frame.forEach(value => {
@@ -56,6 +56,7 @@ export class BowlingCalculatorService {
       this.frameScores[frame] = score;
     }
     this.totalScore = score;
+    return this.totalScore;
   }
 
   calculateMaxScore(frameIndex: number): number {

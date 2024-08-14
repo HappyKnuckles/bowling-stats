@@ -33,8 +33,7 @@ export class TrackGridComponent implements OnInit {
   simulateScore(index: number, event: any): void {
     const inputValue = parseInt(event.target.value, 10);
     if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 10) {
-      this.bowlingService.calculateScore();
-      this.totalScore = this.bowlingService.totalScore;
+      this.totalScore = this.bowlingService.calculateScore();
       this.maxScore = this.bowlingService.calculateMaxScore(index);
       this.maxScoreChanged.emit(this.maxScore);
       this.totalScoreChanged.emit(this.totalScore);

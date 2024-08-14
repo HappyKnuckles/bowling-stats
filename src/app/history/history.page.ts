@@ -42,7 +42,6 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   async deleteGame(gameId: string): Promise<void> {
-    console.log(gameId);
     const alert = await this.alertController.create({
       header: 'Confirm Deletion',
       message: 'Are you sure you want to delete this game?',
@@ -70,7 +69,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   deleteAll(): void {
-    localStorage.clear();
+    this.saveService.deleteAllData();
     window.dispatchEvent(new Event('dataDeleted'));
   }
 
@@ -162,7 +161,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     let i = 1;
 
     const existingFiles = JSON.parse(localStorage.getItem('savedFilenames') || '[]');
-    
+
     if (isPlatform('mobileweb')) {
       while (existingFiles.includes(fileName + suffix + '.xlsx')) {
         suffix = `(${i++})`;

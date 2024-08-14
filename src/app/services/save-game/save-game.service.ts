@@ -27,4 +27,9 @@ export class SaveGameDataService {
     await this.storage.remove(key);
     this.dataDeleted.emit();
   }
+
+  async deleteAllData(): Promise<void> {
+    await this.storage.clear();
+    this.dataDeleted.emit();
+  }
 }

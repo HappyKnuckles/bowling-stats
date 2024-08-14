@@ -68,7 +68,7 @@ export class StatsPage implements OnInit, OnDestroy {
   async loadStats() {
     try {
       await this.statsService.calculateStats(this.gameHistory);
-      
+
       const {
         totalGames,
         averageScore,
@@ -89,7 +89,7 @@ export class StatsPage implements OnInit, OnDestroy {
         pinCounts,
         highGame
       } = this.statsService;
-  
+
       this.totalGames = totalGames;
       this.averageScore = averageScore;
       this.averageFirstCount = averageFirstCount;
@@ -164,13 +164,17 @@ export class StatsPage implements OnInit, OnDestroy {
     return (converted / (converted + missed)) * 100;
   }
 
-  getRateClass(conversionRate: number): string {
-    if (conversionRate > 75) {
-      return 'green';
+  getRateColor(conversionRate: number): string {
+    if (conversionRate > 95) {
+      return '#4faeff'
+    } else if (conversionRate > 75) {
+      return '#008000';
+    } else if (conversionRate > 50) {
+      return '#809300';
     } else if (conversionRate > 33) {
-      return 'orange';
+      return '#FFA500';
     } else {
-      return 'red';
+      return '#FF0000';
     }
   }
 

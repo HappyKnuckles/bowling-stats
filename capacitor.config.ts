@@ -4,7 +4,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'io.ionic.bowling',
   appName: 'BowlingStats',
-  webDir: 'www/browser',
+  webDir: 'www/browser/browser',
   bundledWebRuntime: false,
   server: {
     androidScheme: 'https'

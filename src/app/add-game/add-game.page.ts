@@ -69,7 +69,7 @@ export class AddGamePage {
       fileInput.click();
     });
   }
-
+  // TODO adjust so it works on mobileweb
   async takeOrChoosePicture(): Promise<File | Blob | undefined> {
     if (isPlatform('android') || isPlatform('ios') || isPlatform('mobile')) {
       const permissionRequestResult = (await Camera.checkPermissions());

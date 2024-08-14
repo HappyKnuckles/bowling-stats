@@ -29,6 +29,8 @@ export class GameStatsService {
   async calculateStats(gameHistory: Game[]): Promise<void> {
     this.totalStrikes = 0;
     this.totalSpares = 0;
+    this.totalSparesConverted = 0;
+    this.totalSparesMissed = 0;
     this.totalOpens = 0;
     this.pinCounts = Array(11).fill(0);
     this.missedCounts = Array(11).fill(0);

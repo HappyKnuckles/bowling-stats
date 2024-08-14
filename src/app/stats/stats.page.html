@@ -89,16 +89,19 @@
             <ion-col *ngIf="i > 0">{{ pinCounts[i] }}</ion-col>
             <ion-col *ngIf="i === 0">{{ totalSparesMissed }}</ion-col>
             <ion-col *ngIf="i === 0">{{ totalSparesConverted }}</ion-col>
-            <ion-col *ngIf="i === 0" [ngClass]="getRateClass(getRate(totalSparesConverted, totalSparesMissed))">
+            <ion-col *ngIf="i === 0 && totalSparesMissed + totalSparesMissed !== 0" [ngClass]="getRateClass(getRate(totalSparesConverted, totalSparesMissed))">
               {{ getRate(totalSparesConverted, totalSparesMissed) | number:'1.2-2' }}%
             </ion-col>
+            <ion-col *ngIf="i === 0 && totalSparesMissed + totalSparesMissed === 0"></ion-col>
+
             <ion-col *ngIf="i > 0 && pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
             <ion-col *ngIf="i > 0 && (pinCounts[i] !== 0 || missedCounts[i] !== 0)"
               [ngClass]="getRateClass(getRate(pinCounts[i], missedCounts[i]))">
               {{ missedCounts[i] === 0 ? '100.00' : getRate(pinCounts[i], missedCounts[i]) | number:'1.2-2' }}%
             </ion-col>
           </ion-row>
-        </ion-grid>      </mat-expansion-panel>
+        </ion-grid>      
+      </mat-expansion-panel>
     </div>
     <canvas #scoreChart style="width: 300px; height: 300px;"></canvas>
   </div>

@@ -161,13 +161,38 @@ export class HistoryPage implements OnInit, OnDestroy {
     let fileName = `game_data_${formattedDate}`;
     let i = 1;
 
-    while (await this.fileExists(fileName + suffix)) {
-      suffix = `(${i++})`;
+    const existingFiles = JSON.parse(localStorage.getItem('savedFilenames') || '[]');
+    
+    if (isPlatform('mobileweb')) {
+      while (existingFiles.includes(fileName + suffix + '.xlsx')) {
+        suffix = `(${i++})`;
+      }
+    } else {
+      while (await this.fileExists(fileName + suffix)) {
+        suffix = `(${i++})`;
+      }
     }
 
     const buffer = await workbook.xlsx.writeBuffer();
     await this.saveExcelFile(buffer, `${fileName + suffix}.xlsx`);
+
+    if (isPlatform('mobileweb')) {
+      existingFiles.push(`${fileName + suffix}.xlsx`);
+      localStorage.setItem('savedFilenames', JSON.stringify(existingFiles));
+    }
     this.loadingService.setLoading(false)
+  }
+
+  async fileExists(path: string): Promise<boolean> {
+    try {
+      await Filesystem.stat({
+        path: path + '.xlsx',
+        directory: Directory.Documents,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   private getGameDataForExport(): String[][] {
@@ -235,7 +260,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' +
         base64Data;
 
-      if (isPlatform('desktop')) {
+      if (isPlatform('desktop') || isPlatform('mobileweb')) {
         const anchor = document.createElement('a');
         anchor.href = dataUri;
         anchor.download = fileName;
@@ -262,18 +287,6 @@ export class HistoryPage implements OnInit, OnDestroy {
       }
     } catch (error) {
       this.toastService.showToast(`${error}`, 'bug', true);
-    }
-  }
-
-  async fileExists(path: string): Promise<boolean> {
-    try {
-      await Filesystem.stat({
-        path: path + '.xlsx',
-        directory: Directory.Documents,
-      });
-      return true;
-    } catch (error) {
-      return false;
     }
   }
 

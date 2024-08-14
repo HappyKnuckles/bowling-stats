@@ -204,7 +204,11 @@ export class StatsPage implements OnInit, OnDestroy {
     const scoresByDate: { [date: string]: number[] } = {};
 
     this.gameHistory.forEach((game: any) => {
-      const date = new Date(game.date).toLocaleDateString(); // Convert to local date string
+      const date = new Date(game.date).toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+      }); // Convert to local date string
       if (!scoresByDate[date]) {
         scoresByDate[date] = [];
       }

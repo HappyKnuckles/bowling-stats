@@ -20,6 +20,8 @@ export class HistoryPage implements OnInit, OnDestroy {
   file!: File;
   newDataAddedSubscription!: Subscription;
   dataDeletedSubscription!: Subscription;
+  private loadingSubscription: Subscription;
+  isLoading: boolean = false;
 
   constructor(
     private alertController: AlertController,
@@ -27,7 +29,11 @@ export class HistoryPage implements OnInit, OnDestroy {
     private gameHistoryService: GameHistoryService,
     private saveService: SaveGameDataService,
     private loadingService: LoadingService
-  ) { }
+  ) {
+    this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
+  }
 
   async loadGameHistory(): Promise<void> {
     try {
@@ -101,6 +107,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.newDataAddedSubscription.unsubscribe();
     this.dataDeletedSubscription.unsubscribe();
+    this.loadingSubscription.unsubscribe();
   }
 
   handleRefresh(event: any): void {

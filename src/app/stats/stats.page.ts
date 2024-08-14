@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { GameHistoryService } from '../services/game-history/game-history.service';
 import { ToastService } from '../services/toast/toast.service';
@@ -40,16 +40,27 @@ export class StatsPage implements OnInit, OnDestroy {
   gameHistoryChanged: boolean = true;
   newDataAddedSubscription!: Subscription;
   dataDeletedSubscription!: Subscription;
-  @ViewChild('scoreChart') scoreChart!: ElementRef;
+  private loadingSubscription: Subscription;
+  isLoading: boolean = false;
+  @ViewChild('scoreChart') scoreChart?: ElementRef;
+  private chartInstance: Chart | null = null;
+
 
   constructor(private loadingService: LoadingService,
-    private statsService: GameStatsService, private toastService: ToastService, private gameHistoryService: GameHistoryService, private saveService: SaveGameDataService) { }
+    private statsService: GameStatsService,
+    private toastService: ToastService,
+    private gameHistoryService: GameHistoryService,
+    private saveService: SaveGameDataService) {
+    this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
+      this.isLoading = isLoading;
+    });
+  }
 
   private async loadDataAndCalculateStats() {
     if (this.gameHistoryChanged) {
       try {
         await this.loadGameHistory();
-        await this.loadStats();
+        this.loadStats();
         this.gameHistoryChanged = false; // Reset the flag
       } catch (error) {
         this.toastService.showToast(`Fehler beim Historie und Stats laden: ${error}`, 'bug-outline', true)
@@ -67,7 +78,7 @@ export class StatsPage implements OnInit, OnDestroy {
 
   async loadStats() {
     try {
-      await this.statsService.calculateStats(this.gameHistory);
+      this.statsService.calculateStats(this.gameHistory);
 
       const {
         totalGames,
@@ -129,14 +140,17 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(async () => {
       this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats();
+      await this.loadDataAndCalculateStats();
+      this.generateScoreChart();
+
     });
 
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(async () => {
       this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats();
+      await this.loadDataAndCalculateStats();
+      this.generateScoreChart();
     });
   }
 
@@ -147,6 +161,7 @@ export class StatsPage implements OnInit, OnDestroy {
         await this.loadDataAndCalculateStats();
         event.target.complete();
       }, 100);
+      this.generateScoreChart();
     } catch (error) {
       console.log(error);
     } finally {
@@ -181,45 +196,102 @@ export class StatsPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.newDataAddedSubscription.unsubscribe();
     this.dataDeletedSubscription.unsubscribe();
+    this.loadingSubscription.unsubscribe();
   }
 
   generateScoreChart(): void {
-    const gameLabels = this.gameHistory.map((game: any, index: number) => `${index + 1}`);
-    const scores = this.gameHistory.map((game: any, index: number) => {
-      // Calculate the average score up to the current game index
-      const totalScoreSum = this.gameHistory.slice(0, index + 1).reduce((sum: number, currentGame: any) => {
-        return sum + currentGame.totalScore;
-      }, 0);
-      return totalScoreSum / (index + 1); // Calculate average
+    // Create a map to aggregate scores by date
+    const scoresByDate: { [date: string]: number[] } = {};
+
+    this.gameHistory.forEach((game: any) => {
+      const date = new Date(game.date).toLocaleDateString(); // Convert to local date string
+      if (!scoresByDate[date]) {
+        scoresByDate[date] = [];
+      }
+      scoresByDate[date].push(game.totalScore);
     });
 
-    const ctx = this.scoreChart.nativeElement;
-    new Chart(ctx, {
+    // Create labels and scores arrays
+    const gameLabels = Object.keys(scoresByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    console.log(gameLabels);
+
+    // Calculate overall average up to each date
+    let cumulativeSum = 0;
+    let cumulativeCount = 0;
+    const overallAverages = gameLabels.map(date => {
+      cumulativeSum += scoresByDate[date].reduce((sum, score) => sum + score, 0);
+      cumulativeCount += scoresByDate[date].length;
+      return cumulativeSum / cumulativeCount; // Overall average up to this date
+    });
+
+    // Calculate differences from the overall average
+    const differences = gameLabels.map((date, index) => {
+      const dailySum = scoresByDate[date].reduce((sum, score) => sum + score, 0);
+      const dailyAverage = dailySum / scoresByDate[date].length;
+      return dailyAverage - overallAverages[index]; // Difference from the overall average
+    });
+
+    // Calculate the number of games played each day
+    const gamesPlayedDaily = gameLabels.map(date => scoresByDate[date].length);
+
+    const ctx = this.scoreChart?.nativeElement;
+
+    // Destroy the old chart instance if it exists
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
+
+    // Create a new chart instance with multiple datasets
+    this.chartInstance = new Chart(ctx, {
       type: 'line',
       data: {
         labels: gameLabels,
-        datasets: [{
-          label: 'Average',
-          data: scores,
-          backgroundColor: "#FFFFFf",
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
+        datasets: [
+          {
+            label: 'Average',
+            data: overallAverages,
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Difference from Average',
+            data: differences,
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Games Played',
+            data: gamesPlayedDaily,
+            backgroundColor: "rgba(153, 102, 255, 0.2)",
+            borderColor: 'rgba(153, 102, 255, 1)',
+            borderWidth: 1,
+            yAxisID: 'y1' // Use a second y-axis for this dataset
+          }
+        ]
       },
       options: {
         scales: {
           y: {
             beginAtZero: true,
             suggestedMax: 300 // Set the maximum value to 300
+          },
+          y1: {
+            beginAtZero: true,
+            position: 'right',
+            grid: {
+              drawOnChartArea: false // Only draw grid lines for the first y-axis
+            }
           }
         },
         plugins: {
           title: {
             display: true,
-            text: 'Score Average'
+            text: 'Score Analysis'
           },
           legend: {
-            display: false,
+            display: true // Show legend to differentiate datasets
           }
         }
       }

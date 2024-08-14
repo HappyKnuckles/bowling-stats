@@ -26,7 +26,7 @@ export class GameStatsService {
   highGame: number = 0;
   constructor() { }
 
-  async calculateStats(gameHistory: Game[]): Promise<void> {
+  calculateStats(gameHistory: Game[]): void {
     this.totalStrikes = 0;
     this.totalSpares = 0;
     this.totalSparesConverted = 0;

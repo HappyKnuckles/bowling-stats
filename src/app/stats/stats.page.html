@@ -18,68 +18,75 @@
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
     <div>
-      <h2>Allgemein</h2>
-      <div class="stats">
-        <ion-text>Games: </ion-text>
-        <ion-text class="value">{{ totalGames }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Durchschnitt: </ion-text>
-        <ion-text class="value">{{ averageScore | number:'1.2-2' }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>High Game: </ion-text>
-        <ion-text class="value">{{ highGame }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Total Pins: </ion-text>
-        <ion-text class="value">{{ totalPins }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Erster Ball Durchschnitt: </ion-text>
-        <ion-text class="value">{{ averageFirstCount | number:'1.2-2' }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Strikes: </ion-text>
-        <ion-text class="value">{{ totalStrikes }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Strikes pro Spiel: </ion-text>
-        <ion-text class="value">{{ averageStrikesPerGame | number:'1.2-2' }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Strikewahrscheinlichkeit: </ion-text>
-        <ion-text class="value">{{ strikePercentage | number:'1.2-2' }}%</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Spares: </ion-text>
-        <ion-text class="value">{{ totalSpares }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Spares pro Spiel: </ion-text>
-        <ion-text class="value">{{ averageSparesPerGame | number:'1.2-2' }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Sparewahrscheinlichkeit: </ion-text>
-        <ion-text class="value">{{ sparePercentage | number:'1.2-2' }}%</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Opens: </ion-text>
-        <ion-text class="value">{{ totalOpens }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Opens pro Spiel: </ion-text>
-        <ion-text class="value">{{ averageOpensPerGame | number:'1.2-2' }}</ion-text>
-      </div>
-      <div class="stats">
-        <ion-text>Openwahrscheinlichkeit: </ion-text>
-        <ion-text class="value">{{ openPercentage | number:'1.2-2' }}%</ion-text>
-      </div>
-
+      <mat-expansion-panel>
+        <mat-expansion-panel-header class="padding">
+          <mat-panel-title>
+            <h2>Allgemein</h2>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="stats">
+          <ion-text>Games: </ion-text>
+          <ion-text class="value">{{ totalGames }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Durchschnitt: </ion-text>
+          <ion-text class="value">{{ averageScore | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>High Game: </ion-text>
+          <ion-text class="value">{{ highGame }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total Pins: </ion-text>
+          <ion-text class="value">{{ totalPins }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Erster Ball Durchschnitt: </ion-text>
+          <ion-text class="value">{{ averageFirstCount | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Strikes: </ion-text>
+          <ion-text class="value">{{ totalStrikes }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Strikes pro Spiel: </ion-text>
+          <ion-text class="value">{{ averageStrikesPerGame | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Strikewahrscheinlichkeit: </ion-text>
+          <ion-text class="value">{{ strikePercentage | number:'1.2-2' }}%</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Spares: </ion-text>
+          <ion-text class="value">{{ totalSpares }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Spares pro Spiel: </ion-text>
+          <ion-text class="value">{{ averageSparesPerGame | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Sparewahrscheinlichkeit: </ion-text>
+          <ion-text class="value">{{ sparePercentage | number:'1.2-2' }}%</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Opens: </ion-text>
+          <ion-text class="value">{{ totalOpens }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Opens pro Spiel: </ion-text>
+          <ion-text class="value">{{ averageOpensPerGame | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Openwahrscheinlichkeit: </ion-text>
+          <ion-text class="value">{{ openPercentage | number:'1.2-2' }}%</ion-text>
+        </div>
+      </mat-expansion-panel>
       <div>
         <mat-expansion-panel>
           <mat-expansion-panel-header class="padding">
-            <mat-panel-title>Spares</mat-panel-title>
+            <mat-panel-title>
+              <h2>Spares</h2>
+            </mat-panel-title>
           </mat-expansion-panel-header>
           <ion-grid class="statGrid">
             <ion-row>
@@ -114,7 +121,14 @@
           </ion-grid>
         </mat-expansion-panel>
       </div>
-      <canvas #scoreChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header class="padding">
+          <mat-panel-title>
+            <h2>Average over Time</h2>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <canvas #scoreChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
+      </mat-expansion-panel>
     </div>
   </ng-template>
 </ion-content>

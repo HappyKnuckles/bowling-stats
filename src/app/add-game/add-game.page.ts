@@ -1,5 +1,6 @@
 import {
     Component,
+    OnInit,
     QueryList,
     ViewChild,
     ViewChildren,
@@ -44,7 +45,7 @@ import { NgIf, NgFor } from '@angular/common';
         IonInput,
     ],
 })
-export class AddGamePage {
+export class AddGamePage implements OnInit {
     totalScores: number[] = new Array(8).fill(0);
     maxScores: number[] = new Array(8).fill(300);
     seriesMode: boolean[] = [true, false, false];
@@ -60,7 +61,6 @@ export class AddGamePage {
 
     @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
     @ViewChild(IonModal) modal!: IonModal;
-
 
     constructor(
         private actionSheetCtrl: ActionSheetController,
@@ -85,6 +85,9 @@ export class AddGamePage {
     async openFileInput(): Promise<File | undefined> {
         return new Promise((resolve) => {
             const fileInput = document.getElementById('upload') as HTMLInputElement;
+            console.log(fileInput.value);
+            fileInput.value = '';
+
             fileInput.addEventListener('change', () => {
                 const selectedFile = fileInput.files?.[0];
                 resolve(selectedFile);
@@ -151,9 +154,9 @@ export class AddGamePage {
                 this.loadingService.setLoading(true);
                 const gameText = await this.imageProcessingService.performOCR(imageUrl);
                 this.parseBowlingScores(gameText!);
-            } else this.toastService.showToast("Kein Bild hochgeladen", "bug-outline", true);
+            } else this.toastService.showToast("Kein Bild hochgeladen", "bug", true);
         } catch (error) {
-            this.toastService.showToast(`Fehler beim Hochladen des Bildes ${error}`, "bug-outline", true);
+            this.toastService.showToast(`Fehler beim Hochladen des Bildes ${error}`, "bug", true);
         } finally {
             this.loadingService.setLoading(false);
         }
@@ -161,7 +164,7 @@ export class AddGamePage {
 
     parseBowlingScores(input: string): void {
         try {
-            const lines = input.split('\n').filter(line => line.trim() !== ''); console.log(lines)
+            const lines = input.split('\n').filter(line => line.trim() !== '');
 
             const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.username!.toLowerCase()));
 
@@ -245,7 +248,7 @@ export class AddGamePage {
                 this.isModalOpen = true;
             }
         } catch (error) {
-            this.toastService.showToast(`${error}`, 'bug-outline', true);
+            this.toastService.showToast(`${error}`, 'bug', true);
         }
     }
 
@@ -259,7 +262,7 @@ export class AddGamePage {
             this.toastService.showToast("Spiel hinzugefügt", "add");
             this.modal.dismiss(null, 'confirm');
         } catch (error) {
-            this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug-outline', true);
+            this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);
         }
     }
 
@@ -297,7 +300,7 @@ export class AddGamePage {
                 });
                 this.toastService.showToast('Spiel wurde gespeichert!', 'add');
             } catch (error) {
-                this.toastService.showToast('Da ist was schief gelaufen', 'bug-outline', true);
+                this.toastService.showToast('Da ist was schief gelaufen', 'bug', true);
             }
         } else this.setAlertOpen();
     }

@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { BlobServiceClient, ContainerClient } from "@azure/storage-blob";
 import { environment } from 'src/environments/environment';
 
-const ComputerVisionClient = require('@azure/cognitiveservices-computervision').ComputerVisionClient;
-const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
-
+import { ComputerVisionClient } from '@azure/cognitiveservices-computervision';
+import { ApiKeyCredentials } from '@azure/ms-rest-js';
+import { ReadResult, ReadOperationResult } from '@azure/cognitiveservices-computervision/esm/models';
 @Injectable({
   providedIn: 'root'
 })
@@ -37,17 +37,18 @@ export class ImageProcesserService {
     }
   }
 
-  async readTextFromURL(url: string): Promise<any> {
+  async readTextFromURL(url: string): Promise<ReadResult[]> {
     let result = await this.computerVisionClient.read(url);
     let operation = result.operationLocation.split('/').slice(-1)[0];
 
-    // Continuously check the status until it succeeds, slep 1sec against excessive API Calls
-    while (result.status !== "succeeded") {
-      await this.sleep(1000); 
-      result = await this.computerVisionClient.getReadResult(operation);
-    }
+    // Continuously check the status until it succeeds, sleep 1 sec against excessive API Calls
+    let readOperationResult: ReadOperationResult;
+    do {
+      await this.sleep(1000);
+      readOperationResult = await this.computerVisionClient.getReadResult(operation);
+    } while (readOperationResult.status !== "succeeded");
 
-    return result.analyzeResult.readResults;
+    return readOperationResult.analyzeResult!.readResults;
   }
 
   sleep(ms: number) {
@@ -85,7 +86,7 @@ export class ImageProcesserService {
     try {
       const blobName = 'bowling' + Date.now().toString();
       const blockBlobClient = this.containerClient.getBlockBlobClient(blobName);
-      await blockBlobClient.uploadBrowserData(imageFile);
+      await blockBlobClient.uploadData(imageFile);
       this.imageUrl = this.url + blobName;
       return this.imageUrl;
     } catch (error) {

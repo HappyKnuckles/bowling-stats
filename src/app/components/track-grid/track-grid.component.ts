@@ -52,7 +52,7 @@ export class TrackGridComponent implements OnInit {
             this.toastService.showToast("Spiel hinzugefügt", "add");
             this.clearFrames();
         } catch (error) {
-            this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug-outline', true);
+            this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);
         }
     }
 

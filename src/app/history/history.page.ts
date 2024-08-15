@@ -68,7 +68,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         } catch (error) {
             this.toastService.showToast(
                 `Fehler beim Historie laden ${error}`,
-                'bug-outline',
+                'bug',
                 true
             );
         }
@@ -332,10 +332,10 @@ export class HistoryPage implements OnInit, OnDestroy {
                 'Excel Datei wurde hochgeladen!',
                 'checkmark-outline'
             );
-            event.target.value = '';
         } catch (error) {
             this.toastService.showToast(`Error: ${error}`, 'bug', true);
         } finally {
+            event.target.value = '';
             this.loadingService.setLoading(false);
         }
     }

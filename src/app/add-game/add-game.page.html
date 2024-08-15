@@ -71,7 +71,7 @@
       </ion-row>
     </ion-grid>
 
-    <ion-modal [isOpen]="isModalOpen">
+    <ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false">
       <ng-template>
         <ion-header>
           <ion-toolbar>

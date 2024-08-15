@@ -68,7 +68,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 this.loadStats();
                 this.gameHistoryChanged = false; // Reset the flag
             } catch (error) {
-                this.toastService.showToast(`Fehler beim Historie und Stats laden: ${error}`, 'bug-outline', true)
+                this.toastService.showToast(`Fehler beim Historie und Stats laden: ${error}`, 'bug', true)
             }
         }
     }
@@ -77,7 +77,7 @@ export class StatsPage implements OnInit, OnDestroy {
         try {
             this.gameHistory = await this.gameHistoryService.loadGameHistory();
         } catch (error) {
-            this.toastService.showToast(`Fehler beim Historie laden: ${error}`, 'bug-outline', true)
+            this.toastService.showToast(`Fehler beim Historie laden: ${error}`, 'bug', true)
         }
     }
 
@@ -125,7 +125,7 @@ export class StatsPage implements OnInit, OnDestroy {
             this.pinCounts = pinCounts;
             this.highGame = highGame;
         } catch (error) {
-            this.toastService.showToast(`Fehler beim Statistik laden: ${error}`, 'bug-outline', true);
+            this.toastService.showToast(`Fehler beim Statistik laden: ${error}`, 'bug', true);
         }
     }
 
@@ -260,14 +260,16 @@ export class StatsPage implements OnInit, OnDestroy {
                         data: overallAverages,
                         backgroundColor: "rgba(75, 192, 192, 0.2)",
                         borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        pointHitRadius: 10 
                     },
                     {
                         label: 'Difference from Average',
                         data: differences,
                         backgroundColor: "rgba(255, 99, 132, 0.2)",
                         borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        pointHitRadius: 10 
                     },
                     {
                         label: 'Games Played',
@@ -275,6 +277,7 @@ export class StatsPage implements OnInit, OnDestroy {
                         backgroundColor: "rgba(153, 102, 255, 0.2)",
                         borderColor: 'rgba(153, 102, 255, 1)',
                         borderWidth: 1,
+                        pointHitRadius: 10,
                         yAxisID: 'y1' // Use a second y-axis for this dataset
                     }
                 ]

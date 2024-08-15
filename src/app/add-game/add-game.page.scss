@@ -8,11 +8,35 @@ app-track-grid {
     background: none;
     --background-activated: none;
   }
+}
+.bowling-setup {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  height: 55%;
+}
 
-  .chevron {
-    margin-left: 5px;
-    font-size: 15px;
-  }
+.pin-row {
+  display: flex;
+  justify-content: center;
+  margin: 5px 0;
+}
+
+.pin {
+  width: 20vmin;
+  height: 20vmin;
+  background-color: #f0f0f0;
+  border: 2px solid red;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+  color: black;
+}
+.chevron {
+  vertical-align: -4px;
 }
 
 ion-modal {
@@ -66,6 +90,7 @@ ion-modal {
       --ion-grid-column-padding: 1px;
     }
   }
+
   ///////////////////////////////////////////
 }
 

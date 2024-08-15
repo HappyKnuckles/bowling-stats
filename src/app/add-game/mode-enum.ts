@@ -8,3 +8,8 @@ export enum SeriesMode {
 export enum Game{
 
 }
+
+export enum InputMode{
+  Manual = 'Manual',
+  Pins = 'Pins'
+}

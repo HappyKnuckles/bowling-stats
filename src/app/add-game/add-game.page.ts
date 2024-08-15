@@ -1,5 +1,6 @@
 import {
     Component,
+    Input,
     OnInit,
     QueryList,
     ViewChild,
@@ -10,7 +11,7 @@ import { ActionSheetController, AlertController, IonModal, isPlatform, IonHeader
 import { ImageProcesserService } from '../services/image-processer/image-processer.service';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ToastService } from '../services/toast/toast.service';
-import { SeriesMode } from './seriesModeEnum';
+import { InputMode, SeriesMode } from './mode-enum';
 import { BowlingCalculatorService } from '../services/bowling-calculator/bowling-calculator.service';
 import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
 import { SaveGameDataService } from '../services/save-game/save-game.service';
@@ -58,6 +59,7 @@ export class AddGamePage implements OnInit {
     isModalOpen: boolean = false;
     username = "";
     gameData!: Game;
+    inputMode: InputMode = InputMode.Pins;
 
     @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
     @ViewChild(IonModal) modal!: IonModal;
@@ -379,5 +381,15 @@ export class AddGamePage implements OnInit {
         });
 
         await actionSheet.present();
+    }
+
+    changeInputMode(): void {
+        if (this.inputMode === InputMode.Manual) {
+            this.inputMode = InputMode.Pins
+        }
+        else {
+            this.inputMode = InputMode.Manual;
+        }
+        this.toastService.showToast(`Eingabemodus geändert zu ${this.inputMode}`, 'refresh-outline');
     }
 }

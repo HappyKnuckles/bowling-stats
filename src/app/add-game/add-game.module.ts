@@ -1,22 +1,31 @@
-import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddGamePageRoutingModule } from './add-game-routing.module';
 import { AddGamePage } from './add-game.page';
-import { TrackGridComponentModule } from '../components/track-grid/track-grid.component.module';
-import { ToastComponentModule } from '../components/toast/toast.component.module';
 
+
+import { IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonModal, IonButtons, IonInput } from "@ionic/angular/standalone";
 
 @NgModule({
-  imports: [
-    IonicModule,
+    imports: [
     CommonModule,
     FormsModule,
     AddGamePageRoutingModule,
-    TrackGridComponentModule,
-    ToastComponentModule
-  ],
-  declarations: [AddGamePage]
+    IonHeader,
+    IonToolbar,
+    IonButton,
+    IonIcon,
+    IonTitle,
+    IonAlert,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonModal,
+    IonButtons,
+    IonInput,
+    AddGamePage
+]
 })
-export class AddGamePageModule {}
+export class AddGamePageModule { }

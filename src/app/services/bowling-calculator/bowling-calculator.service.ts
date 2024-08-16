@@ -68,7 +68,7 @@ export class BowlingCalculatorService {
       if (frameIndex === 0) {
         if (secondThrow !== undefined) {
           if (this.isStrike(firstThrow)) {
-            return this.maxScore = 300; // Maximum score if first throw is a strike
+            return this.maxScore; // Maximum score if first throw is a strike
           }
           if (this.isSpare(firstThrow, secondThrow)) {
             return this.maxScore -= 10;
@@ -118,86 +118,56 @@ export class BowlingCalculatorService {
     else {
       const thirdThrow = this.frames[frameIndex][2];
 
-      if (!thirdThrow) {
-        // Case where 8th frame is a strike
-        if (this.isPreviousStrike(frameIndex - 1)) {
-          if (!this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
-            if (secondThrow !== undefined) {
-              if (!this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore = this.totalScore;
-              }
-            } else if (firstThrow !== undefined) {
-              if (!this.isStrike(firstThrow)) {
-                return this.maxScore -= 10;
-              }
-            }
-          }
+      // Case 3rd throw exists = always totalscore
+      if (thirdThrow !== undefined) {
+        return this.maxScore = this.totalScore;
+      }
 
-          if (this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
-            if (secondThrow !== undefined) {
-              if (!this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore = this.totalScore;
-              }
-            } else if (firstThrow !== undefined) {
-              if (!this.isStrike(firstThrow)) {
-                return this.maxScore -= 30 - firstThrow;
-              }
-            }
-          }
+      // Case when tenth frame is not a spare -> second throw is last throw
+      if (secondThrow !== undefined) {
+        if (!this.isSpare(firstThrow, secondThrow)) {
+          return this.maxScore = this.totalScore;
+        } else return this.maxScore;
+      }
 
-          if (this.isPreviousSpare(frameIndex)) {
-            if (secondThrow !== undefined) {
-              if (!this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore = this.totalScore;
-              }
-            } else if (firstThrow !== undefined) {
-              if (!this.isStrike(firstThrow)) {
-                return this.maxScore -= 20 - firstThrow;
-              }
-            }
+      // case when previous frame is a Spare
+      if (this.isPreviousSpare(frameIndex) && !this.isPreviousStrike(frameIndex)) {
+        if (firstThrow !== undefined) {
+          if (!this.isStrike(firstThrow)) {
+            return this.maxScore -= 20 - firstThrow;
           }
         }
-        // Case where 8th frame is not a strike
-        else {
-          if (!this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
-            if (secondThrow !== undefined) {
-              if (!this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore = this.totalScore;
-              }
-            } else if (firstThrow !== undefined) {
-              if (!this.isStrike(firstThrow)) {
-                return this.maxScore -= 10;
-              }
-            }
-          }
+      }
 
-          if (this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
-            if (secondThrow !== undefined) {
-              if (!this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore = this.totalScore;
-              }
-            } else if (firstThrow !== undefined) {
-              if (!this.isStrike(firstThrow)) {
-                return this.maxScore -= 20;
-              }
-            }
+      // Case when previous frame is a open
+      if (!this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
+        if (firstThrow !== undefined) {
+          if (!this.isStrike(firstThrow)) {
+            return this.maxScore -= 10;
           }
+        }
+      }
 
-          if (this.isPreviousSpare(frameIndex)) {
-            if (secondThrow !== undefined) {
-              if (!this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore = this.totalScore;
-              }
-            } else if (firstThrow !== undefined) {
-              if (!this.isStrike(firstThrow)) {
-                return this.maxScore -= 20 - firstThrow;
-              }
+      // Case where 8th frame is a strike and firstthrow is not a strike
+      if (this.isPreviousStrike(frameIndex - 1)) {
+        if (this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
+          if (firstThrow !== undefined) {
+            if (!this.isStrike(firstThrow)) {
+              return this.maxScore -= 30 - firstThrow;
             }
           }
         }
       }
-      // Case 3rd throw exists = always totalscore
-      else return this.maxScore = this.totalScore;
+      // Case where 8th frame is not a strike and firstthrow is not a strike
+      else {
+        if (this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
+          if (firstThrow !== undefined) {
+            if (!this.isStrike(firstThrow)) {
+              return this.maxScore -= 20;
+            }
+          }
+        }
+      }
     }
 
     return this.maxScore;

@@ -28,7 +28,7 @@ export class BowlingCalculatorService {
     this.addFrame();
     // Recalculate the score and max score
     this.totalScore = 0;
-    this.maxScore = 300; 
+    this.maxScore = 300;
   }
 
   calculateScore(): number {
@@ -116,27 +116,88 @@ export class BowlingCalculatorService {
     }
     // Last Frame
     else {
-      const thirdThrow = this.frames[frameIndex][3];
-      if (!this.isStrike(firstThrow) && this.isStrike(secondThrow) && !this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
-        return this.maxScore = this.totalScore;
+      const thirdThrow = this.frames[frameIndex][2];
+
+      if (!thirdThrow) {
+        // Case where 8th frame is a strike
+        if (this.isPreviousStrike(frameIndex - 1)) {
+          if (!this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
+            if (secondThrow !== undefined) {
+              if (!this.isSpare(firstThrow, secondThrow)) {
+                return this.maxScore = this.totalScore;
+              }
+            } else if (firstThrow !== undefined) {
+              if (!this.isStrike(firstThrow)) {
+                return this.maxScore -= 10;
+              }
+            }
+          }
+
+          if (this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
+            if (secondThrow !== undefined) {
+              if (!this.isSpare(firstThrow, secondThrow)) {
+                return this.maxScore = this.totalScore;
+              }
+            } else if (firstThrow !== undefined) {
+              if (!this.isStrike(firstThrow)) {
+                return this.maxScore -= 30 - firstThrow;
+              }
+            }
+          }
+
+          if (this.isPreviousSpare(frameIndex)) {
+            if (secondThrow !== undefined) {
+              if (!this.isSpare(firstThrow, secondThrow)) {
+                return this.maxScore = this.totalScore;
+              }
+            } else if (firstThrow !== undefined) {
+              if (!this.isStrike(firstThrow)) {
+                return this.maxScore -= 20 - firstThrow;
+              }
+            }
+          }
+        }
+        // Case where 8th frame is not a strike
+        else {
+          if (!this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
+            if (secondThrow !== undefined) {
+              if (!this.isSpare(firstThrow, secondThrow)) {
+                return this.maxScore = this.totalScore;
+              }
+            } else if (firstThrow !== undefined) {
+              if (!this.isStrike(firstThrow)) {
+                return this.maxScore -= 10;
+              }
+            }
+          }
+
+          if (this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
+            if (secondThrow !== undefined) {
+              if (!this.isSpare(firstThrow, secondThrow)) {
+                return this.maxScore = this.totalScore;
+              }
+            } else if (firstThrow !== undefined) {
+              if (!this.isStrike(firstThrow)) {
+                return this.maxScore -= 20;
+              }
+            }
+          }
+
+          if (this.isPreviousSpare(frameIndex)) {
+            if (secondThrow !== undefined) {
+              if (!this.isSpare(firstThrow, secondThrow)) {
+                return this.maxScore = this.totalScore;
+              }
+            } else if (firstThrow !== undefined) {
+              if (!this.isStrike(firstThrow)) {
+                return this.maxScore -= 20 - firstThrow;
+              }
+            }
+          }
+        }
       }
-      if (this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
-        return this.maxScore -= 10;
-      }
-      if (this.isStrike(firstThrow) && !this.isStrike(secondThrow) && secondThrow !== undefined) {
-        if (this.isPreviousStrike(frameIndex)) {
-          return this.maxScore -= 20 - 2 * secondThrow;
-        } else return this.maxScore -= 10;
-      }
-      if (this.isStrike(firstThrow)) {
-        return this.maxScore;
-      }
-      if (!this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
-        return this.maxScore = this.totalScore;
-      }
-      if (thirdThrow != undefined) {
-        return this.maxScore = this.totalScore;
-      }
+      // Case 3rd throw exists = always totalscore
+      else return this.maxScore = this.totalScore;
     }
 
     return this.maxScore;

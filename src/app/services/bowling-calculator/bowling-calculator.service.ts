@@ -125,10 +125,23 @@ export class BowlingCalculatorService {
 
       // Case when tenth frame is not a spare -> second throw is last throw
       if (secondThrow !== undefined) {
+        if (this.isStrike(firstThrow)) {
+          if (this.isPreviousStrike(frameIndex) && !this.isStrike(secondThrow)) {
+            return this.maxScore -= 20 - secondThrow;
+          }
+          if (!this.isPreviousStrike(frameIndex) && !this.isStrike(secondThrow)) {
+            return this.maxScore -= 10;
+          }
+          return this.maxScore;
+        }
+
         if (!this.isSpare(firstThrow, secondThrow)) {
           return this.maxScore = this.totalScore;
-        } else return this.maxScore;
+        }
+
+        return this.maxScore;
       }
+
 
       // case when previous frame is a Spare
       if (this.isPreviousSpare(frameIndex) && !this.isPreviousStrike(frameIndex)) {
@@ -158,6 +171,7 @@ export class BowlingCalculatorService {
           }
         }
       }
+      
       // Case where 8th frame is not a strike and firstthrow is not a strike
       else {
         if (this.isPreviousStrike(frameIndex) && !this.isPreviousSpare(frameIndex)) {
@@ -173,6 +187,7 @@ export class BowlingCalculatorService {
     return this.maxScore;
   }
 
+  
   getSeriesMaxScore(index: number, maxScores: number[]): number {
     if (index === 1) {
       return maxScores[1] + maxScores[2] + maxScores[3];

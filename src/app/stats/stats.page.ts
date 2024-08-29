@@ -137,7 +137,7 @@ export class StatsPage implements OnInit, OnDestroy {
             this.generateScoreChart();
         }
         catch (error) {
-            console.log(error);
+            console.error(error);
         }
         finally {
             this.loadingService.setLoading(false);
@@ -168,7 +168,7 @@ export class StatsPage implements OnInit, OnDestroy {
             }, 100);
             this.generateScoreChart();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             this.loadingService.setLoading(false);
         }

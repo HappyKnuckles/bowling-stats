@@ -14,6 +14,7 @@ import { NgIf, NgFor } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
 import html2canvas from 'html2canvas';
 import { Share } from '@capacitor/share';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-history',
@@ -40,6 +41,7 @@ import { Share } from '@capacitor/share';
         IonRow,
         IonCol,
         IonInput,
+        FormsModule
     ],
 })
 export class HistoryPage implements OnInit, OnDestroy {
@@ -53,6 +55,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     isEditMode: { [key: string]: boolean } = {};
     @ViewChild('expansionPanel') expansionPanel!: MatExpansionPanel;
     @ViewChild('scoreTemplate', { static: false }) scoreTemplate!: ElementRef;
+    private originalGameState: { [key: string]: Game } = {};
 
 
     constructor(
@@ -68,6 +71,11 @@ export class HistoryPage implements OnInit, OnDestroy {
         addIcons({ cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline });
     }
 
+    parseIntValue(value: any): any {
+        const parsedValue = parseInt(value, 10);
+        return isNaN(parsedValue) ? '' : parsedValue;
+    }
+
     async loadGameHistory(): Promise<void> {
         try {
             this.gameHistory = await this.gameHistoryService.loadGameHistory();
@@ -80,23 +88,57 @@ export class HistoryPage implements OnInit, OnDestroy {
         }
     }
 
-    enableEdit(gameId: string, expansionPanel?: MatExpansionPanel) {
-        this.isEditMode[gameId] = !this.isEditMode[gameId];
+    saveOriginalStateAndEnableEdit(game: Game, expansionPanel?: MatExpansionPanel) {
+        this.originalGameState[game.gameId] = JSON.parse(JSON.stringify(game));
+        this.enableEdit(game, expansionPanel);
+    }
+
+    enableEdit(game: Game, expansionPanel?: MatExpansionPanel): void {
+        this.isEditMode[game.gameId] = !this.isEditMode[game.gameId];
         if (expansionPanel) {
             expansionPanel.open();
         }
     }
 
-    async saveEdit(game: Game): Promise<void> {
+    cancelEdit(game: Game): void {
+        // Revert to the original game state
+        if (this.originalGameState[game.gameId]) {
+            Object.assign(game, this.originalGameState[game.gameId]);
+            delete this.originalGameState[game.gameId];
+        }
+        this.enableEdit(game);
+    }
+
+    async saveEdit(game: Game, expansionPanel: MatExpansionPanel): Promise<void> {
         try {
-            this.saveService.saveGameToLocalStorage(game);
+            if (!this.isGameValid(game)) {
+                this.toastService.showToast('Ungültige Eingabe', 'bug', true);
+                return;
+            }
+            await this.saveService.saveGameToLocalStorage(game);
             this.toastService.showToast("Spieländerung erfolgreich gespeichert", "refresh-outline");
+            this.enableEdit(game);
         } catch (error) {
             this.toastService.showToast(`Fehler beim Speichern des Spiels ${error}`, 'bug', true);
         }
-        finally {
-            this.enableEdit(game.gameId);
-        }
+    }
+
+    isGameValid(game: Game): boolean {
+        const allInputsValid = game.frames.every((frame: any, index: number) => {
+            const throws = frame.throws.map((t: { value: any; }) => t.value);
+            if (index < 9) {
+                // For frames 1 to 9: Check if there are either 2 throws (unless it's a strike) or 1 throw (for strike)
+                return (throws[0] === 10 && throws.length === 1) ||
+                    (throws.length === 2 && throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+            } else {
+                // For frame 10: Check if there are either 3 throws (if there's a strike or spare in the first two throws),
+                // or 2 throws (if there's no strike or spare in the first two throws)
+                return (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
+                    (throws.length === 2 && throws[0] + throws[1] < 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
+                    (throws.length === 3 && throws[0] + throws[1] >= 10 && throws[1] !== undefined && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+            }
+        });
+        return allInputsValid;
     }
 
     async takeScreenshotAndShare(game: Game): Promise<void> {
@@ -180,10 +222,11 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     async ngOnInit(): Promise<void> {
         try {
-            this.loadingService.setLoading(true); await this.loadGameHistory();
+            this.loadingService.setLoading(true);
+            await this.loadGameHistory();
             this.subscribeToDataEvents();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             this.loadingService.setLoading(false);
         }
@@ -217,7 +260,7 @@ export class HistoryPage implements OnInit, OnDestroy {
                 event.target.complete();
             }, 100);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             this.loadingService.setLoading(false);
         }

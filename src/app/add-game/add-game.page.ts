@@ -85,7 +85,6 @@ export class AddGamePage implements OnInit {
     async openFileInput(): Promise<File | undefined> {
         return new Promise((resolve) => {
             const fileInput = document.getElementById('upload') as HTMLInputElement;
-            console.log(fileInput.value);
             fileInput.value = '';
 
             fileInput.addEventListener('change', () => {

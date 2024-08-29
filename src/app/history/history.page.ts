@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AlertController, isPlatform, IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonBadge, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol, IonInput, IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular/standalone';
-import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { ToastService } from '../services/toast/toast.service';
 import { GameHistoryService } from '../services/game-history/game-history.service';
 import { SaveGameDataService } from '../services/save-game/save-game.service';
@@ -12,6 +12,8 @@ import { addIcons } from "ionicons";
 import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline } from "ionicons/icons";
 import { NgIf, NgFor } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
+import html2canvas from 'html2canvas';
+import { Share } from '@capacitor/share';
 
 @Component({
     selector: 'app-history',
@@ -50,6 +52,9 @@ export class HistoryPage implements OnInit, OnDestroy {
     isLoading: boolean = false;
     isEditMode: { [key: string]: boolean } = {};
     @ViewChild('expansionPanel') expansionPanel!: MatExpansionPanel;
+    @ViewChild('scoreTemplate', { static: false }) scoreTemplate!: ElementRef;
+
+
     constructor(
         private alertController: AlertController,
         private toastService: ToastService,
@@ -91,6 +96,53 @@ export class HistoryPage implements OnInit, OnDestroy {
         }
         finally {
             this.enableEdit(game.gameId);
+        }
+    }
+
+    async takeScreenshotAndShare(game: Game): Promise<void> {
+        try {
+            const canvas = await html2canvas(this.scoreTemplate.nativeElement);
+            const dataUrl = canvas.toDataURL('image/png');
+            const base64Data = dataUrl.split(',')[1];
+
+            if (navigator.share && navigator.canShare({ files: [new File([], '')] })) {
+                // Web Share API is supported
+                const blob = await (await fetch(dataUrl)).blob();
+                const filesArray = [
+                    new File([blob], `score_${game.gameId}.png`, {
+                        type: blob.type,
+                    }),
+                ];
+
+                await navigator.share({
+                    title: 'Game Score',
+                    text: 'Check out this game score!',
+                    files: filesArray,
+                });
+            } else {
+                // Fallback for native mobile platforms
+                const fileName = `score_${game.gameId}.png`;
+                await Filesystem.writeFile({
+                    path: fileName,
+                    data: base64Data,
+                    directory: Directory.Cache,
+                    encoding: Encoding.UTF8
+                });
+
+                const fileUri = await Filesystem.getUri({
+                    directory: Directory.Cache,
+                    path: fileName
+                });
+
+                await Share.share({
+                    title: 'Game Score',
+                    text: 'Check out this game score!',
+                    url: fileUri.uri,
+                    dialogTitle: 'Share Game Score'
+                });
+            }
+        } catch (error) {
+            console.error('Error taking screenshot and sharing', error);
         }
     }
 

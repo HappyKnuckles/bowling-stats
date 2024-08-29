@@ -7,8 +7,8 @@ describe('StatsPage', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-    imports: [IonicModule.forRoot(), StatsPage]
-}).compileComponents();
+            imports: [StatsPage]
+        }).compileComponents();
 
         fixture = TestBed.createComponent(StatsPage);
         component = fixture.componentInstance;

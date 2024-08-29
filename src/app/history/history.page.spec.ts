@@ -7,8 +7,8 @@ describe('HistoryPage', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-    imports: [IonicModule.forRoot(), HistoryPage]
-}).compileComponents();
+            imports: [HistoryPage]
+        }).compileComponents();
 
         fixture = TestBed.createComponent(HistoryPage);
         component = fixture.componentInstance;

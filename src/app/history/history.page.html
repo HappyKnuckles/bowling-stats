@@ -50,7 +50,7 @@
             (click)="enableEdit(game.gameId, expansionPanel); slidingItem.closeOpened(); $event.stopPropagation();">
             <ion-icon class="title" style="transform: translateY(-2px);" name="create-outline"></ion-icon>
           </ion-item-option>
-          <ion-item-option (click)="slidingItem.closeOpened(); $event.stopPropagation();">
+          <ion-item-option *ngIf="!isEditMode[game.gameId]" (click)="takeScreenshotAndShare(game); slidingItem.closeOpened(); $event.stopPropagation();">
             <ion-icon class="title" style="transform: translateY(-2px);" name="share-outline"></ion-icon>
           </ion-item-option>
         </ion-item-options>
@@ -67,7 +67,7 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
 
-            <div class="grid-container">
+            <div class="grid-container" #scoreTemplate>
               <ion-grid fixed="true" *ngFor="let frame of game.frames; let j = index;">
                 <ion-row>
                   <ion-col class="middle frame">{{j + 1}}</ion-col>

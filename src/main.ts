@@ -17,10 +17,10 @@ if (environment.production) {
 }
 
 bootstrapApplication(AppComponent, {
-    providers: [
-        importProvidersFrom(BrowserModule, AppRoutingModule, IonicStorageModule.forRoot(), IonApp, IonBackdrop, IonSpinner, IonRouterOutlet),
-        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync(), provideIonicAngular(),
-        provideHttpClient(withInterceptorsFromDi()),
-    ]
+  providers: [
+    importProvidersFrom(BrowserModule, AppRoutingModule, IonicStorageModule.forRoot()),
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync(), provideIonicAngular(),
+    provideHttpClient(withInterceptorsFromDi()),
+  ]
 })
   .catch(err => console.log(err));

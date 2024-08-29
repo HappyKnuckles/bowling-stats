@@ -7,8 +7,8 @@ describe('ToastComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-    imports: [IonicModule.forRoot(), ToastComponent]
-}).compileComponents();
+            imports: [ToastComponent]
+        }).compileComponents();
 
         fixture = TestBed.createComponent(ToastComponent);
         component = fixture.componentInstance;

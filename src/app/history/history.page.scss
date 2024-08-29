@@ -65,22 +65,46 @@ ion-row {
     }
 }
 
-.title {
-    font-weight: 600;
-    font-size: 19px;
-
-    &:first-child {
-        margin-top: 10px;
+.sliding {
+    ion-item {
+        --padding-start: 0;
+        --inner-padding-end: 0;
+        --inner-border-width: 0;
     }
-}
 
-mat-panel-title {
-    .score {
-        padding: 5px;
-        margin-top: 10px;
+    .expansion-header {
+        padding: 10px 20px 0 !important;
+
+        .score {
+            font-size: 16px;
+        }
+
+        .title {
+            font-weight: 600;
+            font-size: 19px;
+
+            &:first-child {
+                margin-top: 10px;
+            }
+        }
+
+        .game-info {
+            display: flex;
+            flex-direction: column;
+        }
     }
-}
 
-.padding {
-    padding: 15px 20px 0 !important;
+    .actionRow {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin: .3rem .5rem 0;
+
+        ion-button {
+            width: 6rem;
+            height: 2rem;
+            // --background: var(--ion-color-dark);
+            // color: #fff;
+        }
+    }
 }

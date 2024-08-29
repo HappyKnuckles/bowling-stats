@@ -7,8 +7,8 @@ describe('TrackGridComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-    imports: [IonicModule.forRoot(), TrackGridComponent]
-}).compileComponents();
+            imports: [TrackGridComponent]
+        }).compileComponents();
 
         fixture = TestBed.createComponent(TrackGridComponent);
         component = fixture.componentInstance;

@@ -109,15 +109,18 @@ export class HistoryPage implements OnInit, OnDestroy {
         this.enableEdit(game);
     }
 
-    async saveEdit(game: Game, expansionPanel: MatExpansionPanel): Promise<void> {
+    async saveEdit(game: Game): Promise<void> {
         try {
             if (!this.isGameValid(game)) {
                 this.toastService.showToast('Ungültige Eingabe', 'bug', true);
                 return;
             }
-            await this.saveService.saveGameToLocalStorage(game);
-            this.toastService.showToast("Spieländerung erfolgreich gespeichert", "refresh-outline");
-            this.enableEdit(game);
+            else {
+                await this.saveService.saveGameToLocalStorage(game);
+                this.toastService.showToast("Spieländerung erfolgreich gespeichert", "refresh-outline");
+                this.enableEdit(game);
+
+            }
         } catch (error) {
             this.toastService.showToast(`Fehler beim Speichern des Spiels ${error}`, 'bug', true);
         }
@@ -144,7 +147,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     async takeScreenshotAndShare(game: Game): Promise<void> {
         try {
             const canvas = await html2canvas(this.scoreTemplate.nativeElement);
-            const dataUrl = canvas.toDataURL('image/png');
+            const dataUrl = canvas.toDataURL('image/png', 0.7);
             const base64Data = dataUrl.split(',')[1];
 
             if (navigator.share && navigator.canShare({ files: [new File([], '')] })) {

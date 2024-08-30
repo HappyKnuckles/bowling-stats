@@ -58,8 +58,7 @@
 
         <ion-item-options side="start" *ngIf="isEditMode[game.gameId]"
           (ionSwipe)="cancelEdit(game); slidingItem.closeOpened(); $event.stopPropagation();">
-          <ion-item-option expandable
-            (click)="cancelEdit(game); slidingItem.closeOpened(); $event.stopPropagation();">
+          <ion-item-option expandable (click)="cancelEdit(game); slidingItem.closeOpened(); $event.stopPropagation();">
             <ion-icon class="title" style="transform: translateY(-2px);" name="create-outline"></ion-icon>
           </ion-item-option>
         </ion-item-options>
@@ -126,19 +125,19 @@
                   <ion-col class="inputCol" *ngIf="frameIndex !== 9"></ion-col>
                   <ion-col class="inputCol">
                     <ion-input type="number" [value]="frame.throws[0]?.value" inputmode="numeric"
-                      (ionChange)="frame.throws[0].value = parseIntValue($event.target.value)"></ion-input>
+                      (ionChange)="frame.throws[0] = frame.throws[0] || {}; frame.throws[0].value = parseIntValue($event.target.value)"></ion-input>
                   </ion-col>
                   <ion-col class="inputCol" *ngIf="frameIndex !== 9">
                     <ion-input type="number" [value]="frame.throws[1]?.value" inputmode="numeric"
-                      (ionChange)="frame.throws[1].value = parseIntValue($event.target.value)"></ion-input>
+                      (ionChange)="frame.throws[1] = frame.throws[1] || {}; frame.throws[1].value = parseIntValue($event.target.value)"></ion-input>
                   </ion-col>
                   <ion-col class="inputCol" *ngIf="frameIndex === 9">
                     <ion-input type="number" [value]="frame.throws[1]?.value" inputmode="numeric"
-                      (ionChange)="frame.throws[1].value = parseIntValue($event.target.value)"></ion-input>
+                      (ionChange)="frame.throws[1] = frame.throws[1] || {}; frame.throws[1].value = parseIntValue($event.target.value)"></ion-input>
                   </ion-col>
                   <ion-col class="inputCol" *ngIf="frameIndex === 9">
                     <ion-input type="number" [value]="frame.throws[2]?.value" inputmode="numeric"
-                      (ionChange)="frame.throws[2].value = parseIntValue($event.target.value)"></ion-input>
+                      (ionChange)="frame.throws[2] = frame.throws[2] || {}; frame.throws[2].value = parseIntValue($event.target.value)"></ion-input>
                   </ion-col>
                 </ion-row>
                 <ion-row>
@@ -152,7 +151,7 @@
               </ion-grid>
               <div class="actionRow">
                 <ion-button class="left-button" (click)="cancelEdit(game)">Cancel</ion-button>
-                <ion-button class="right-button" (click)="saveEdit(game, expansionPanel)">Save</ion-button>
+                <ion-button class="right-button" (click)="saveEdit(game)">Save</ion-button>
               </div>
             </div>
           </mat-expansion-panel>

@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { IonToast } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { add, bug, checkmarkOutline, refreshOutline, reloadOutline } from 'ionicons/icons';
+import { add, bug, checkmarkOutline, refreshOutline, reloadOutline, shareSocialOutline } from 'ionicons/icons';
 
 @Component({
     selector: 'app-toast',
@@ -30,7 +30,7 @@ export class ToastComponent implements OnDestroy {
                 this.isOpen = false;
             }, 4000);
         });
-        addIcons({ bug, add, checkmarkOutline, refreshOutline, reloadOutline });
+        addIcons({ bug, add, checkmarkOutline, refreshOutline, reloadOutline, shareSocialOutline });
     }
 
     ngOnDestroy(): void {

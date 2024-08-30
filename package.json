@@ -41,7 +41,7 @@
     "@ionic/storage-angular": "^4.0.0",
     "chart.js": "^4.4.2",
     "exceljs": "^4.4.0",
-    "html2canvas": "^1.4.1",
+    "html-to-image": "^1.11.11",
     "ionicons": "^7.0.0",
     "ms-rest-azure": "^3.0.2",
     "rxjs": "~7.8.0",

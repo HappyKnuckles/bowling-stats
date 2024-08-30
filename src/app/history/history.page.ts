@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { AlertController, isPlatform, IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonBadge, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol, IonInput, IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { ToastService } from '../services/toast/toast.service';
@@ -10,17 +10,18 @@ import * as ExcelJS from 'exceljs';
 import { Game } from '../models/game-model';
 import { addIcons } from "ionicons";
 import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline } from "ionicons/icons";
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, DatePipe } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
-import html2canvas from 'html2canvas';
 import { Share } from '@capacitor/share';
 import { FormsModule } from '@angular/forms';
+import { toPng } from 'html-to-image';
 
 @Component({
     selector: 'app-history',
     templateUrl: 'history.page.html',
     styleUrls: ['history.page.scss'],
     standalone: true,
+    providers: [DatePipe],
     imports: [IonItemOption, IonItemOptions, IonItem, IonItemSliding,
         IonHeader,
         IonToolbar,
@@ -45,6 +46,7 @@ import { FormsModule } from '@angular/forms';
     ],
 })
 export class HistoryPage implements OnInit, OnDestroy {
+    @ViewChild('expansionPanel') expansionPanel!: MatExpansionPanel;
     gameHistory: Game[] = [];
     arrayBuffer: any;
     file!: File;
@@ -53,8 +55,6 @@ export class HistoryPage implements OnInit, OnDestroy {
     private loadingSubscription: Subscription;
     isLoading: boolean = false;
     isEditMode: { [key: string]: boolean } = {};
-    @ViewChild('expansionPanel') expansionPanel!: MatExpansionPanel;
-    @ViewChild('scoreTemplate', { static: false }) scoreTemplate!: ElementRef;
     private originalGameState: { [key: string]: Game } = {};
 
 
@@ -63,7 +63,8 @@ export class HistoryPage implements OnInit, OnDestroy {
         private toastService: ToastService,
         private gameHistoryService: GameHistoryService,
         private saveService: SaveGameDataService,
-        private loadingService: LoadingService
+        private loadingService: LoadingService,
+        private datePipe: DatePipe
     ) {
         this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
             this.isLoading = isLoading;
@@ -96,8 +97,12 @@ export class HistoryPage implements OnInit, OnDestroy {
     enableEdit(game: Game, expansionPanel?: MatExpansionPanel): void {
         this.isEditMode[game.gameId] = !this.isEditMode[game.gameId];
         if (expansionPanel) {
-            expansionPanel.open();
+            this.openExpansionPanel(expansionPanel);
         }
+    }
+
+    async openExpansionPanel(expansionPanel: MatExpansionPanel): Promise<void> {
+        expansionPanel.open();
     }
 
     cancelEdit(game: Game): void {
@@ -119,7 +124,6 @@ export class HistoryPage implements OnInit, OnDestroy {
                 await this.saveService.saveGameToLocalStorage(game);
                 this.toastService.showToast("Spieländerung erfolgreich gespeichert", "refresh-outline");
                 this.enableEdit(game);
-
             }
         } catch (error) {
             this.toastService.showToast(`Fehler beim Speichern des Spiels ${error}`, 'bug', true);
@@ -144,10 +148,28 @@ export class HistoryPage implements OnInit, OnDestroy {
         return allInputsValid;
     }
 
-    async takeScreenshotAndShare(game: Game): Promise<void> {
+    async takeScreenshotAndShare(game: Game, expansionPanel: MatExpansionPanel): Promise<void> {
+        const panelContent = expansionPanel._body.nativeElement;
+        const scoreTemplate = panelContent.querySelector('.grid-container') as HTMLElement;
+
+        if (!scoreTemplate) {
+            throw new Error('Score template not found in the expansion panel');
+        }
+
+        // Save panel state
+        const originalVisibility = panelContent.style.visibility;
+        const originalWidth = panelContent.style.width;
+
+        // Temporarily show the panel content
+        panelContent.style.visibility = 'visible';
+        panelContent.style.width = '130vw';
+
         try {
-            const canvas = await html2canvas(this.scoreTemplate.nativeElement);
-            const dataUrl = canvas.toDataURL('image/png', 0.7);
+            this.loadingService.setLoading(true);
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Generate screenshot
+            const dataUrl = await toPng(scoreTemplate, { quality: 0.7 });
             const base64Data = dataUrl.split(',')[1];
 
             if (navigator.share && navigator.canShare({ files: [new File([], '')] })) {
@@ -158,15 +180,17 @@ export class HistoryPage implements OnInit, OnDestroy {
                         type: blob.type,
                     }),
                 ];
+                const formattedDate = this.datePipe.transform(new Date(), 'dd.MM.yy');
 
                 await navigator.share({
                     title: 'Game Score',
-                    text: 'Check out this game score!',
+                    text: `Check out this game from ${formattedDate}`,
                     files: filesArray,
                 });
             } else {
                 // Fallback for native mobile platforms
                 const fileName = `score_${game.gameId}.png`;
+
                 await Filesystem.writeFile({
                     path: fileName,
                     data: base64Data,
@@ -185,9 +209,16 @@ export class HistoryPage implements OnInit, OnDestroy {
                     url: fileUri.uri,
                     dialogTitle: 'Share Game Score'
                 });
+                this.toastService.showToast('Screenshot erfolgreich geteilt', 'share-social-outline');
             }
         } catch (error) {
             console.error('Error taking screenshot and sharing', error);
+            this.toastService.showToast('Fehler beim Teilen des Screenshots', 'bug', true);
+        } finally {
+            // Restore the original state
+            panelContent.style.visibility = originalVisibility;
+            panelContent.style.width = originalWidth;
+            this.loadingService.setLoading(false);
         }
     }
 

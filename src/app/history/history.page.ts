@@ -162,7 +162,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
         // Temporarily show the panel content
         panelContent.style.visibility = 'visible';
-        panelContent.style.width = '130vw';
+        panelContent.style.width = '600px';
 
         try {
             this.loadingService.setLoading(true);

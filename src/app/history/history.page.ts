@@ -180,7 +180,7 @@ export class HistoryPage implements OnInit, OnDestroy {
                         type: blob.type,
                     }),
                 ];
-                const formattedDate = this.datePipe.transform(new Date(), 'dd.MM.yy');
+                const formattedDate = this.datePipe.transform(game.date, 'dd.MM.yy');
 
                 await navigator.share({
                     title: 'Game Score',

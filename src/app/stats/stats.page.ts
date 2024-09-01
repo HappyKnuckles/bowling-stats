@@ -48,8 +48,11 @@ export class StatsPage implements OnInit, OnDestroy {
     private loadingSubscription: Subscription;
     isLoading: boolean = false;
     @ViewChild('scoreChart') scoreChart?: ElementRef;
-    private chartInstance: Chart | null = null;
-
+    @ViewChild('throwChart') throwChart?: ElementRef;
+    @ViewChild('pinChart') pinChart?: ElementRef;
+    private pinChartInstance: Chart | null = null;
+    private throwChartInstance: Chart | null = null;
+    private scoreChartInstance: Chart | null = null;
 
     constructor(private loadingService: LoadingService,
         private statsService: GameStatsService,
@@ -135,6 +138,8 @@ export class StatsPage implements OnInit, OnDestroy {
             await this.loadDataAndCalculateStats();
             this.subscribeToDataEvents();
             this.generateScoreChart();
+            this.generateThrowChart();
+            this.generatePinChart();
         }
         catch (error) {
             console.error(error);
@@ -243,14 +248,13 @@ export class StatsPage implements OnInit, OnDestroy {
         const gamesPlayedDaily = gameLabels.map(date => scoresByDate[date].length);
 
         const ctx = this.scoreChart?.nativeElement;
-
-        // Destroy the old chart instance if it exists
-        if (this.chartInstance) {
-            this.chartInstance.destroy();
+        if (this.scoreChartInstance) {
+            this.scoreChartInstance.destroy();
         }
 
+
         // Create a new chart instance with multiple datasets
-        this.chartInstance = new Chart(ctx, {
+        this.scoreChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: gameLabels,
@@ -261,7 +265,7 @@ export class StatsPage implements OnInit, OnDestroy {
                         backgroundColor: "rgba(75, 192, 192, 0.2)",
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1,
-                        pointHitRadius: 10 
+                        pointHitRadius: 10
                     },
                     {
                         label: 'Difference from Average',
@@ -269,15 +273,15 @@ export class StatsPage implements OnInit, OnDestroy {
                         backgroundColor: "rgba(255, 99, 132, 0.2)",
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1,
-                        pointHitRadius: 10 
+                        pointHitRadius: 10
                     },
                     {
                         label: 'Games Played',
                         data: gamesPlayedDaily,
-                        backgroundColor: "rgba(153, 102, 255, 0.2)",
-                        borderColor: 'rgba(153, 102, 255, 1)',
+                        type: 'bar',
+                        backgroundColor: "rgba(153, 102, 255, 0.1)",
+                        borderColor: 'rgba(153, 102, 255, .5)',
                         borderWidth: 1,
-                        pointHitRadius: 10,
                         yAxisID: 'y1' // Use a second y-axis for this dataset
                     }
                 ]
@@ -286,23 +290,230 @@ export class StatsPage implements OnInit, OnDestroy {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        suggestedMax: 300 // Set the maximum value to 300
+                        suggestedMax: 300,
+                        ticks: {
+                            font: {
+                                size: 14
+                            }
+                        }
+
                     },
                     y1: {
                         beginAtZero: true,
                         position: 'right',
                         grid: {
                             drawOnChartArea: false // Only draw grid lines for the first y-axis
+                        },
+                        ticks: {
+                            font: {
+                                size: 14
+                            }
                         }
                     }
                 },
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Score Analysis'
+                        text: 'Score Analysis',
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
                     },
                     legend: {
-                        display: true // Show legend to differentiate datasets
+                        display: true, // Show legend to differentiate datasets
+                        labels: {
+                            font: {
+                                size: 15
+                            },
+                        },
+                        onClick: (e, legendItem) => {
+                            // Access the dataset index from the legend item
+                            const index = legendItem.datasetIndex!;
+
+                            // Ensure that chartInstance is defined and points to your chart
+                            const ci = this.scoreChartInstance;
+                            if (!ci) {
+                                console.error("Chart instance is not defined.");
+                                return;
+                            }
+
+                            // Get the metadata of the clicked dataset
+                            const meta = ci.getDatasetMeta(index);
+
+                            // Toggle the visibility of the dataset
+                            meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : !meta.hidden;
+
+                            // Find the index of the "Games Played" dataset
+                            const gamesPlayedIndex = ci.data.datasets.findIndex(dataset => dataset.label === 'Games Played');
+
+                            // Check if the "Games Played" dataset exists
+                            if (gamesPlayedIndex !== -1) {
+                                const gamesPlayedMeta = ci.getDatasetMeta(gamesPlayedIndex);
+                                const isGamesPlayedHidden = gamesPlayedMeta.hidden;
+
+                                // Update the y1 axis visibility based on the "Games Played" dataset visibility
+                                if (ci.options.scales && ci.options.scales['y1']) {
+                                    ci.options.scales['y1'].display = !isGamesPlayedHidden;
+                                }
+                            }
+
+                            // Update the chart to apply the changes
+                            ci.update();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    generateThrowChart(): void {
+        const data = {
+            labels: ['Spare %', 'Strike %', 'Open %'],
+            datasets: [{
+                label: 'Percentage',
+                data: [this.sparePercentage, this.strikePercentage, this.openPercentage],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                pointBackgroundColor: 'rgb(54, 162, 235)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(54, 162, 235)'
+            }]
+        };
+
+        const ctx = this.throwChart?.nativeElement;
+
+        if (this.throwChartInstance) {
+            this.throwChartInstance.destroy();
+        }
+
+        this.throwChartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: data,
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: 'gray',
+                            lineWidth: 0.5
+                        },
+                        angleLines: {
+                            color: 'gray',
+                            lineWidth: 0.5
+                        },
+                        pointLabels: {
+                            color: 'gray',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        ticks: {
+                            display: false,
+                            backdropColor: 'transparent',
+                            color: 'white'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Throw Distribution',
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+                layout: {
+                    padding: {
+                        top: 10,
+                        bottom: 10
+                    }
+                },
+                elements: {
+                    line: {
+                        borderWidth: 2
+                    }
+                }
+            }
+        });
+    }
+
+    //TODO adjust look of this
+    generatePinChart() {
+        const ctx = this.pinChart!.nativeElement;
+
+        if (this.pinChartInstance) {
+            this.pinChartInstance.destroy();
+        }
+
+        this.pinChartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], // Labels for each pin count
+                datasets: [
+                    {
+                        label: 'Pin Counts',
+                        data: this.pinCounts.slice(1), // Exclude the first element if it's for total
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Missed Counts',
+                        data: this.missedCounts.slice(1), // Exclude the first element if it's for total
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: Math.min(this.totalSparesConverted, this.totalSparesMissed),
+                        grid: {
+                            color: 'gray'
+                        },
+                        angleLines: {
+                            color: 'gray'
+                        },
+                        pointLabels: {
+                            color: 'gray',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        ticks: {
+                            backdropColor: 'transparent',
+                            color: 'white',
+                            display: false,
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Pin Counts vs Missed Counts',
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: {
+                                size: 15
+                            },
+                        }
                     }
                 }
             }

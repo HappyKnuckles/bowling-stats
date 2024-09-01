@@ -119,6 +119,7 @@
               </ng-container>
             </ion-row>
           </ion-grid>
+          <canvas #pinChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
         </mat-expansion-panel>
       </div>
       <mat-expansion-panel>
@@ -128,6 +129,15 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <canvas #scoreChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header class="padding">
+          <mat-panel-title>
+            <h2>Throw Distribution</h2>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <canvas #throwChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
       </mat-expansion-panel>
     </div>
   </ng-template>

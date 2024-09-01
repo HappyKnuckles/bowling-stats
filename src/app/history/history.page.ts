@@ -164,6 +164,13 @@ export class HistoryPage implements OnInit, OnDestroy {
         panelContent.style.visibility = 'visible';
         panelContent.style.width = '600px';
 
+        const formattedDate = this.datePipe.transform(game.date, 'dd.MM.yy');
+
+        let message = `Check out this game from ${formattedDate}`;
+        if (game.totalScore === 300) {
+            message = `Look at me perfect game on ${formattedDate} Bitches! 🎳🎉. `;
+        }
+        
         try {
             this.loadingService.setLoading(true);
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -180,11 +187,11 @@ export class HistoryPage implements OnInit, OnDestroy {
                         type: blob.type,
                     }),
                 ];
-                const formattedDate = this.datePipe.transform(game.date, 'dd.MM.yy');
+
 
                 await navigator.share({
                     title: 'Game Score',
-                    text: `Check out this game from ${formattedDate}`,
+                    text: message,
                     files: filesArray,
                 });
             } else {
@@ -205,7 +212,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
                 await Share.share({
                     title: 'Game Score',
-                    text: 'Check out this game score!',
+                    text: message,
                     url: fileUri.uri,
                     dialogTitle: 'Share Game Score'
                 });

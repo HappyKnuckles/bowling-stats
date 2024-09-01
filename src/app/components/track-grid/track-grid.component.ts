@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren } from '@angular/core';
 import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
 import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
@@ -18,9 +18,11 @@ import { FormsModule } from '@angular/forms';
 export class TrackGridComponent implements OnInit {
     @Output() maxScoreChanged = new EventEmitter<number>();
     @Output() totalScoreChanged = new EventEmitter<number>();
+    @ViewChildren(IonInput) inputs!: QueryList<IonInput>;
 
     totalScore: any;
     maxScore: any;
+    globalIndex: number = 0;
 
     constructor(public bowlingService: BowlingCalculatorService,
         private saveGameService: SaveGameDataService,
@@ -45,6 +47,26 @@ export class TrackGridComponent implements OnInit {
         }
     }
 
+    async focusNextInput(frameIndex: number, inputIndex: number) {
+        // Convert QueryList to an array
+        const inputArray = this.inputs.toArray();
+        // Calculate the current index in the linear array of inputs
+        const currentInputPosition = frameIndex * 2 + inputIndex;
+
+        // Find the next input element that is not disabled
+        for (let i = currentInputPosition + 1; i < inputArray.length; i++) {
+            const nextInput = inputArray[i];
+            const nextInputElement = await nextInput.getInputElement();
+
+            if (!nextInputElement.disabled) {
+                // Add a 1-second delay before focusing on the next available input
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                nextInput.setFocus();
+                break;
+            }
+        }
+    }
+    
     saveGameToLocalStorage(): void {
         try {
             const gameData = this.transformGameService.transformGameData(this.bowlingService.frames, this.bowlingService.frameScores, this.bowlingService.totalScore);

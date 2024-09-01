@@ -6,20 +6,27 @@
     <ion-row>
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
-        <ion-input type="number" clearOnEdit="true" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][0]" (ionBlur)="simulateScore($event)"></ion-input>
+        <ion-input type="number" clearOnEdit="true" inputmode="numeric"
+          [(ngModel)]="bowlingService.frames[frameIndex][0]" (ionBlur)="simulateScore($event)"
+          (ionInput)="focusNextInput(frameIndex, 0)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
-        <ion-input type="number" clearOnEdit="true" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][1]"
-          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore($event)"></ion-input>
+        <ion-input type="number" clearOnEdit="true" inputmode="numeric"
+          [(ngModel)]="bowlingService.frames[frameIndex][1]"
+          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore($event)"
+          (ionInput)="focusNextInput(frameIndex, 1)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input type="number" clearOnEdit="true" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][1]"
-          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore($event)"></ion-input>
+        <ion-input type="number" clearOnEdit="true" inputmode="numeric"
+          [(ngModel)]="bowlingService.frames[frameIndex][1]"
+          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore($event)"
+          (ionInput)="focusNextInput(frameIndex, 1)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input type="number" clearOnEdit="true" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][2]"
+        <ion-input type="number" clearOnEdit="true" inputmode="numeric"
+          [(ngModel)]="bowlingService.frames[frameIndex][2]"
           [disabled]="bowlingService.frames[frameIndex][0] !== 10 && bowlingService.frames[frameIndex][0] + (bowlingService.frames[frameIndex][1] || 0) !== 10"
-          (ionBlur)="simulateScore($event)"></ion-input>
+          (ionBlur)="simulateScore($event)" (ionInput)="focusNextInput(frameIndex, 2)"></ion-input>
       </ion-col>
     </ion-row>
     <ion-row

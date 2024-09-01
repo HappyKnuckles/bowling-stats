@@ -6,20 +6,20 @@
     <ion-row>
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
-        <ion-input type="number" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][0]" (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
+        <ion-input type="number" clearOnEdit="true" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][0]" (ionChange)="simulateScore($event)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
-        <ion-input type="number" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][1]"
-          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
+        <ion-input type="number" clearOnEdit="true" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][1]"
+          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionChange)="simulateScore($event)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input type="number" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][1]"
-          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
+        <ion-input type="number" clearOnEdit="true" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][1]"
+          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10" (ionChange)="simulateScore($event)"></ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input type="number" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][2]"
+        <ion-input type="number" clearOnEdit="true" inputmode="numeric" [(ngModel)]="bowlingService.frames[frameIndex][2]"
           [disabled]="bowlingService.frames[frameIndex][0] !== 10 && bowlingService.frames[frameIndex][0] + (bowlingService.frames[frameIndex][1] || 0) !== 10"
-          (ionBlur)="simulateScore(frameIndex, $event)"></ion-input>
+          (ionChange)="simulateScore($event)"></ion-input>
       </ion-col>
     </ion-row>
     <ion-row

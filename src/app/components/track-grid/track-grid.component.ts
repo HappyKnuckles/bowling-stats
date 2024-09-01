@@ -48,7 +48,9 @@ export class TrackGridComponent implements OnInit {
     }
 
     async focusNextInput(frameIndex: number, inputIndex: number) {
-        // Convert QueryList to an array
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Convert QueryList to an array               
         const inputArray = this.inputs.toArray();
         // Calculate the current index in the linear array of inputs
         const currentInputPosition = frameIndex * 2 + inputIndex;
@@ -60,13 +62,12 @@ export class TrackGridComponent implements OnInit {
 
             if (!nextInputElement.disabled) {
                 // Add a 1-second delay before focusing on the next available input
-                await new Promise(resolve => setTimeout(resolve, 1000));
                 nextInput.setFocus();
                 break;
             }
         }
     }
-    
+
     saveGameToLocalStorage(): void {
         try {
             const gameData = this.transformGameService.transformGameData(this.bowlingService.frames, this.bowlingService.frameScores, this.bowlingService.totalScore);

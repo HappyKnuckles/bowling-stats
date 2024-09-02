@@ -1,5 +1,6 @@
 import {
     Component,
+    CUSTOM_ELEMENTS_SCHEMA,
     OnInit,
     QueryList,
     ViewChild,
@@ -44,6 +45,7 @@ import { NgIf, NgFor } from '@angular/common';
         IonButtons,
         IonInput,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AddGamePage implements OnInit {
     totalScores: number[] = new Array(8).fill(0);
@@ -153,9 +155,9 @@ export class AddGamePage implements OnInit {
                 this.loadingService.setLoading(true);
                 const gameText = await this.imageProcessingService.performOCR(imageUrl);
                 this.parseBowlingScores(gameText!);
-            } else this.toastService.showToast("Kein Bild hochgeladen", "bug", true);
+            } else this.toastService.showToast("No image uploaded!", "bug", true);
         } catch (error) {
-            this.toastService.showToast(`Fehler beim Hochladen des Bildes ${error}`, "bug", true);
+            this.toastService.showToast(`Error uploading image: ${error}`, "bug", true);
         } finally {
             this.loadingService.setLoading(false);
         }
@@ -257,12 +259,36 @@ export class AddGamePage implements OnInit {
 
     confirm(): void {
         try {
-            this.saveGameService.saveGameToLocalStorage(this.gameData);
-            this.toastService.showToast("Spiel hinzugefügt", "add");
-            this.modal.dismiss(null, 'confirm');
+            if (!this.isGameValid(this.gameData)) {
+                this.toastService.showToast('Invalid input!', 'bug', true);
+                return;
+            }
+            else {
+                this.saveGameService.saveGameToLocalStorage(this.gameData);
+                this.toastService.showToast("Game saved!", "add");
+                this.modal.dismiss(null, 'confirm');
+            }
         } catch (error) {
             this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);
         }
+    }
+
+    isGameValid(game: Game): boolean {
+        const allInputsValid = game.frames.every((frame: any, index: number) => {
+            const throws = frame.throws.map((t: { value: any; }) => t.value);
+            if (index < 9) {
+                // For frames 1 to 9: Check if there are either 2 throws (unless it's a strike) or 1 throw (for strike)
+                return (throws[0] === 10 && throws.length === 1) ||
+                    (throws.length === 2 && throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+            } else {
+                // For frame 10: Check if there are either 3 throws (if there's a strike or spare in the first two throws),
+                // or 2 throws (if there's no strike or spare in the first two throws)
+                return (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
+                    (throws.length === 2 && throws[0] + throws[1] < 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
+                    (throws.length === 3 && throws[0] + throws[1] >= 10 && throws[1] !== undefined && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+            }
+        });
+        return allInputsValid;
     }
 
     updateFrameScore(value: any, index: number): void {
@@ -279,7 +305,7 @@ export class AddGamePage implements OnInit {
                 trackGrid.clearFrames();
             });
         }
-        this.toastService.showToast('Spiel wurde zurückgesetzt!', 'refresh-outline');
+        this.toastService.showToast('Game reset!', 'refresh-outline');
     }
 
     calculateScore(): void {
@@ -294,12 +320,19 @@ export class AddGamePage implements OnInit {
 
         if (allGamesValid) {
             try {
-                this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
+                let perfectGame = false;
+                this.trackGrids.forEach((trackGrid: TrackGridComponent) => { 
+                    if (trackGrid.totalScore === 300) {
+                        perfectGame = true;
+                    }
                     trackGrid.saveGameToLocalStorage();
+                   
                 });
-                this.toastService.showToast('Spiel wurde gespeichert!', 'add');
+                if (perfectGame) {
+                }
+                this.toastService.showToast('Game saved!', 'add');
             } catch (error) {
-                this.toastService.showToast('Da ist was schief gelaufen', 'bug', true);
+                this.toastService.showToast('Oops, something went wrong', 'bug', true);
             }
         } else this.setAlertOpen();
     }
@@ -364,12 +397,12 @@ export class AddGamePage implements OnInit {
         }
 
         buttons.push({
-            text: 'Abbrechen',
+            text: 'Cancel',
             role: 'cancel',
         });
 
         const actionSheet = await this.actionSheetCtrl.create({
-            header: 'Serie auswählen',
+            header: 'Choose series mode',
             buttons: buttons,
         });
 

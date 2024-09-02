@@ -72,7 +72,7 @@ export class TrackGridComponent implements OnInit {
         try {
             const gameData = this.transformGameService.transformGameData(this.bowlingService.frames, this.bowlingService.frameScores, this.bowlingService.totalScore);
             this.saveGameService.saveGameToLocalStorage(gameData);
-            this.toastService.showToast("Spiel hinzugefügt", "add");
+            this.toastService.showToast("Game saved!", "add");
             this.clearFrames();
         } catch (error) {
             this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);

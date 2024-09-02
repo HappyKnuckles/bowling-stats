@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Statistik
+      Stats
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -11,7 +11,7 @@
   <!-- Show this message if there are no game history items and it's not loading -->
   <ng-container *ngIf="gameHistory.length <= 0 && !isLoading; else content">
     <ion-text style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 999;">
-      Spiele erst ein paar Runden
+      Start playing a few games to see your stats here!
     </ion-text>
   </ng-container>
 
@@ -21,7 +21,7 @@
       <mat-expansion-panel>
         <mat-expansion-panel-header class="padding">
           <mat-panel-title>
-            <h2>Allgemein</h2>
+            <h2>Overall</h2>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div class="stats">
@@ -29,55 +29,55 @@
           <ion-text class="value">{{ totalGames }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Durchschnitt: </ion-text>
+          <ion-text>Average: </ion-text>
           <ion-text class="value">{{ averageScore | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>High Game: </ion-text>
+          <ion-text>High game: </ion-text>
           <ion-text class="value">{{ highGame }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Total Pins: </ion-text>
+          <ion-text>Total pins: </ion-text>
           <ion-text class="value">{{ totalPins }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Erster Ball Durchschnitt: </ion-text>
+          <ion-text>First ball average: </ion-text>
           <ion-text class="value">{{ averageFirstCount | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Strikes: </ion-text>
+          <ion-text>Total strikes: </ion-text>
           <ion-text class="value">{{ totalStrikes }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Strikes pro Spiel: </ion-text>
+          <ion-text>Strikes per game: </ion-text>
           <ion-text class="value">{{ averageStrikesPerGame | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Strikewahrscheinlichkeit: </ion-text>
+          <ion-text>Strike-percentage: </ion-text>
           <ion-text class="value">{{ strikePercentage | number:'1.2-2' }}%</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Spares: </ion-text>
+          <ion-text>Total spares: </ion-text>
           <ion-text class="value">{{ totalSpares }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Spares pro Spiel: </ion-text>
+          <ion-text>Spares per game: </ion-text>
           <ion-text class="value">{{ averageSparesPerGame | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Sparewahrscheinlichkeit: </ion-text>
+          <ion-text>Spare-percentage: </ion-text>
           <ion-text class="value">{{ sparePercentage | number:'1.2-2' }}%</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Opens: </ion-text>
+          <ion-text>Total opens: </ion-text>
           <ion-text class="value">{{ totalOpens }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Opens pro Spiel: </ion-text>
+          <ion-text>Opens per game: </ion-text>
           <ion-text class="value">{{ averageOpensPerGame | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
-          <ion-text>Openwahrscheinlichkeit: </ion-text>
+          <ion-text>Open-percentage: </ion-text>
           <ion-text class="value">{{ openPercentage | number:'1.2-2' }}%</ion-text>
         </div>
       </mat-expansion-panel>
@@ -125,7 +125,7 @@
       <mat-expansion-panel>
         <mat-expansion-panel-header class="padding">
           <mat-panel-title>
-            <h2>Average over Time</h2>
+            <h2>Average over time</h2>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <canvas #scoreChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
@@ -134,7 +134,7 @@
       <mat-expansion-panel>
         <mat-expansion-panel-header class="padding">
           <mat-panel-title>
-            <h2>Throw Distribution</h2>
+            <h2>Throw distribution</h2>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <canvas #throwChart style="width: 300px; height: 300px; margin: 8px;"></canvas>

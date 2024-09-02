@@ -82,7 +82,7 @@ export class GameStatsService {
 
       game.frames.forEach(frame => {
         const throws = frame.throws;
-        firstThrowCount += throws[0].value;
+        firstThrowCount += parseInt(throws[0].value);
       });
     });
 

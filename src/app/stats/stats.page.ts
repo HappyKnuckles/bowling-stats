@@ -76,7 +76,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 this.loadStats();
                 this.gameHistoryChanged = false; // Reset the flag
             } catch (error) {
-                this.toastService.showToast(`Fehler beim Historie und Stats laden: ${error}`, 'bug', true)
+                this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true)
             }
         }
     }
@@ -85,7 +85,7 @@ export class StatsPage implements OnInit, OnDestroy {
         try {
             this.gameHistory = await this.gameHistoryService.loadGameHistory();
         } catch (error) {
-            this.toastService.showToast(`Fehler beim Historie laden: ${error}`, 'bug', true)
+            this.toastService.showToast(`Error loading history: ${error}`, 'bug', true)
         }
     }
 
@@ -134,7 +134,7 @@ export class StatsPage implements OnInit, OnDestroy {
             this.highGame = highGame;
             this.calculateRates();
         } catch (error) {
-            this.toastService.showToast(`Fehler beim Statistik laden: ${error}`, 'bug', true);
+            this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
         }
     }
 
@@ -143,9 +143,7 @@ export class StatsPage implements OnInit, OnDestroy {
             this.loadingService.setLoading(true);
             await this.loadDataAndCalculateStats();
             this.subscribeToDataEvents();
-            this.generateScoreChart();
-            this.generateThrowChart();
-            this.generatePinChart();
+            this.generateCharts();
         }
         catch (error) {
             console.error(error);
@@ -155,18 +153,24 @@ export class StatsPage implements OnInit, OnDestroy {
         }
     }
 
+    generateCharts(): void {
+        this.generateScoreChart();
+        this.generateThrowChart();
+        this.generatePinChart();
+    }
+
     private subscribeToDataEvents(): void {
         this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(async () => {
             this.gameHistoryChanged = true;
             await this.loadDataAndCalculateStats();
-            this.generateScoreChart();
+            this.generateCharts();
 
         });
 
         this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(async () => {
             this.gameHistoryChanged = true;
             await this.loadDataAndCalculateStats();
-            this.generateScoreChart();
+            this.generateCharts();
         });
     }
 
@@ -184,10 +188,12 @@ export class StatsPage implements OnInit, OnDestroy {
             this.loadingService.setLoading(false);
         }
     }
+
     calculateRates() {
         this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
         this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
     }
+
     getLabel(i: number): string {
         if (i === 0) return 'Overall';
         if (i === 1) return `${i} Pin`;
@@ -222,7 +228,7 @@ export class StatsPage implements OnInit, OnDestroy {
     }
 
     //TODO adjust look of this
-    generatePinChart() {
+    generatePinChart(): void {
         const ctx = this.pinChart!.nativeElement;
 
         if (this.pinChartInstance) {
@@ -262,10 +268,10 @@ export class StatsPage implements OnInit, OnDestroy {
                         beginAtZero: true,
                         max: 100,
                         grid: {
-                            color: 'gray'
+                            color: 'rgba(128, 128, 128, 0.3)',
                         },
                         angleLines: {
-                            color: 'gray'
+                            color: 'rgba(128, 128, 128, 0.3)',
                         },
                         pointLabels: {
                             color: 'gray',
@@ -297,7 +303,7 @@ export class StatsPage implements OnInit, OnDestroy {
                     },
                     title: {
                         display: true,
-                        text: 'Converted Spares vs Missed Spares',
+                        text: 'Converted vs Missed spares',
                         color: 'white',
                         font: {
                             size: 16
@@ -376,7 +382,7 @@ export class StatsPage implements OnInit, OnDestroy {
                         pointHitRadius: 10
                     },
                     {
-                        label: 'Difference from Average',
+                        label: 'Difference from average',
                         data: differences.map(difference => parseFloat(this.decimalPipe.transform(difference, '1.2-2')!)),
                         backgroundColor: "rgba(255, 99, 132, 0.2)",
                         borderColor: 'rgba(255, 99, 132, 1)',
@@ -384,7 +390,7 @@ export class StatsPage implements OnInit, OnDestroy {
                         pointHitRadius: 10
                     },
                     {
-                        label: 'Games Played',
+                        label: 'Games played',
                         data: gamesPlayedDaily,
                         type: 'bar',
                         backgroundColor: "rgba(153, 102, 255, 0.1)",
@@ -422,7 +428,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Score Analysis',
+                        text: 'Score analysis',
                         color: 'white',
                         font: {
                             size: 16
@@ -476,21 +482,6 @@ export class StatsPage implements OnInit, OnDestroy {
     }
 
     generateThrowChart(): void {
-        const data = {
-            labels: ['Spare', 'Strike', 'Open'],
-            datasets: [{
-                label: 'Percentage',
-                data: [parseFloat(this.decimalPipe.transform(this.sparePercentage, '1.2-2')!), parseFloat(this.decimalPipe.transform(this.strikePercentage, '1.2-2')!), parseFloat(this.decimalPipe.transform(this.openPercentage, '1.2-2')!)],
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgb(54, 162, 235)',
-                pointBackgroundColor: 'rgb(54, 162, 235)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgb(54, 162, 235)',
-                pointHitRadius: 10
-            }]
-        };
-
         const ctx = this.throwChart?.nativeElement;
 
         if (this.throwChartInstance) {
@@ -499,18 +490,31 @@ export class StatsPage implements OnInit, OnDestroy {
 
         this.throwChartInstance = new Chart(ctx, {
             type: 'radar',
-            data: data,
+            data: {
+                labels: ['Spare', 'Strike', 'Open'],
+                datasets: [{
+                    label: 'Percentage',
+                    data: [parseFloat(this.decimalPipe.transform(this.sparePercentage, '1.2-2')!), parseFloat(this.decimalPipe.transform(this.strikePercentage, '1.2-2')!), parseFloat(this.decimalPipe.transform(this.openPercentage, '1.2-2')!)],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    pointBackgroundColor: 'rgb(54, 162, 235)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(54, 162, 235)',
+                    pointHitRadius: 10
+                }]
+            },
             options: {
                 scales: {
                     r: {
                         beginAtZero: true,
                         max: 100,
                         grid: {
-                            color: 'gray',
+                            color: 'rgba(128, 128, 128, 0.3)',
                             lineWidth: 0.5
                         },
                         angleLines: {
-                            color: 'gray',
+                            color: 'rgba(128, 128, 128, 0.3)',
                             lineWidth: 0.5
                         },
                         pointLabels: {
@@ -543,7 +547,7 @@ export class StatsPage implements OnInit, OnDestroy {
                     },
                     title: {
                         display: true,
-                        text: 'Throw Distribution',
+                        text: 'Throw distribution',
                         color: 'white',
                         font: {
                             size: 16

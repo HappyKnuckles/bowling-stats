@@ -82,7 +82,7 @@ export class HistoryPage implements OnInit, OnDestroy {
             this.gameHistory = await this.gameHistoryService.loadGameHistory();
         } catch (error) {
             this.toastService.showToast(
-                `Fehler beim Historie laden ${error}`,
+                `Error loading history! ${error}`,
                 'bug',
                 true
             );
@@ -117,16 +117,16 @@ export class HistoryPage implements OnInit, OnDestroy {
     async saveEdit(game: Game): Promise<void> {
         try {
             if (!this.isGameValid(game)) {
-                this.toastService.showToast('Ungültige Eingabe', 'bug', true);
+                this.toastService.showToast('Invalid input!', 'bug', true);
                 return;
             }
             else {
                 await this.saveService.saveGameToLocalStorage(game);
-                this.toastService.showToast("Spieländerung erfolgreich gespeichert", "refresh-outline");
+                this.toastService.showToast("Game edit saved!", "refresh-outline");
                 this.enableEdit(game);
             }
         } catch (error) {
-            this.toastService.showToast(`Fehler beim Speichern des Spiels ${error}`, 'bug', true);
+            this.toastService.showToast(`Error saving game to localstorage: ${error}`, 'bug', true);
         }
     }
 
@@ -168,7 +168,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
         let message = `Check out this game from ${formattedDate}`;
         if (game.totalScore === 300) {
-            message = `Look at me perfect game on ${formattedDate} Bitches! 🎳🎉. `;
+            message = `Look at me bitches, perfect game on ${formattedDate}! 🎳🎉.`;
         }
         
         try {
@@ -216,11 +216,11 @@ export class HistoryPage implements OnInit, OnDestroy {
                     url: fileUri.uri,
                     dialogTitle: 'Share Game Score'
                 });
-                this.toastService.showToast('Screenshot erfolgreich geteilt', 'share-social-outline');
+                this.toastService.showToast('Screenshot shared!', 'share-social-outline');
             }
         } catch (error) {
             console.error('Error taking screenshot and sharing', error);
-            this.toastService.showToast('Fehler beim Teilen des Screenshots', 'bug', true);
+            this.toastService.showToast('Error sharing Screenshot', 'bug', true);
         } finally {
             // Restore the original state
             panelContent.style.visibility = originalVisibility;
@@ -245,7 +245,7 @@ export class HistoryPage implements OnInit, OnDestroy {
                         const key = 'game' + gameId;
                         this.saveService.deleteGame(key);
                         this.toastService.showToast(
-                            'Spiel wurde gelöscht!',
+                            'Game deleted!',
                             'checkmark-outline'
                         );
                     },
@@ -459,7 +459,7 @@ export class HistoryPage implements OnInit, OnDestroy {
                 document.body.removeChild(anchor);
 
                 this.toastService.showToast(
-                    `File saved successfully`,
+                    `File saved!`,
                     'checkmark-outline'
                 );
             } else {
@@ -485,7 +485,7 @@ export class HistoryPage implements OnInit, OnDestroy {
             this.file = event.target.files[0];
             await this.readExcelData();
             this.toastService.showToast(
-                'Excel Datei wurde hochgeladen!',
+                'Uploaded Excel file!',
                 'checkmark-outline'
             );
         } catch (error) {

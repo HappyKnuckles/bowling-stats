@@ -16,6 +16,7 @@ import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } fr
     templateUrl: 'stats.page.html',
     styleUrls: ['stats.page.scss'],
     standalone: true,
+    providers: [DecimalPipe],
     imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, NgIf, IonText, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, IonGrid, IonRow, IonCol, NgFor, NgStyle, DecimalPipe]
 })
 export class StatsPage implements OnInit, OnDestroy {
@@ -40,6 +41,8 @@ export class StatsPage implements OnInit, OnDestroy {
     highGame: number = 0;
     pinCounts: number[] = Array(11).fill(0);
     missedCounts: number[] = Array(11).fill(0);
+    spareRates: number[] = [];
+    overallSpareRate: number = 0;
     totalMissed: number = 0;
     totalConverted: number = 0;
     gameHistoryChanged: boolean = true;
@@ -58,7 +61,9 @@ export class StatsPage implements OnInit, OnDestroy {
         private statsService: GameStatsService,
         private toastService: ToastService,
         private gameHistoryService: GameHistoryService,
-        private saveService: SaveGameDataService) {
+        private saveService: SaveGameDataService,
+        private decimalPipe: DecimalPipe
+    ) {
         this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
             this.isLoading = isLoading;
         });
@@ -127,6 +132,7 @@ export class StatsPage implements OnInit, OnDestroy {
             this.missedCounts = missedCounts;
             this.pinCounts = pinCounts;
             this.highGame = highGame;
+            this.calculateRates();
         } catch (error) {
             this.toastService.showToast(`Fehler beim Statistik laden: ${error}`, 'bug', true);
         }
@@ -178,7 +184,10 @@ export class StatsPage implements OnInit, OnDestroy {
             this.loadingService.setLoading(false);
         }
     }
-
+    calculateRates() {
+        this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
+        this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
+    }
     getLabel(i: number): string {
         if (i === 0) return 'Overall';
         if (i === 1) return `${i} Pin`;
@@ -186,6 +195,9 @@ export class StatsPage implements OnInit, OnDestroy {
     }
 
     getRate(converted: number, missed: number): number {
+        if (converted + missed === 0) {
+            return 0;
+        }
         return (converted / (converted + missed)) * 100;
     }
 
@@ -208,6 +220,102 @@ export class StatsPage implements OnInit, OnDestroy {
         this.dataDeletedSubscription.unsubscribe();
         this.loadingSubscription.unsubscribe();
     }
+
+    //TODO adjust look of this
+    generatePinChart() {
+        const ctx = this.pinChart!.nativeElement;
+
+        if (this.pinChartInstance) {
+            this.pinChartInstance.destroy();
+        }
+
+        this.pinChartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['1 Pin', '2 Pins', '3 Pins', '4 Pins', '5 Pins', '6 Pins', '7 Pins', '8 Pins', '9 Pins', '10 Pins'], // Labels for each pin count
+                datasets: [
+                    {
+                        label: 'Converted',
+                        data: this.spareRates.slice(1).map(rate => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!)), // Exclude the first element if it's for total
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        pointHitRadius: 10
+                    },
+                    {
+                        label: 'Missed',
+                        data: this.missedCounts.slice(1).map((count, i) => {
+                            const rate = this.getRate(count, this.pinCounts[i + 1]);
+                            const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
+                            return parseFloat(transformedRate ?? '0'); // Use '0' as a fallback if transformedRate is null
+                        }), // Exclude the first element if it's for total                       
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        pointHitRadius: 10
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: 'gray'
+                        },
+                        angleLines: {
+                            color: 'gray'
+                        },
+                        pointLabels: {
+                            color: 'gray',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        ticks: {
+                            backdropColor: 'transparent',
+                            color: 'white',
+                            display: false,
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.r !== null) {
+                                    label += context.parsed.r + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Converted Spares vs Missed Spares',
+                        color: 'white',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: {
+                                size: 15
+                            },
+                        }
+                    }
+                }
+            }
+        });
+    }
+
 
     generateScoreChart(): void {
         // Create a map to aggregate scores by date
@@ -261,7 +369,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 datasets: [
                     {
                         label: 'Average',
-                        data: overallAverages,
+                        data: overallAverages.map(average => parseFloat(this.decimalPipe.transform(average, '1.2-2')!)),
                         backgroundColor: "rgba(75, 192, 192, 0.2)",
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1,
@@ -269,7 +377,7 @@ export class StatsPage implements OnInit, OnDestroy {
                     },
                     {
                         label: 'Difference from Average',
-                        data: differences,
+                        data: differences.map(difference => parseFloat(this.decimalPipe.transform(difference, '1.2-2')!)),
                         backgroundColor: "rgba(255, 99, 132, 0.2)",
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1,
@@ -369,16 +477,17 @@ export class StatsPage implements OnInit, OnDestroy {
 
     generateThrowChart(): void {
         const data = {
-            labels: ['Spare %', 'Strike %', 'Open %'],
+            labels: ['Spare', 'Strike', 'Open'],
             datasets: [{
                 label: 'Percentage',
-                data: [this.sparePercentage, this.strikePercentage, this.openPercentage],
+                data: [parseFloat(this.decimalPipe.transform(this.sparePercentage, '1.2-2')!), parseFloat(this.decimalPipe.transform(this.strikePercentage, '1.2-2')!), parseFloat(this.decimalPipe.transform(this.openPercentage, '1.2-2')!)],
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgb(54, 162, 235)',
                 pointBackgroundColor: 'rgb(54, 162, 235)',
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgb(54, 162, 235)'
+                pointHoverBorderColor: 'rgb(54, 162, 235)',
+                pointHitRadius: 10
             }]
         };
 
@@ -418,6 +527,20 @@ export class StatsPage implements OnInit, OnDestroy {
                     }
                 },
                 plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.r !== null) {
+                                    label += context.parsed.r + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    },
                     title: {
                         display: true,
                         text: 'Throw Distribution',
@@ -445,78 +568,4 @@ export class StatsPage implements OnInit, OnDestroy {
         });
     }
 
-    //TODO adjust look of this
-    generatePinChart() {
-        const ctx = this.pinChart!.nativeElement;
-
-        if (this.pinChartInstance) {
-            this.pinChartInstance.destroy();
-        }
-
-        this.pinChartInstance = new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], // Labels for each pin count
-                datasets: [
-                    {
-                        label: 'Pin Counts',
-                        data: this.pinCounts.slice(1), // Exclude the first element if it's for total
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Missed Counts',
-                        data: this.missedCounts.slice(1), // Exclude the first element if it's for total
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    r: {
-                        beginAtZero: true,
-                        max: Math.min(this.totalSparesConverted, this.totalSparesMissed),
-                        grid: {
-                            color: 'gray'
-                        },
-                        angleLines: {
-                            color: 'gray'
-                        },
-                        pointLabels: {
-                            color: 'gray',
-                            font: {
-                                size: 14
-                            }
-                        },
-                        ticks: {
-                            backdropColor: 'transparent',
-                            color: 'white',
-                            display: false,
-                        }
-                    }
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Pin Counts vs Missed Counts',
-                        color: 'white',
-                        font: {
-                            size: 16
-                        }
-                    },
-                    legend: {
-                        display: true,
-                        labels: {
-                            font: {
-                                size: 15
-                            },
-                        }
-                    }
-                }
-            }
-        });
-    }
 }

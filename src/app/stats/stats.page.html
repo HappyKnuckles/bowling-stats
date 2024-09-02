@@ -103,8 +103,8 @@
                 <ion-col>{{ pinCounts[i] }}</ion-col>
                 <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
                 <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0"
-                  [ngStyle]="{'color': getRateColor(getRate(pinCounts[i], missedCounts[i]))}">
-                  {{ getRate(pinCounts[i], missedCounts[i]) | number:'1.2-2' }}%
+                  [ngStyle]="{'color': getRateColor(spareRates[i])}">
+                  {{ spareRates[i] | number:'1.2-2' }}%
                 </ion-col>
               </ng-container>
               <!-- Display total spares and conversion rate -->
@@ -112,8 +112,8 @@
                 <ion-col>{{ totalSparesMissed }}</ion-col>
                 <ion-col>{{ totalSparesConverted }}</ion-col>
                 <ion-col *ngIf="totalSparesMissed + totalSparesConverted !== 0"
-                  [ngStyle]="{'color': getRateColor(getRate(totalSparesConverted, totalSparesMissed))}">
-                  {{ getRate(totalSparesConverted, totalSparesMissed) | number:'1.2-2' }}%
+                  [ngStyle]="{'color': getRateColor(overallSpareRate)}">
+                  {{ overallSpareRate | number:'1.2-2' }}%
                 </ion-col>
                 <ion-col *ngIf="totalSparesMissed + totalSparesConverted === 0"></ion-col>
               </ng-container>

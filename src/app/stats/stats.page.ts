@@ -225,6 +225,16 @@ export class StatsPage implements OnInit, OnDestroy {
 
     //TODO adjust look of this
     generatePinChart(): void {
+        const originalLabels = ['1 Pin', '2 Pins', '3 Pins', '4 Pins', '5 Pins', '6 Pins', '7 Pins', '8 Pins', '9 Pins', '10 Pins'];
+
+        // Filter out the spareRates and update labels accordingly
+        const filteredSpareRates = this.spareRates.slice(1).map(rate => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
+        const filteredMissedCounts = this.missedCounts.slice(1).map((count, i) => {
+            const rate = this.getRate(count, this.pinCounts[i + 1]);
+            const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
+            return parseFloat(transformedRate ?? '0');
+        });
+
         const ctx = this.pinChart!.nativeElement;
 
         if (this.pinChartInstance) {
@@ -238,7 +248,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 datasets: [
                     {
                         label: 'Converted',
-                        data: this.spareRates.slice(1).map(rate => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!)), // Exclude the first element if it's for total
+                        data: filteredSpareRates, // Exclude the first element if it's for total
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1,
@@ -246,11 +256,7 @@ export class StatsPage implements OnInit, OnDestroy {
                     },
                     {
                         label: 'Missed',
-                        data: this.missedCounts.slice(1).map((count, i) => {
-                            const rate = this.getRate(count, this.pinCounts[i + 1]);
-                            const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
-                            return parseFloat(transformedRate ?? '0'); // Use '0' as a fallback if transformedRate is null
-                        }), // Exclude the first element if it's for total                       
+                        data: filteredMissedCounts,
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1,
@@ -285,7 +291,34 @@ export class StatsPage implements OnInit, OnDestroy {
                 plugins: {
                     tooltip: {
                         callbacks: {
+                            title: function (context) {
+                                // Get the value of the hovered point
+                                const value = context[0].raw;
+
+                                // Find all labels with the same value
+                                const matchingLabels = context[0].chart.data.labels!.filter((label, index) => {
+                                    // Check if the value matches any point in the datasets and is 0
+                                    return context[0].chart.data.datasets.some(dataset => dataset.data[index] === value && value === 0);
+                                });
+
+                                // Only modify the title if multiple labels match the same value
+                                if (matchingLabels.length > 1) {
+                                    // Extract only the numbers from each label and join them
+                                    const extractedNumbers = matchingLabels.map(label => {
+                                        // Use regex to extract the number part from the label (e.g., "1 Pin" -> "1")
+                                        const match = (label as string).match(/\d+/);
+                                        return match ? match[0] : ''; // Return the matched number or an empty string if no match
+                                    });
+
+                                    // Return the combined numbers as the title (e.g., "2, 3 Pins")
+                                    return extractedNumbers.join(', ') + ' Pins';
+                                }
+
+                                // Default behavior: return the original label if only one match
+                                return context[0].label || '';
+                            },
                             label: function (context) {
+                                // Create the base label with dataset name and value percentage
                                 let label = context.dataset.label || '';
                                 if (label) {
                                     label += ': ';
@@ -293,6 +326,9 @@ export class StatsPage implements OnInit, OnDestroy {
                                 if (context.parsed.r !== null) {
                                     label += context.parsed.r + '%';
                                 }
+
+
+
                                 return label;
                             }
                         }

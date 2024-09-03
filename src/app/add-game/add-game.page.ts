@@ -155,7 +155,7 @@ export class AddGamePage implements OnInit {
                 this.loadingService.setLoading(true);
                 const gameText = await this.imageProcessingService.performOCR(imageUrl);
                 this.parseBowlingScores(gameText!);
-            } else this.toastService.showToast("No image uploaded!", "bug", true);
+            } else this.toastService.showToast("No image uploaded.", "bug", true);
         } catch (error) {
             this.toastService.showToast(`Error uploading image: ${error}`, "bug", true);
         } finally {
@@ -260,12 +260,12 @@ export class AddGamePage implements OnInit {
     confirm(): void {
         try {
             if (!this.isGameValid(this.gameData)) {
-                this.toastService.showToast('Invalid input!', 'bug', true);
+                this.toastService.showToast('Invalid input.', 'bug', true);
                 return;
             }
             else {
                 this.saveGameService.saveGameToLocalStorage(this.gameData);
-                this.toastService.showToast("Game saved!", "add");
+                this.toastService.showToast("Game saved successfully.", "add");
                 this.modal.dismiss(null, 'confirm');
             }
         } catch (error) {
@@ -305,7 +305,7 @@ export class AddGamePage implements OnInit {
                 trackGrid.clearFrames();
             });
         }
-        this.toastService.showToast('Game reset!', 'refresh-outline');
+        this.toastService.showToast('Game reset successfully.', 'refresh-outline');
     }
 
     calculateScore(): void {
@@ -330,9 +330,9 @@ export class AddGamePage implements OnInit {
                 });
                 if (perfectGame) {
                 }
-                this.toastService.showToast('Game saved!', 'add');
+                this.toastService.showToast('Game saved successfully.', 'add');
             } catch (error) {
-                this.toastService.showToast('Oops, something went wrong', 'bug', true);
+                this.toastService.showToast('Oops, something went wrong.', 'bug', true);
             }
         } else this.setAlertOpen();
     }

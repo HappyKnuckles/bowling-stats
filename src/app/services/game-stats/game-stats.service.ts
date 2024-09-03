@@ -10,7 +10,6 @@ export class GameStatsService {
   totalSpares: number = 0;
   totalSparesMissed: number = 0;
   totalSparesConverted: number = 0; 
-  totalOpens: number = 0;
   pinCounts: number[] = Array(11).fill(0);
   missedCounts: number[] = Array(11).fill(0);
   averageStrikesPerGame: number = 0;
@@ -31,7 +30,6 @@ export class GameStatsService {
     this.totalSpares = 0;
     this.totalSparesConverted = 0;
     this.totalSparesMissed = 0;
-    this.totalOpens = 0;
     this.pinCounts = Array(11).fill(0);
     this.missedCounts = Array(11).fill(0);
     let firstThrowCount = 0;
@@ -43,8 +41,6 @@ export class GameStatsService {
       //   return throws[0].value !== 10 && (throws[0].value + throws[1]?.value === 10 || (throws[0].value === 10 && throws[1]?.value !== 10 && throws[1]?.value + throws[2]?.value === 10));
       // });
       
-      this.totalOpens += this.countOccurrences(game.frames, frame => frame.throws.length === 2 && frame.throws[0].value + (frame.throws[1]?.value || 0) < 10);
-
       game.frames.forEach(frame => {
         const throws = frame.throws;
         if (throws.length === 2 && throws[0].value + throws[1].value === 10) {
@@ -101,11 +97,11 @@ export class GameStatsService {
 
     this.averageStrikesPerGame = this.totalStrikes / gameHistory.length;
     this.averageSparesPerGame = this.totalSpares / gameHistory.length;
-    this.averageOpensPerGame = this.totalOpens / gameHistory.length;
+    this.averageOpensPerGame = this.totalSparesMissed / gameHistory.length;
 
     this.strikePercentage = (this.totalStrikes / strikeChances) * 100;
     this.sparePercentage = (this.totalSpares / totalFrames) * 100;
-    this.openPercentage = (this.totalOpens / totalFrames) * 100;
+    this.openPercentage = (this.totalSparesMissed / totalFrames) * 100;
     
     this.averageFirstCount = firstThrowCount / totalFrames;
   }

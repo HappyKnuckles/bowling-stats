@@ -117,12 +117,12 @@ export class HistoryPage implements OnInit, OnDestroy {
     async saveEdit(game: Game): Promise<void> {
         try {
             if (!this.isGameValid(game)) {
-                this.toastService.showToast('Invalid input!', 'bug', true);
+                this.toastService.showToast('Invalid input.', 'bug', true);
                 return;
             }
             else {
                 await this.saveService.saveGameToLocalStorage(game);
-                this.toastService.showToast("Game edit saved!", "refresh-outline");
+                this.toastService.showToast("Game edit saved sucessfully!", "refresh-outline");
                 this.enableEdit(game);
             }
         } catch (error) {
@@ -170,7 +170,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         if (game.totalScore === 300) {
             message = `Look at me bitches, perfect game on ${formattedDate}! 🎳🎉.`;
         }
-        
+
         try {
             this.loadingService.setLoading(true);
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -216,11 +216,11 @@ export class HistoryPage implements OnInit, OnDestroy {
                     url: fileUri.uri,
                     dialogTitle: 'Share Game Score'
                 });
-                this.toastService.showToast('Screenshot shared!', 'share-social-outline');
+                this.toastService.showToast('Screenshot shared successfully.', 'share-social-outline');
             }
         } catch (error) {
             console.error('Error taking screenshot and sharing', error);
-            this.toastService.showToast('Error sharing Screenshot', 'bug', true);
+            this.toastService.showToast('Error sharing screenshot', 'bug', true);
         } finally {
             // Restore the original state
             panelContent.style.visibility = originalVisibility;
@@ -244,10 +244,7 @@ export class HistoryPage implements OnInit, OnDestroy {
                     handler: () => {
                         const key = 'game' + gameId;
                         this.saveService.deleteGame(key);
-                        this.toastService.showToast(
-                            'Game deleted!',
-                            'checkmark-outline'
-                        );
+                        this.toastService.showToast('Game deleted sucessfully.', 'checkmark-outline');
                     },
                 },
             ],
@@ -458,10 +455,7 @@ export class HistoryPage implements OnInit, OnDestroy {
                 anchor.click();
                 document.body.removeChild(anchor);
 
-                this.toastService.showToast(
-                    `File saved!`,
-                    'checkmark-outline'
-                );
+                this.toastService.showToast(`File saved sucessfully.`, 'checkmark-outline');
             } else {
                 const savedFile = await Filesystem.writeFile({
                     path: fileName,
@@ -469,10 +463,7 @@ export class HistoryPage implements OnInit, OnDestroy {
                     directory: Directory.Documents,
                     recursive: true,
                 });
-                this.toastService.showToast(
-                    `File saved at path: ${savedFile.uri}`,
-                    'checkmark-outline'
-                );
+                this.toastService.showToast(`File saved at path: ${savedFile.uri}`, 'checkmark-outline');
             }
         } catch (error) {
             this.toastService.showToast(`${error}`, 'bug', true);
@@ -484,10 +475,7 @@ export class HistoryPage implements OnInit, OnDestroy {
             this.loadingService.setLoading(true);
             this.file = event.target.files[0];
             await this.readExcelData();
-            this.toastService.showToast(
-                'Uploaded Excel file!',
-                'checkmark-outline'
-            );
+            this.toastService.showToast('Uploaded Excel file successfully.', 'checkmark-outline');
         } catch (error) {
             this.toastService.showToast(`Error: ${error}`, 'bug', true);
         } finally {

@@ -28,7 +28,6 @@ export class StatsPage implements OnInit, OnDestroy {
     totalSpares: number = 0;
     totalSparesMissed: number = 0;
     totalSparesConverted: number = 0;
-    totalOpens: number = 0;
     firstThrowCount: number = 0;
     averageFirstCount: number = 0;
     averageStrikesPerGame: number = 0;
@@ -106,7 +105,6 @@ export class StatsPage implements OnInit, OnDestroy {
                 totalSparesMissed,
                 averageSparesPerGame,
                 sparePercentage,
-                totalOpens,
                 averageOpensPerGame,
                 openPercentage,
                 missedCounts,
@@ -126,7 +124,6 @@ export class StatsPage implements OnInit, OnDestroy {
             this.totalSparesMissed = totalSparesMissed;
             this.averageSparesPerGame = averageSparesPerGame;
             this.sparePercentage = sparePercentage;
-            this.totalOpens = totalOpens;
             this.averageOpensPerGame = averageOpensPerGame;
             this.openPercentage = openPercentage;
             this.missedCounts = missedCounts;
@@ -181,7 +178,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 await this.loadDataAndCalculateStats();
                 event.target.complete();
             }, 100);
-            this.generateScoreChart();
+            this.generateCharts();
         } catch (error) {
             console.error(error);
         } finally {
@@ -459,7 +456,7 @@ export class StatsPage implements OnInit, OnDestroy {
                             meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : !meta.hidden;
 
                             // Find the index of the "Games Played" dataset
-                            const gamesPlayedIndex = ci.data.datasets.findIndex(dataset => dataset.label === 'Games Played');
+                            const gamesPlayedIndex = ci.data.datasets.findIndex(dataset => dataset.label === 'Games played');
 
                             // Check if the "Games Played" dataset exists
                             if (gamesPlayedIndex !== -1) {

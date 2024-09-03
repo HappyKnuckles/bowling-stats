@@ -10,7 +10,7 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"></ion-refresher>
   <!-- Show this message if there are no game history items and it's not loading -->
   <ng-container *ngIf="gameHistory.length <= 0 && !isLoading; else content">
-    <ion-text style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 999;">
+    <ion-text style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 999; width: 60%;">
       Start playing a few games to see your stats here!
     </ion-text>
   </ng-container>

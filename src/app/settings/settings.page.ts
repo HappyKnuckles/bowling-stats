@@ -1,11 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { UserService } from '../services/user/user.service';
 import { ToastService } from '../services/toast/toast.service';
+import { IonHeader, IonToolbar, IonContent, IonInput, IonIcon, IonTitle, IonItem, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
+import { FormsModule } from '@angular/forms';
+import { addIcons } from 'ionicons';
+import { colorPaletteOutline, personCircleOutline } from 'ionicons/icons';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
+  standalone: true,
+  imports: [IonItem, IonTitle, IonIcon, IonInput, IonContent, IonToolbar, IonHeader, IonSelect, IonSelectOption, FormsModule, CommonModule],
+
 })
 export class SettingsPage implements OnInit {
   username: string | null = '';
@@ -17,7 +25,9 @@ export class SettingsPage implements OnInit {
     { name: 'Red', class: 'red-option' },
     { name: 'Gray', class: 'gray-option' }
   ];
-  constructor(private userService: UserService, private toastService: ToastService) { }
+  constructor(private userService: UserService, private toastService: ToastService) {
+    addIcons({ personCircleOutline, colorPaletteOutline});
+   }
 
   ngOnInit() {
     this.currentColor = localStorage.getItem('theme');
@@ -35,7 +45,6 @@ export class SettingsPage implements OnInit {
 
   changeColor() {
     localStorage.setItem('theme', this.currentColor!);
-    this.toastService.showToast(`Changed theme to ${this.currentColor}`, 'checkmark');
-
+    this.toastService.showToast(`Changed theme to ${this.currentColor}.`, 'checkmark-outline');
   }
 }

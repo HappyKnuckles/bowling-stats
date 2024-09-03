@@ -9,7 +9,7 @@ describe('TabsPage', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TabsPage],
+      imports: [TabsPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   });

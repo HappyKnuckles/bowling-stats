@@ -11,6 +11,6 @@ export class LoadingService {
 
   constructor() { }
 
-  setLoading(isLoading: boolean) {
+  setLoading(isLoading: boolean): void {
     this.isLoadingSubject.next(isLoading);
   }}

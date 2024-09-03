@@ -1,10 +1,9 @@
-
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-button type="button" class="actionSheet" slot="start" fill="clear" (click)="handleImageUpload()">
       <ion-icon slot="icon-only" name="add"></ion-icon>
     </ion-button>
-    <input type="file" id="upload" style="display: none;" accept="image/*"/>
+    <input type="file" id="upload" style="display: none;" accept="image/*" />
     <ion-title>
       Add Game
     </ion-title>
@@ -21,8 +20,6 @@
 <ion-alert [isOpen]="isAlertOpen" header="Error" message="You didn't fill all inputs" [buttons]="alertButton"
   (didDismiss)="setAlertOpen()">
 </ion-alert>
-
-<app-toast></app-toast>
 
 <ng-container *ngFor="let mode of seriesMode; let i = index;">
   <ion-content [fullscreen]="true" *ngIf="mode">
@@ -73,7 +70,7 @@
       </ion-row>
     </ion-grid>
 
-    <ion-modal [isOpen]="isModalOpen">
+    <ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false">
       <ng-template>
         <ion-header>
           <ion-toolbar>
@@ -96,26 +93,26 @@
               <ion-row>
                 <ion-col class="inputCol" *ngIf="frameIndex !== 9"></ion-col>
                 <ion-col class="inputCol">
-                  <ion-input type="number" [value]="frame.throws[0]?.value"
-                    (ionChange)="frame.throws[0].value = $event.target.value"></ion-input>
+                  <ion-input type="number" clearOnEdit="true" [value]="frame.throws[0]?.value" inputmode="numeric"
+                    (ionChange)="frame.throws[0] = frame.throws[0] || {}; frame.throws[0].value = $event.target.value"></ion-input>
                 </ion-col>
                 <ion-col class="inputCol" *ngIf="frameIndex !== 9">
-                  <ion-input type="number" [value]="frame.throws[1]?.value"
-                    (ionChange)="frame.throws[1].value = $event.target.value"></ion-input>
+                  <ion-input type="number" clearOnEdit="true" [value]="frame.throws[1]?.value" inputmode="numeric"
+                    (ionChange)="frame.throws[1] = frame.throws[1] || {}; frame.throws[1].value = $event.target.value"></ion-input>
                 </ion-col>
                 <ion-col class="inputCol" *ngIf="frameIndex === 9">
-                  <ion-input type="number" [value]="frame.throws[1]?.value"
-                    (ionChange)="frame.throws[1].value = $event.target.value"></ion-input>
+                  <ion-input type="number" clearOnEdit="true" [value]="frame.throws[1]?.value" inputmode="numeric"
+                    (ionChange)="frame.throws[1] = frame.throws[1] || {}; frame.throws[1].value = $event.target.value"></ion-input>
                 </ion-col>
                 <ion-col class="inputCol" *ngIf="frameIndex === 9">
-                  <ion-input type="number" [value]="frame.throws[2]?.value"
-                    (ionChange)="frame.throws[2].value = $event.target.value"></ion-input>
+                  <ion-input type="number" clearOnEdit="true" [value]="frame.throws[2]?.value" inputmode="numeric"
+                    (ionChange)="frame.throws[2] = frame.throws[2] || {}; frame.throws[2].value = $event.target.value"></ion-input>
                 </ion-col>
               </ion-row>
               <ion-row>
                 <ion-col class="middle count">
                   <ion-input type="text" class="frameScores" [value]="gameData.frameScores[frameIndex]"
-                    (ionChange)="updateFrameScore($event.target.value, frameIndex)">
+                    inputmode="numeric" clearOnEdit="true" (ionChange)="updateFrameScore($event.target.value, frameIndex)">
                   </ion-input>
                 </ion-col>
               </ion-row>

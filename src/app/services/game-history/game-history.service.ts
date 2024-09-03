@@ -1,30 +1,33 @@
 import { Injectable } from '@angular/core';
+import { Game } from 'src/app/models/game-model';
+import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameHistoryService {
-  constructor() {}
+  constructor(private storage: Storage) {
+    this.init();
+  }
 
-  async loadGameHistory(): Promise<any[]> {
-    const gameHistory: any[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('game')) {
-        const gameDataString = localStorage.getItem(key);
-        if (gameDataString) {
-          const gameData = JSON.parse(gameDataString);
-          gameHistory.push(gameData);
-        }
+  async init() {
+    await this.storage.create();
+  }
+
+  async loadGameHistory(): Promise<Game[]> {
+    const gameHistory: Game[] = [];
+    await this.storage.forEach((value: Game, key: string) => {
+      if (key.startsWith('game')) {
+        gameHistory.push(value);
       }
-    }
+    });
     await this.sortGameHistoryByDate(gameHistory);
     return gameHistory;
   }
 
-  async sortGameHistoryByDate(gameHistory: any[]): Promise<void> {
+  async sortGameHistoryByDate(gameHistory: Game[]): Promise<void> {
     gameHistory.sort((a: { date: number }, b: { date: number }) => {
-      return a.date - b.date; // Sorting in ascending order based on date
+      return a.date - b.date;
     });
   }
 }

@@ -3,7 +3,7 @@
   "ignorePatterns": ["projects/**/*"],
   "overrides": [
     {
-      "files": ["*/*.ts"],
+      "files": ["**/*.ts"],
       "parserOptions": {
         "project": ["tsconfig.json"],
         "createDefaultProgram": true
@@ -38,7 +38,7 @@
       }
     },
     {
-      "files": ["*.html"],
+      "files": ["**/*.html"],
       "extends": ["plugin:@angular-eslint/template/recommended"],
       "rules": {}
     }

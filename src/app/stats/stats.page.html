@@ -1,92 +1,144 @@
-<ion-backdrop *ngIf="isLoading" style="opacity: 0.3; z-index: 11;"></ion-backdrop>
-<ion-spinner *ngIf="isLoading" name="lines" color="primary" class="custom-loader"></ion-spinner>
-
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header [translucent]="true"  class="ion-text-center">
+  <ion-toolbar style="height: 66.8px; display: flex;">
     <ion-title>
-      Statistik
+      Stats
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">  
-  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>
-  <h2>Allgemein</h2>
-  <div class="stats">
-    <ion-text>Durchschnitt: </ion-text>
-    <ion-text class="value">{{averageScore | number:'1.2-2' }}</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>High Game: </ion-text>
-    <ion-text class="value">{{highGame}}</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Total Pins: </ion-text>
-    <ion-text class="value">{{totalPins}}</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Erster Ball Durchschnitt: </ion-text>
-    <ion-text class="value">{{averageFirstCount | number:'1.2-2' }}</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Strikes: </ion-text>
-    <ion-text class="value">{{totalStrikes}}</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Strikes pro Spiel: </ion-text>
-    <ion-text class="value">{{averageStrikesPerGame | number:'1.2-2'}}</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Strikewahrscheinlichkeit: </ion-text>
-    <ion-text class="value">{{strikePercentage | number:'1.2-2'}}%</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Spares: </ion-text>
-    <ion-text class="value">{{totalSpares}}</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Sparewahrscheinlichkeit: </ion-text>
-    <ion-text class="value">{{sparePercentage | number:'1.2-2'}}%</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Opens: </ion-text>
-    <ion-text class="value">{{totalOpens}}</ion-text>
-  </div>
-  <div class="stats">
-    <ion-text>Openwahrscheinlichkeit: </ion-text>
-    <ion-text class="value">{{openPercentage | number:'1.2-2'}}%</ion-text>
-  </div>
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"></ion-refresher>
+  <!-- Show this message if there are no game history items and it's not loading -->
+  <ng-container *ngIf="gameHistory.length <= 0 && !isLoading; else content">
+    <ion-text style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 999; width: 60%;">
+      Start playing a few games to see your stats here!
+    </ion-text>
+  </ng-container>
 
-  <div>
-    <mat-expansion-panel>
-      <mat-expansion-panel-header class="padding">
-        <mat-panel-title>Spares</mat-panel-title>
-      </mat-expansion-panel-header>
-      <ion-grid class="statGrid">
-        <ion-row>
-          <ion-col>Count</ion-col>
-          <ion-col>Missed</ion-col>
-          <ion-col>Converted</ion-col>
-          <ion-col>Rate</ion-col>
-        </ion-row>
-        <ion-row *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];">
-          <ion-col *ngIf="i === 1">{{ i }} Pin</ion-col>
-          <ion-col *ngIf="i > 1">{{ i }} Pins</ion-col>
-          <ion-col>{{ missedCounts[i] }}</ion-col>
-          <ion-col>{{ pinCounts[i] }}</ion-col>
-          <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
-          <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0" [ngClass]="{
-           'green': (missedCounts[i] === 0 || (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) > 75),
-           'orange': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) > 33 && (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 75,
-           'red': (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) <= 33 }">
-            {{ missedCounts[i] === 0 ? '100.00' : (pinCounts[i] / (pinCounts[i] + missedCounts[i]) * 100) |
-            number:'1.2-2'}}%
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </mat-expansion-panel>
-  </div>
+  <!-- Main content to display when there is game history or when loading is done -->
+  <ng-template #content>
+    <div>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header class="padding">
+          <mat-panel-title>
+            <h2>Overall</h2>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="stats">
+          <ion-text>Games: </ion-text>
+          <ion-text class="value">{{ totalGames }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Average: </ion-text>
+          <ion-text class="value">{{ averageScore | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>High game: </ion-text>
+          <ion-text class="value">{{ highGame }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total pins: </ion-text>
+          <ion-text class="value">{{ totalPins }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>First ball average: </ion-text>
+          <ion-text class="value">{{ averageFirstCount | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total strikes: </ion-text>
+          <ion-text class="value">{{ totalStrikes }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Strikes per game: </ion-text>
+          <ion-text class="value">{{ averageStrikesPerGame | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Strike-percentage: </ion-text>
+          <ion-text class="value">{{ strikePercentage | number:'1.2-2' }}%</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total spares: </ion-text>
+          <ion-text class="value">{{ totalSpares }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Spares per game: </ion-text>
+          <ion-text class="value">{{ averageSparesPerGame | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Spare-percentage: </ion-text>
+          <ion-text class="value">{{ sparePercentage | number:'1.2-2' }}%</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total opens: </ion-text>
+          <ion-text class="value">{{ totalSparesMissed }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Opens per game: </ion-text>
+          <ion-text class="value">{{ averageOpensPerGame | number:'1.2-2' }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Open-percentage: </ion-text>
+          <ion-text class="value">{{ openPercentage | number:'1.2-2' }}%</ion-text>
+        </div>
+      </mat-expansion-panel>
+      <div>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header class="padding">
+            <mat-panel-title>
+              <h2>Spares</h2>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ion-grid class="statGrid">
+            <ion-row style="font-weight: bold;">
+              <ion-col>Count</ion-col>
+              <ion-col>Missed</ion-col>
+              <ion-col>Converted</ion-col>
+              <ion-col>Rate</ion-col>
+            </ion-row>
+            <ion-row *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+              <ion-col>{{ getLabel(i) }}</ion-col>
+              <!-- Display each pin count -->
+              <ng-container *ngIf="i > 0">
+                <ion-col>{{ missedCounts[i] }}</ion-col>
+                <ion-col>{{ pinCounts[i] }}</ion-col>
+                <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
+                <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0"
+                  [ngStyle]="{'color': getRateColor(spareRates[i])}">
+                  {{ spareRates[i] | number:'1.2-2' }}%
+                </ion-col>
+              </ng-container>
+              <!-- Display total spares and conversion rate -->
+              <ng-container *ngIf="i === 0">
+                <ion-col>{{ totalSparesMissed }}</ion-col>
+                <ion-col>{{ totalSparesConverted }}</ion-col>
+                <ion-col *ngIf="totalSparesMissed + totalSparesConverted !== 0"
+                  [ngStyle]="{'color': getRateColor(overallSpareRate)}">
+                  {{ overallSpareRate | number:'1.2-2' }}%
+                </ion-col>
+                <ion-col *ngIf="totalSparesMissed + totalSparesConverted === 0"></ion-col>
+              </ng-container>
+            </ion-row>
+          </ion-grid>
+          <canvas #pinChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
+        </mat-expansion-panel>
+      </div>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header class="padding">
+          <mat-panel-title>
+            <h2>Average over time</h2>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <canvas #scoreChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
+      </mat-expansion-panel>
 
-  <canvas #scoreChart style="width: 300px; height: 300px;"></canvas>
-
+      <mat-expansion-panel>
+        <mat-expansion-panel-header class="padding">
+          <mat-panel-title>
+            <h2>Throw distribution</h2>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <canvas #throwChart style="width: 300px; height: 300px; margin: 8px;"></canvas>
+      </mat-expansion-panel>
+    </div>
+  </ng-template>
 </ion-content>

@@ -151,9 +151,9 @@ export class StatsPage implements OnInit, OnDestroy {
     }
 
     generateCharts(): void {
+        this.generatePinChart();
         this.generateScoreChart();
         this.generateThrowChart();
-        this.generatePinChart();
     }
 
     private subscribeToDataEvents(): void {
@@ -161,7 +161,6 @@ export class StatsPage implements OnInit, OnDestroy {
             this.gameHistoryChanged = true;
             await this.loadDataAndCalculateStats();
             this.generateCharts();
-
         });
 
         this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(async () => {

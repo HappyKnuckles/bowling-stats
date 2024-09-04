@@ -26,6 +26,7 @@
     "@azure/cognitiveservices-computervision": "^8.2.0",
     "@azure/identity": "^4.2.1",
     "@azure/storage-blob": "^12.17.0",
+    "@capacitor-community/admob": "^6.0.0",
     "@capacitor/android": "^6.0.0",
     "@capacitor/app": "^6.0.0",
     "@capacitor/camera": "^6.0.0",

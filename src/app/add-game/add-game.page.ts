@@ -151,14 +151,21 @@ export class AddGamePage implements OnInit {
 
     async handleImageUpload(): Promise<void> {
         try {
+            await this.adService.showRewardedAd();
             const imageUrl: File | Blob | undefined = await this.takeOrChoosePicture();
             if (imageUrl instanceof File) {
                 this.loadingService.setLoading(true);
                 const gameText = await this.imageProcessingService.performOCR(imageUrl);
                 this.parseBowlingScores(gameText!);
-            } else this.toastService.showToast("No image uploaded.", "bug", true);
+            } else {
+                this.toastService.showToast("No image uploaded.", "bug", true);
+            }
         } catch (error) {
-            this.toastService.showToast(`Error uploading image: ${error}`, "bug", true);
+            if ((error as Error).message === 'Ad not watched') {
+                this.toastService.showToast("You need to watch the ad to upload an image.", "bug", true);
+            } else {
+                this.toastService.showToast(`Error uploading image: ${error}`, "bug", true);
+            }
         } finally {
             this.loadingService.setLoading(false);
         }

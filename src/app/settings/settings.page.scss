@@ -1,0 +1,29 @@
+.Red {
+    &::part(text) {
+        color: red;
+    }
+}
+
+.Blue {
+    &::part(text) {
+        color: blue;
+    }
+}
+
+.Green {
+    &::part(text) {
+        color: green;
+    }
+}
+
+.Yellow {
+    &::part(text) {
+        color: yellow;
+    }
+}
+
+.Gray {
+    &::part(text) {
+        color: gray;
+    }
+}

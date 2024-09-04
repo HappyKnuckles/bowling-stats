@@ -38,6 +38,38 @@ ion-header {
     color: black;
 }
 
+.sc-ion-select-popover-ios {
+    .blue-option {
+        ion-radio {
+            color: blue;
+        }
+    }
+
+    .red-option {
+        ion-radio {
+            color: red;
+        }
+    }
+
+    .gray-option {
+        ion-radio {
+            color: gray;
+        }
+    }
+
+    .yellow-option {
+        ion-radio {
+            color: yellow;
+        }
+    }
+
+    .green-option {
+        ion-radio {
+            color: green;
+        }
+    }
+}
+
 ion-button {
     --background-activated: none;
     --background-hover: none;

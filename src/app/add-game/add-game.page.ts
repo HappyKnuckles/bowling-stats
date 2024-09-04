@@ -21,7 +21,7 @@ import { Game } from '../models/game-model';
 import { addIcons } from "ionicons";
 import { add, chevronDown, chevronUp } from "ionicons/icons";
 import { NgIf, NgFor } from '@angular/common';
-
+import { AdService } from '../services/ad/ad.service';
 @Component({
     selector: 'app-add-game',
     templateUrl: 'add-game.page.html',
@@ -73,12 +73,13 @@ export class AddGamePage implements OnInit {
         private saveGameService: SaveGameDataService,
         private transformGameService: GameDataTransformerService,
         private loadingService: LoadingService,
-        private userService: UserService
+        private userService: UserService,
+        private adService: AdService
     ) {
         addIcons({ add, chevronDown, chevronUp });
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.userService.getUsername().subscribe((username: string) => {
             this.username = username;
         });
@@ -308,7 +309,7 @@ export class AddGamePage implements OnInit {
         this.toastService.showToast('Game reset successfully.', 'refresh-outline');
     }
 
-    calculateScore(): void {
+    async calculateScore(): Promise<void> {
         let allGamesValid = true;
 
         this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
@@ -321,14 +322,17 @@ export class AddGamePage implements OnInit {
         if (allGamesValid) {
             try {
                 let perfectGame = false;
-                this.trackGrids.forEach((trackGrid: TrackGridComponent) => { 
+                this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
                     if (trackGrid.totalScore === 300) {
                         perfectGame = true;
                     }
                     trackGrid.saveGameToLocalStorage();
-                   
+
                 });
                 if (perfectGame) {
+                }
+                if (isPlatform('android') || isPlatform('ios')) {
+                    await this.adService.showIntertistalAd();
                 }
                 this.toastService.showToast('Game saved successfully.', 'add');
             } catch (error) {

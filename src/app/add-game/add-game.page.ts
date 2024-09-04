@@ -151,7 +151,12 @@ export class AddGamePage implements OnInit {
 
     async handleImageUpload(): Promise<void> {
         try {
-            await this.adService.showRewardedAd();
+            const adWatched = await this.showAdAlert();
+            if (!adWatched) {
+                this.toastService.showToast("You need to watch the ad to use this service.", "bug", true);
+                return;
+            }
+
             const imageUrl: File | Blob | undefined = await this.takeOrChoosePicture();
             if (imageUrl instanceof File) {
                 this.loadingService.setLoading(true);
@@ -161,15 +166,41 @@ export class AddGamePage implements OnInit {
                 this.toastService.showToast("No image uploaded.", "bug", true);
             }
         } catch (error) {
-            if ((error as Error).message === 'Ad not watched') {
-                this.toastService.showToast("You need to watch the ad to upload an image.", "bug", true);
-            } else {
-                this.toastService.showToast(`Error uploading image: ${error}`, "bug", true);
-            }
+            this.toastService.showToast(`Error uploading image: ${error}`, "bug", true);
         } finally {
             this.loadingService.setLoading(false);
         }
     }
+
+    showAdAlert(): Promise<boolean> {
+        return new Promise((resolve) => {
+            this.alertController.create({
+                header: 'Ad required',
+                message: 'To use this service, you need to watch an ad.',
+                buttons: [
+                    {
+                        text: 'Watch ad',
+                        handler: async () => {
+                            try {
+                                await this.adService.showRewardedAd();
+                                resolve(true);
+                            } catch (error) {
+                                resolve(false);
+                            }
+                        }
+                    },
+                    {
+                        text: 'Cancel',
+                        role: 'cancel',
+                        handler: () => {
+                            resolve(false);
+                        }
+                    }
+                ]
+            }).then(alert => alert.present());
+        });
+    }
+
 
     parseBowlingScores(input: string): void {
         try {

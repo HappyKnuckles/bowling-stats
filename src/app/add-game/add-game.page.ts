@@ -151,12 +151,13 @@ export class AddGamePage implements OnInit {
 
     async handleImageUpload(): Promise<void> {
         try {
-            const adWatched = await this.showAdAlert();
-            if (!adWatched) {
-                this.toastService.showToast("You need to watch the ad to use this service.", "bug", true);
-                return;
+            if (!isPlatform('desktop' || !isPlatform('mobileweb'))) {
+                const adWatched = await this.showAdAlert();
+                if (!adWatched) {
+                    this.toastService.showToast("You need to watch the ad to use this service.", "bug", true);
+                    return;
+                }
             }
-
             const imageUrl: File | Blob | undefined = await this.takeOrChoosePicture();
             if (imageUrl instanceof File) {
                 this.loadingService.setLoading(true);
@@ -369,7 +370,7 @@ export class AddGamePage implements OnInit {
                 });
                 if (perfectGame) {
                 }
-                if (isPlatform('android') || isPlatform('ios')) {
+                if (!isPlatform('desktop') || !isPlatform('mobileweb')) {
                     await this.adService.showIntertistalAd();
                 }
                 this.toastService.showToast('Game saved successfully.', 'add');

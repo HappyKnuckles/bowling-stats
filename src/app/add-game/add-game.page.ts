@@ -151,7 +151,7 @@ export class AddGamePage implements OnInit {
 
     async handleImageUpload(): Promise<void> {
         try {
-            if (!isPlatform('desktop' || !isPlatform('mobileweb'))) {
+            if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
                 const adWatched = await this.showAdAlert();
                 if (!adWatched) {
                     this.toastService.showToast("You need to watch the ad to use this service.", "bug", true);
@@ -370,7 +370,7 @@ export class AddGamePage implements OnInit {
                 });
                 if (perfectGame) {
                 }
-                if (!isPlatform('desktop') || !isPlatform('mobileweb')) {
+                if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
                     await this.adService.showIntertistalAd();
                 }
                 this.toastService.showToast('Game saved successfully.', 'add');

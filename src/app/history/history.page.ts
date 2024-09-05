@@ -162,7 +162,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
         // Temporarily show the panel content
         panelContent.style.visibility = 'visible';
-        panelContent.style.width = '600px';
+        panelContent.style.width = '700px';
 
         const formattedDate = this.datePipe.transform(game.date, 'dd.MM.yy');
 

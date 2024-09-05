@@ -1,4 +1,4 @@
-import { enableProdMode, importProvidersFrom } from '@angular/core';
+import { enableProdMode, importProvidersFrom, isDevMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 
@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app/app-routing.module';
 import { withInterceptorsFromDi, provideHttpClient } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { AppComponent } from './app/app.component';
+import { provideServiceWorker } from '@angular/service-worker';
 
 if (environment.production) {
   enableProdMode();
@@ -21,6 +22,10 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(BrowserModule, AppRoutingModule, IonicStorageModule.forRoot()),
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync(), provideIonicAngular(),
     provideHttpClient(withInterceptorsFromDi()),
-  ]
+    provideServiceWorker('ngsw-worker.js', {
+        enabled: !isDevMode(),
+        registrationStrategy: 'registerWhenStable:30000'
+    })
+]
 })
   .catch(err => console.error(err));

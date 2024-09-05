@@ -1,8 +1,8 @@
 {
   "name": "Bowling Stats",
   "short_name": "Bowling Stats",
-  "theme_color": "#1976d2",
-  "background_color": "#fafafa",
+  "theme_color": "#020a06",
+  "background_color": "#020a06",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

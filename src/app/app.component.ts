@@ -6,6 +6,7 @@ import { UserService } from './services/user/user.service';
 import { Subscription } from 'rxjs';
 import { NgIf } from '@angular/common';
 import { ToastComponent } from './components/toast/toast.component';
+import { SwUpdate } from '@angular/service-worker';
 
 @Component({
     selector: 'app-root',
@@ -32,8 +33,10 @@ export class AppComponent implements OnInit, OnDestroy {
         private alertController: AlertController,
         private toastService: ToastService,
         private loadingService: LoadingService,
-        private userService: UserService
+        private userService: UserService,
+        private swUpdate: SwUpdate
     ) {
+        this.initializeApp();
         this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
             this.isLoading = isLoading;
         });
@@ -42,6 +45,16 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
+    initializeApp(): void {
+        this.swUpdate.versionUpdates.subscribe(event => {
+            if (event.type === 'VERSION_READY') {
+                if (confirm('A new version is available. Load it?')) {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+    
     ngOnInit(): void {
         this.greetUser();
     }

@@ -370,7 +370,7 @@ export class AddGamePage implements OnInit {
                 });
                 if (perfectGame) {
                 }
-                if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
+                if ((isPlatform('android') || isPlatform('ios'))) {
                     await this.adService.showIntertistalAd();
                 }
                 this.toastService.showToast('Game saved successfully.', 'add');

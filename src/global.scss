@@ -33,6 +33,28 @@ ion-header {
     }
 }
 
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(30px, 1fr));
+    gap: 10px;
+    margin: 5px 5px 10px;
+    max-width: 100%;
+}
+
+.middle {
+    text-align: center;
+
+    &.frame {
+        background-color: var(--ion-color-dark);
+        border-radius: 3px;
+    }
+
+    &.count {
+        font-weight: 500;
+        --ion-grid-column-padding: 1px;
+    }
+}
+
 .nameInput {
     background-color: white !important;
     color: black;

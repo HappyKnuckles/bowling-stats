@@ -9,7 +9,7 @@ export class GameStatsService {
   totalStrikes: number = 0;
   totalSpares: number = 0;
   totalSparesMissed: number = 0;
-  totalSparesConverted: number = 0; 
+  totalSparesConverted: number = 0;
   pinCounts: number[] = Array(11).fill(0);
   missedCounts: number[] = Array(11).fill(0);
   averageStrikesPerGame: number = 0;
@@ -17,7 +17,7 @@ export class GameStatsService {
   averageOpensPerGame: number = 0;
   strikePercentage: number = 0;
   sparePercentage: number = 0;
-  openPercentage: number = 0;  
+  openPercentage: number = 0;
   spareConversionPercentage: number = 0;
   averageFirstCount: number = 0;
   averageScore: number = 0;
@@ -35,50 +35,61 @@ export class GameStatsService {
     let firstThrowCount = 0;
 
     gameHistory.forEach((game: { frames: any[] }) => {
-      this.totalStrikes += this.countOccurrences(game.frames, frame => frame.throws[0].value === 10);
-      // this.totalSpares += this.countOccurrences(game.frames, frame => {
-      //   const throws = frame.throws;
-      //   return throws[0].value !== 10 && (throws[0].value + throws[1]?.value === 10 || (throws[0].value === 10 && throws[1]?.value !== 10 && throws[1]?.value + throws[2]?.value === 10));
-      // });
-      
-      game.frames.forEach(frame => {
+
+      game.frames.forEach((frame, index) => {
         const throws = frame.throws;
-        if (throws.length === 2 && throws[0].value + throws[1].value === 10) {
-          const pinsLeft = 10 - throws[0].value;
-          this.pinCounts[pinsLeft]++;
-        } else if (throws.length === 3) {
-          if (throws[1].value + throws[2].value === 10) {
-            const pinsLeft = 10 - throws[1].value;
-            this.pinCounts[pinsLeft]++;
-          } else if (throws[0].value + throws[1].value === 10) {
-            const pinsLeft = 10 - throws[0].value;
-            this.pinCounts[pinsLeft]++;
+
+        // Count the first throw in each frame for firstThrowAverage
+        firstThrowCount += parseInt(throws[0].value);
+
+        // Count strikes
+        if (throws[0].value === 10) {
+          this.totalStrikes++;
+          // Additional logic for counting strikes in the 10th frame
+          if (index === 9) {
+            if (throws[1]?.value === 10) {
+              this.totalStrikes++; // Increment by 1 if second throw is also a strike   
+              if (throws[2]?.value === 10) {
+                this.totalStrikes++; // Increment by 1 if third throw is also a strike
+              }
+            }
+          }
+        } else if (index === 9 && throws.length === 3) {
+          if (throws[2]?.value === 10) {
+            this.totalStrikes++; // Increment by 1 if third throw is a strike
           }
         }
-      });
 
-      // Additional logic for counting strikes in the 10th frame
-      if (game.frames.length === 10) {
-        const tenthFrame = game.frames[9];
-        const throws = tenthFrame.throws;
-        if (throws.length === 3 && throws[0].value === 10 && throws[1]?.value === 10) {
-          this.totalStrikes += 2; // Increment by 2 if both throws are strikes
-        } else if (throws.length === 3 && throws[0].value === 10) {
-          this.totalStrikes++; // Increment by 1 if first throw is a strike
+        // Handle pin counts for spares
+        if (throws.length === 2) {
+          if (throws[0].value + throws[1].value === 10) {
+            const pinsLeft = 10 - throws[0].value;
+            this.pinCounts[pinsLeft]++;
+          } else {
+            const pinsLeft = 10 - throws[0].value;
+            this.missedCounts[pinsLeft]++;
+          }
+        } else if (throws.length === 3) {
+
+          // Check for spares in the first two throws
+          if (throws[0].value !== 10 && throws[0].value + throws[1].value === 10) {
+            const pinsLeft = 10 - throws[0].value;
+            this.pinCounts[pinsLeft]++;
+          } else if (throws[1].value !== 10 && throws[1].value + throws[2].value === 10) {
+            const pinsLeft = 10 - throws[1].value;
+            this.pinCounts[pinsLeft]++;
+          }
+
+          // Check for missed pins
+          if (throws[0].value !== 10 && throws[0].value + throws[1].value !== 10) {
+            const pinsLeft = 10 - throws[0].value;
+            this.missedCounts[pinsLeft]++;
+          }
+          if (throws[1].value !== 10 && throws[0].value + throws[1].value !== 10 && throws[1].value + throws[2].value !== 10) {
+            const pinsLeft = 10 - throws[1].value;
+            this.missedCounts[pinsLeft]++;
+          }
         }
-      }
-
-      game.frames.forEach(frame => {
-        const throws = frame.throws;
-        if (throws.length === 2 && throws[0].value + throws[1].value !== 10) {
-          const pinsLeft = 10 - throws[0].value;
-          this.missedCounts[pinsLeft]++;
-        }
-      });
-
-      game.frames.forEach(frame => {
-        const throws = frame.throws;
-        firstThrowCount += parseInt(throws[0].value);
       });
     });
 
@@ -102,7 +113,7 @@ export class GameStatsService {
     this.strikePercentage = (this.totalStrikes / strikeChances) * 100;
     this.sparePercentage = (this.totalSpares / totalFrames) * 100;
     this.openPercentage = (this.totalSparesMissed / totalFrames) * 100;
-    
+
     this.averageFirstCount = firstThrowCount / totalFrames;
   }
 

@@ -11,6 +11,8 @@ import { Game } from '../models/game-model';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { NgIf, NgFor, NgStyle, DecimalPipe } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
+import { HapticService } from '../services/haptic/haptic.service';
+import { ImpactStyle } from '@capacitor/haptics';
 @Component({
     selector: 'app-stats',
     templateUrl: 'stats.page.html',
@@ -61,7 +63,8 @@ export class StatsPage implements OnInit, OnDestroy {
         private toastService: ToastService,
         private gameHistoryService: GameHistoryService,
         private saveService: SaveGameDataService,
-        private decimalPipe: DecimalPipe
+        private decimalPipe: DecimalPipe,
+        private hapticService: HapticService
     ) {
         this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
             this.isLoading = isLoading;
@@ -172,6 +175,7 @@ export class StatsPage implements OnInit, OnDestroy {
 
     handleRefresh(event: any): void {
         try {
+            this.hapticService.vibrate(ImpactStyle.Medium, 200);
             this.loadingService.setLoading(true);
             setTimeout(async () => {
                 await this.loadDataAndCalculateStats();

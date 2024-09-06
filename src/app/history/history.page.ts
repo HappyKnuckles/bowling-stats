@@ -15,6 +15,8 @@ import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, Mat
 import { Share } from '@capacitor/share';
 import { FormsModule } from '@angular/forms';
 import { toPng } from 'html-to-image';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { HapticService } from '../services/haptic/haptic.service';
 
 @Component({
     selector: 'app-history',
@@ -64,7 +66,8 @@ export class HistoryPage implements OnInit, OnDestroy {
         private gameHistoryService: GameHistoryService,
         private saveService: SaveGameDataService,
         private loadingService: LoadingService,
-        private datePipe: DatePipe
+        private datePipe: DatePipe,
+        private hapticService: HapticService
     ) {
         this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
             this.isLoading = isLoading;
@@ -96,6 +99,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     enableEdit(game: Game, expansionPanel?: MatExpansionPanel): void {
         this.isEditMode[game.gameId] = !this.isEditMode[game.gameId];
+        this.hapticService.vibrate(ImpactStyle.Light, 100);
         if (expansionPanel) {
             this.openExpansionPanel(expansionPanel);
         }
@@ -117,6 +121,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     async saveEdit(game: Game): Promise<void> {
         try {
             if (!this.isGameValid(game)) {
+                this.hapticService.vibrate(ImpactStyle.Heavy, 300);
                 this.toastService.showToast('Invalid input.', 'bug', true);
                 return;
             }
@@ -230,6 +235,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
 
     async deleteGame(gameId: string): Promise<void> {
+        this.hapticService.vibrate(ImpactStyle.Heavy, 300);
         const alert = await this.alertController.create({
             header: 'Confirm Deletion',
             message: 'Are you sure you want to delete this game?',
@@ -292,6 +298,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     handleRefresh(event: any): void {
         try {
+            this.hapticService.vibrate(ImpactStyle.Medium, 200);
             this.loadingService.setLoading(true);
             setTimeout(async () => {
                 await this.loadGameHistory();
@@ -465,6 +472,7 @@ export class HistoryPage implements OnInit, OnDestroy {
                 });
                 this.toastService.showToast(`File saved at path: ${savedFile.uri}`, 'checkmark-outline');
             }
+            this.hapticService.vibrate(ImpactStyle.Light, 100);
         } catch (error) {
             this.toastService.showToast(`${error}`, 'bug', true);
         }

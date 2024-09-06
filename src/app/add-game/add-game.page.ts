@@ -22,6 +22,8 @@ import { addIcons } from "ionicons";
 import { add, chevronDown, chevronUp } from "ionicons/icons";
 import { NgIf, NgFor } from '@angular/common';
 import { AdService } from '../services/ad/ad.service';
+import { ImpactStyle } from '@capacitor/haptics';
+import { HapticService } from '../services/haptic/haptic.service';
 @Component({
     selector: 'app-add-game',
     templateUrl: 'add-game.page.html',
@@ -74,7 +76,8 @@ export class AddGamePage implements OnInit {
         private transformGameService: GameDataTransformerService,
         private loadingService: LoadingService,
         private userService: UserService,
-        private adService: AdService
+        private adService: AdService,
+        private hapticService: HapticService
     ) {
         addIcons({ add, chevronDown, chevronUp });
     }
@@ -354,6 +357,7 @@ export class AddGamePage implements OnInit {
         this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
             if (!trackGrid.isGameValid()) {
                 allGamesValid = false;
+                this.hapticService.vibrate(ImpactStyle.Heavy, 300);
                 return;
             }
         });
@@ -381,6 +385,7 @@ export class AddGamePage implements OnInit {
     }
 
     setAlertOpen(): void {
+        this.hapticService.vibrate(ImpactStyle.Heavy, 300);
         this.isAlertOpen = !this.isAlertOpen;
     }
 
@@ -402,6 +407,7 @@ export class AddGamePage implements OnInit {
 
     async presentActionSheet(): Promise<void> {
         const buttons = [];
+        this.hapticService.vibrate(ImpactStyle.Medium, 200);
         this.sheetOpen = true;
         if (!this.seriesMode[0]) {
             buttons.push({

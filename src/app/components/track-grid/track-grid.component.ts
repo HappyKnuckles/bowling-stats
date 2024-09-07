@@ -47,18 +47,42 @@ export class TrackGridComponent implements OnInit {
 
     simulateScore(event: any, frameIndex: number, inputIndex: number): void {
         const inputValue = parseInt(event.target.value, 10);
-        const isValidNumber0to10 = !isNaN(inputValue) && inputValue >= 0 && inputValue <= 10;
-        
-        if (isValidNumber0to10) {
-            this.totalScore = this.bowlingService.calculateScore();
-            this.maxScore = this.bowlingService.calculateMaxScore();
-            this.maxScoreChanged.emit(this.maxScore);
-            this.totalScoreChanged.emit(this.totalScore);
-            this.focusNextInput(frameIndex, inputIndex);
-        } else {
-            this.hapticService.vibrate(ImpactStyle.Heavy, 300);
-            event.target.value = '';
+    
+        if (!this.isValidNumber0to10(inputValue)) {
+            this.handleInvalidInput(event);
+            return;
         }
+    
+        if (!this.isValidFrameScore(inputValue, frameIndex, inputIndex)) {
+            this.handleInvalidInput(event);
+            return;
+        }
+    
+        this.bowlingService.frames[frameIndex][inputIndex] = inputValue;
+        this.updateScores();
+        this.focusNextInput(frameIndex, inputIndex);
+    }
+    
+    private isValidNumber0to10(value: number): boolean {
+        return !isNaN(value) && value >= 0 && value <= 10;
+    }
+    
+    private isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number): boolean {
+        const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+        const secondThrow = inputIndex === 1 ? inputValue : this.bowlingService.frames[frameIndex][1] || 0;
+        return firstThrow + secondThrow <= 10;
+    }
+    
+    private handleInvalidInput(event: any): void {
+        this.hapticService.vibrate(ImpactStyle.Heavy, 300);
+        event.target.value = '';
+    }
+    
+    private updateScores(): void {
+        this.totalScore = this.bowlingService.calculateScore();
+        this.maxScore = this.bowlingService.calculateMaxScore();
+        this.maxScoreChanged.emit(this.maxScore);
+        this.totalScoreChanged.emit(this.totalScore);
     }
 
     onInput(event: any, frameIndex: number, inputIndex: number) {

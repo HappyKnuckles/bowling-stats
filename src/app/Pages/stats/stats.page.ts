@@ -71,14 +71,16 @@ export class StatsPage implements OnInit, OnDestroy {
     }
 
     private async loadDataAndCalculateStats() {
-        if (this.gameHistoryChanged) {
+                       this.loadingService.setLoading(true);
+ if (this.gameHistoryChanged) {
             try {
                 await this.loadGameHistory();
-                this.loadStats();
+                await this.loadStats();
                 this.gameHistoryChanged = false; // Reset the flag
             } catch (error) {
                 this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true)
-            }
+            } finally {
+                this.loadingService.setLoading(false);}
         }
     }
 
@@ -92,13 +94,14 @@ export class StatsPage implements OnInit, OnDestroy {
 
     async loadStats() {
         try {
-            this.statsService.calculateStats(this.gameHistory);
-
+            // Await the result from the web worker call
+            const stats = await this.statsService.calculateStatsWithWorker(this.gameHistory);
+            console.log(stats);
+            // Destructure the result received from the web worker
             const {
                 totalGames,
                 averageScore,
                 averageFirstCount,
-                totalScoreSum: totalPins,
                 totalStrikes,
                 averageStrikesPerGame,
                 strikePercentage,
@@ -112,12 +115,12 @@ export class StatsPage implements OnInit, OnDestroy {
                 missedCounts,
                 pinCounts,
                 highGame
-            } = this.statsService;
+            } = stats;
 
+            // Assign the results to the component's properties
             this.totalGames = totalGames;
             this.averageScore = averageScore;
             this.averageFirstCount = averageFirstCount;
-            this.totalPins = totalPins;
             this.totalStrikes = totalStrikes;
             this.averageStrikesPerGame = averageStrikesPerGame;
             this.strikePercentage = strikePercentage;
@@ -131,12 +134,15 @@ export class StatsPage implements OnInit, OnDestroy {
             this.missedCounts = missedCounts;
             this.pinCounts = pinCounts;
             this.highGame = highGame;
-            this.calculateRates();
+    
+            // Calculate additional rates if needed
+            await this.calculateRates();
         } catch (error) {
+            console.log("hier fehler");
             this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
         }
     }
-
+    
     async ngOnInit(): Promise<void> {
         try {
             this.loadingService.setLoading(true);
@@ -188,7 +194,7 @@ export class StatsPage implements OnInit, OnDestroy {
         }
     }
 
-    calculateRates() {
+    async calculateRates() {
         this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
         this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
     }

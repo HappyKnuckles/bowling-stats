@@ -385,7 +385,6 @@ export class AddGamePage implements OnInit {
     }
 
     setAlertOpen(): void {
-        this.hapticService.vibrate(ImpactStyle.Heavy, 300);
         this.isAlertOpen = !this.isAlertOpen;
     }
 

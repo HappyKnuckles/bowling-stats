@@ -33,6 +33,13 @@ ion-header {
     }
 }
 
+ion-toolbar {
+    height: 59px !important;
+    display: flex;
+    flex: 1 1 0%;
+    align-items: center;
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: repeat(5, minmax(30px, 1fr));

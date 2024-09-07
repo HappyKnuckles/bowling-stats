@@ -56,7 +56,7 @@
       "form_factor": "wide"
     },
     {
-      "src": "assets/screenshots/stats_wide.png",
+      "src": "assets/screenshots/history_wide.png",
       "sizes": "2777x1932",
       "type": "image/png",
       "form_factor": "wide"
@@ -67,15 +67,14 @@
       "type": "image/png"
     },
     {
-      "src": "assets/screenshots/history.png",
+      "src": "assets/screenshots/stats.png",
       "sizes": "1179x2556",
       "type": "image/png"
     },
     {
-      "src": "assets/screenshots/stats.png",
+      "src": "assets/screenshots/history.png",
       "sizes": "1179x2556",
       "type": "image/png"
     }
   ]
-
 }

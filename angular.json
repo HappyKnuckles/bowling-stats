@@ -112,8 +112,6 @@
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               },
-              "src/robots.txt",
-              "src/sitemap.xml",
               "src/manifest.webmanifest"
             ],
             "styles": [

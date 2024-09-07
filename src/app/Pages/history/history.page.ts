@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AlertController, isPlatform, IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonBadge, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol, IonInput, IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
-import { Subscription } from 'rxjs';
+import { debounceTime, Subject, Subscription } from 'rxjs';
 import * as ExcelJS from 'exceljs';
 import { addIcons } from "ionicons";
 import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline } from "ionicons/icons";
@@ -58,7 +58,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     isLoading: boolean = false;
     isEditMode: { [key: string]: boolean } = {};
     private originalGameState: { [key: string]: Game } = {};
-
+    private throwChangeSubject: Subject<{ gameIndex: number, event: any, frameIndex: number, inputIndex: number }> = new Subject();
 
     constructor(
         private alertController: AlertController,
@@ -264,7 +264,16 @@ export class HistoryPage implements OnInit, OnDestroy {
         window.dispatchEvent(new Event('dataDeleted'));
     }
 
+    onThrowChangeDebounced(gameIndex: number, event: any, frameIndex: number, inputIndex: number) {
+        this.throwChangeSubject.next({ gameIndex, event, frameIndex, inputIndex });
+    }
+
     async ngOnInit(): Promise<void> {
+        this.throwChangeSubject.pipe(
+            debounceTime(300) // Adjust the debounce time as needed
+        ).subscribe(({ gameIndex, event, frameIndex, inputIndex }) => {
+            this.onThrowChange(gameIndex, event, frameIndex, inputIndex);
+        });
         try {
             this.loadingService.setLoading(true);
             await this.loadGameHistory();
@@ -386,6 +395,56 @@ export class HistoryPage implements OnInit, OnDestroy {
         } catch (error) {
             return false;
         }
+    }
+
+    private isValidNumber0to10(value: number): boolean {
+        return !isNaN(value) && value >= 0 && value <= 10;
+    }
+
+    private isValidFrameScore(gameIndex: number, inputValue: number, frameIndex: number, inputIndex: number): boolean {
+        const firstThrow = this.gameHistory[gameIndex].frames[frameIndex].throws[0]?.value || 0;
+        const secondThrow = inputIndex === 1 ? inputValue : this.gameHistory[gameIndex].frames[frameIndex].throws[1]?.value || 0;
+        return firstThrow + secondThrow <= 10;
+    }
+    previousValues: { [key: string]: number } = {};
+
+    onThrowChange(gameIndex: number, event: any, frameIndex: number, inputIndex: number) {
+        const inputValue = parseInt(event.target.value, 10);
+    
+        // Generate a unique key for each input field to track the previous value
+        const key = `${gameIndex}-${frameIndex}-${inputIndex}`;
+    
+        // Store the previous value before making any changes
+        if (!this.previousValues[key]) {
+            this.previousValues[key] = this.gameHistory[gameIndex].frames[frameIndex].throws[inputIndex]?.value || 0;
+        }
+    
+        // Validate the input value
+        if (!this.isValidNumber0to10(inputValue)) {
+            this.handleInvalidInput(event, key);
+            return;
+        }
+    
+        if (!this.isValidFrameScore(gameIndex, inputValue, frameIndex, inputIndex)) {
+            this.handleInvalidInput(event, key);
+            return;
+        }
+    
+        // Update the value after validation
+        this.gameHistory[gameIndex].frames[frameIndex].throws[inputIndex] = { value: inputValue };
+    
+        // Update the previous value after a successful input
+        this.previousValues[key] = inputValue;
+    }
+    
+    private handleInvalidInput(event: any, key: string): void {
+        this.hapticService.vibrate(ImpactStyle.Heavy, 300);
+    
+        // Revert to the previous value if there's an error
+        event.target.value = this.previousValues[key] !== undefined ? this.previousValues[key] : '';
+    
+        // Optionally, show an error message or take other actions
+        console.log(`Invalid input, reverting to previous value: ${this.previousValues[key]}`);
     }
 
     private getGameDataForExport(): String[][] {

@@ -76,7 +76,6 @@ export class StatsPage implements OnInit, OnDestroy {
                 await this.loadGameHistory();
                 this.loadStats();
                 this.gameHistoryChanged = false; // Reset the flag
-                console.log(this.missedCounts, this.pinCounts);
             } catch (error) {
                 this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true)
             }

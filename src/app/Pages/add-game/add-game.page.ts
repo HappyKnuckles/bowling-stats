@@ -6,24 +6,24 @@ import {
     ViewChild,
     ViewChildren,
 } from '@angular/core';
-import { TrackGridComponent } from '../components/track-grid/track-grid.component';
 import { ActionSheetController, AlertController, IonModal, isPlatform, IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonButtons, IonInput } from '@ionic/angular/standalone';
-import { ImageProcesserService } from '../services/image-processer/image-processer.service';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { ToastService } from '../services/toast/toast.service';
 import { SeriesMode } from './seriesModeEnum';
-import { BowlingCalculatorService } from '../services/bowling-calculator/bowling-calculator.service';
-import { GameDataTransformerService } from '../services/transform-game/transform-game-data.service';
-import { SaveGameDataService } from '../services/save-game/save-game.service';
-import { LoadingService } from '../services/loader/loading.service';
-import { UserService } from '../services/user/user.service';
-import { Game } from '../models/game-model';
+import { Game } from 'src/app/models/game-model';
 import { addIcons } from "ionicons";
 import { add, chevronDown, chevronUp } from "ionicons/icons";
 import { NgIf, NgFor } from '@angular/common';
-import { AdService } from '../services/ad/ad.service';
 import { ImpactStyle } from '@capacitor/haptics';
-import { HapticService } from '../services/haptic/haptic.service';
+import { TrackGridComponent } from 'src/app/components/track-grid/track-grid.component';
+import { AdService } from 'src/app/services/ad/ad.service';
+import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
+import { HapticService } from 'src/app/services/haptic/haptic.service';
+import { ImageProcesserService } from 'src/app/services/image-processer/image-processer.service';
+import { LoadingService } from 'src/app/services/loader/loading.service';
+import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
+import { ToastService } from 'src/app/services/toast/toast.service';
+import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
+import { UserService } from 'src/app/services/user/user.service';
 @Component({
     selector: 'app-add-game',
     templateUrl: 'add-game.page.html',

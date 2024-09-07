@@ -9,19 +9,19 @@ const routes: Routes = [
     children: [
       {
         path: 'add',
-        loadChildren: () => import('../add-game/add-game.module').then(m => m.AddGamePageModule)
+        loadChildren: () => import('../Pages/add-game/add-game.module').then(m => m.AddGamePageModule)
       },
       {
         path: 'stats',
-        loadChildren: () => import('../stats/stats.module').then(m => m.StatsPageModule)
+        loadChildren: () => import('../Pages/stats/stats.module').then(m => m.StatsPageModule)
       },
       {
         path: 'history',
-        loadChildren: () => import('../history/history.module').then(m => m.HistoryPageModule)
+        loadChildren: () => import('../Pages/history/history.module').then(m => m.HistoryPageModule)
       },
       {
         path: 'settings',
-        loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule)
+        loadChildren: () => import('../Pages/settings/settings.module').then(m => m.SettingsPageModule)
       },
       {
         path: '',

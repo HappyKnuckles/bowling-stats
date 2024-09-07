@@ -1,11 +1,11 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-import { UserService } from '../services/user/user.service';
-import { ToastService } from '../services/toast/toast.service';
 import { IonHeader, IonToolbar, IonContent, IonInput, IonIcon, IonTitle, IonItem, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { colorPaletteOutline, personCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
+import { ToastService } from 'src/app/services/toast/toast.service';
+import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
   selector: 'app-settings',

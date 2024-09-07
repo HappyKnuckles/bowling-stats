@@ -1,18 +1,17 @@
-import { AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Chart from 'chart.js/auto';
-import { GameHistoryService } from '../services/game-history/game-history.service';
-import { ToastService } from '../services/toast/toast.service';
-import { BowlingCalculatorService } from '../services/bowling-calculator/bowling-calculator.service';
-import { GameStatsService } from '../services/game-stats/game-stats.service';
 import { Subscription } from 'rxjs';
-import { SaveGameDataService } from '../services/save-game/save-game.service';
-import { LoadingService } from '../services/loader/loading.service';
-import { Game } from '../models/game-model';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { NgIf, NgFor, NgStyle, DecimalPipe } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
-import { HapticService } from '../services/haptic/haptic.service';
 import { ImpactStyle } from '@capacitor/haptics';
+import { Game } from 'src/app/models/game-model';
+import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
+import { GameStatsService } from 'src/app/services/game-stats/game-stats.service';
+import { HapticService } from 'src/app/services/haptic/haptic.service';
+import { LoadingService } from 'src/app/services/loader/loading.service';
+import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
+import { ToastService } from 'src/app/services/toast/toast.service';
 @Component({
     selector: 'app-stats',
     templateUrl: 'stats.page.html',

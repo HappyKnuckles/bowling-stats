@@ -1,13 +1,8 @@
-import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AlertController, isPlatform, IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonBadge, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol, IonInput, IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
-import { ToastService } from '../services/toast/toast.service';
-import { GameHistoryService } from '../services/game-history/game-history.service';
-import { SaveGameDataService } from '../services/save-game/save-game.service';
 import { Subscription } from 'rxjs';
-import { LoadingService } from '../services/loader/loading.service';
 import * as ExcelJS from 'exceljs';
-import { Game } from '../models/game-model';
 import { addIcons } from "ionicons";
 import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline } from "ionicons/icons";
 import { NgIf, NgFor, DatePipe } from '@angular/common';
@@ -15,8 +10,13 @@ import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, Mat
 import { Share } from '@capacitor/share';
 import { FormsModule } from '@angular/forms';
 import { toPng } from 'html-to-image';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { HapticService } from '../services/haptic/haptic.service';
+import { ImpactStyle } from '@capacitor/haptics';
+import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
+import { HapticService } from 'src/app/services/haptic/haptic.service';
+import { LoadingService } from 'src/app/services/loader/loading.service';
+import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
+import { ToastService } from 'src/app/services/toast/toast.service';
+import { Game } from 'src/app/models/game-model';
 
 @Component({
     selector: 'app-history',

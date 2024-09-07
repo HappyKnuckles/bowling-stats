@@ -3,4 +3,4 @@ User-agent: *
 Disallow:
 
 # Optional: specify your sitemap (recommended)
-Sitemap: https://www.yourwebsite.com/sitemap.xml
+Sitemap: https://bowling-stats-brown.vercel.app/sitemap.xml

@@ -377,6 +377,7 @@ export class AddGamePage implements OnInit {
                 if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
                     await this.adService.showIntertistalAd();
                 }
+                this.hapticService.vibrate(ImpactStyle.Medium, 200);
                 this.toastService.showToast('Game saved successfully.', 'add');
             } catch (error) {
                 this.toastService.showToast('Oops, something went wrong.', 'bug', true);

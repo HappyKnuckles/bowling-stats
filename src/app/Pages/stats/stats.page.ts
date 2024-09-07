@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Chart from 'chart.js/auto';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { NgIf, NgFor, NgStyle, DecimalPipe } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
@@ -76,6 +76,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 await this.loadGameHistory();
                 this.loadStats();
                 this.gameHistoryChanged = false; // Reset the flag
+                console.log(this.missedCounts, this.pinCounts);
             } catch (error) {
                 this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true)
             }
@@ -152,24 +153,10 @@ export class StatsPage implements OnInit, OnDestroy {
         }
     }
 
-    generateCharts(): void {
-        this.generatePinChart();
-        this.generateScoreChart();
-        this.generateThrowChart();
-    }
-
-    private subscribeToDataEvents(): void {
-        this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(async () => {
-            this.gameHistoryChanged = true;
-            await this.loadDataAndCalculateStats();
-            this.generateCharts();
-        });
-
-        this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(async () => {
-            this.gameHistoryChanged = true;
-            await this.loadDataAndCalculateStats();
-            this.generateCharts();
-        });
+    ngOnDestroy(): void {
+        this.newDataAddedSubscription.unsubscribe();
+        this.dataDeletedSubscription.unsubscribe();
+        this.loadingSubscription.unsubscribe();
     }
 
     handleRefresh(event: any): void {
@@ -180,11 +167,75 @@ export class StatsPage implements OnInit, OnDestroy {
                 await this.loadDataAndCalculateStats();
                 event.target.complete();
             }, 100);
-            this.generateCharts();
+            this.updateCharts();
         } catch (error) {
             console.error(error);
         } finally {
             this.loadingService.setLoading(false);
+        }
+    }
+
+    generateCharts(): void {
+        this.generatePinChart();
+        this.generateScoreChart();
+        this.generateThrowChart();
+    }
+
+    private subscribeToDataEvents(): void {
+        this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(async () => {
+            this.gameHistoryChanged = true;
+            await this.loadDataAndCalculateStats();
+            this.updateCharts();
+
+        });
+
+        this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(async () => {
+            this.gameHistoryChanged = true;
+            await this.loadDataAndCalculateStats();
+            this.updateCharts();
+        });
+    }
+
+    private transformDataForCharts() {
+        const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
+        const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
+        const { opens, spares, strikes } = this.calculateThrowChartData();
+        return { filteredSpareRates, filteredMissedCounts, gameLabels, overallAverages, differences, gamesPlayedDaily, opens, spares, strikes };
+    }
+
+    private updateCharts(): void {
+        const {
+            filteredSpareRates,
+            filteredMissedCounts,
+            gameLabels,
+            overallAverages,
+            differences,
+            gamesPlayedDaily,
+            opens,
+            spares,
+            strikes
+        } = this.transformDataForCharts();
+
+        // Update pin chart
+        if (this.pinChartInstance) {
+            this.pinChartInstance.data.datasets[0].data = filteredSpareRates;
+            this.pinChartInstance.data.datasets[1].data = filteredMissedCounts;
+            this.pinChartInstance.update();
+        }
+
+        // Update score chart
+        if (this.scoreChartInstance) {
+            this.scoreChartInstance.data.labels = gameLabels;
+            this.scoreChartInstance.data.datasets[0].data = overallAverages;
+            this.scoreChartInstance.data.datasets[1].data = differences;
+            this.scoreChartInstance.data.datasets[2].data = gamesPlayedDaily;
+            this.scoreChartInstance.update();
+        }
+
+        // Update throw chart
+        if (this.throwChartInstance) {
+            this.throwChartInstance.data.datasets[0].data = [opens, spares, strikes];
+            this.throwChartInstance.update();
         }
     }
 
@@ -220,23 +271,62 @@ export class StatsPage implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        this.newDataAddedSubscription.unsubscribe();
-        this.dataDeletedSubscription.unsubscribe();
-        this.loadingSubscription.unsubscribe();
-    }
-
-    //TODO adjust look of this
-    generatePinChart(): void {
-        const originalLabels = ['1 Pin', '2 Pins', '3 Pins', '4 Pins', '5 Pins', '6 Pins', '7 Pins', '8 Pins', '9 Pins', '10 Pins'];
-
-        // Filter out the spareRates and update labels accordingly
-        const filteredSpareRates = this.spareRates.slice(1).map(rate => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
-        const filteredMissedCounts = this.missedCounts.slice(1).map((count, i) => {
+    calculatePinChartData() {
+        const filteredSpareRates: number[] = this.spareRates.slice(1).map(rate => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
+        const filteredMissedCounts: number[] = this.missedCounts.slice(1).map((count, i) => {
             const rate = this.getRate(count, this.pinCounts[i + 1]);
             const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
             return parseFloat(transformedRate ?? '0');
         });
+        return { filteredSpareRates, filteredMissedCounts };
+    }
+
+    calculateScoreChartData() {
+        const scoresByDate: { [date: string]: number[] } = {};
+        this.gameHistory.forEach((game: any) => {
+            const date = new Date(game.date).toLocaleDateString('de-DE', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit'
+            });
+            if (!scoresByDate[date]) {
+                scoresByDate[date] = [];
+            }
+            scoresByDate[date].push(game.totalScore);
+        });
+
+        const gameLabels = Object.keys(scoresByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        let cumulativeSum = 0;
+        let cumulativeCount = 0;
+
+        const overallAverages = gameLabels.map(date => {
+            cumulativeSum += scoresByDate[date].reduce((sum, score) => sum + score, 0);
+            cumulativeCount += scoresByDate[date].length;
+            return cumulativeSum / cumulativeCount;
+        });
+        overallAverages.map(average => parseFloat(this.decimalPipe.transform(average, '1.2-2')!))
+
+        const differences = gameLabels.map((date, index) => {
+            const dailySum = scoresByDate[date].reduce((sum, score) => sum + score, 0);
+            const dailyAverage = dailySum / scoresByDate[date].length;
+            return dailyAverage - overallAverages[index];
+        });
+        differences.map(difference => parseFloat(this.decimalPipe.transform(difference, '1.2-2')!))
+
+        const gamesPlayedDaily = gameLabels.map(date => scoresByDate[date].length);
+        return { gameLabels, overallAverages, differences, gamesPlayedDaily };
+    }
+
+    calculateThrowChartData() {
+        const opens = parseFloat(this.decimalPipe.transform(this.openPercentage, '1.2-2')!);
+        const spares = parseFloat(this.decimalPipe.transform(this.sparePercentage, '1.2-2')!);
+        const strikes = parseFloat(this.decimalPipe.transform(this.strikePercentage, '1.2-2')!);
+        return { opens, spares, strikes };
+    }
+
+    //TODO adjust look of this
+    generatePinChart(): void {
+        const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
 
         const ctx = this.pinChart!.nativeElement;
 
@@ -330,8 +420,6 @@ export class StatsPage implements OnInit, OnDestroy {
                                     label += context.parsed.r + '%';
                                 }
 
-
-
                                 return label;
                             }
                         }
@@ -359,48 +447,12 @@ export class StatsPage implements OnInit, OnDestroy {
 
 
     generateScoreChart(): void {
-        // Create a map to aggregate scores by date
-        const scoresByDate: { [date: string]: number[] } = {};
-
-        this.gameHistory.forEach((game: any) => {
-            const date = new Date(game.date).toLocaleDateString('de-DE', {
-                day: '2-digit',
-                month: '2-digit',
-                year: '2-digit'
-            }); // Convert to local date string
-            if (!scoresByDate[date]) {
-                scoresByDate[date] = [];
-            }
-            scoresByDate[date].push(game.totalScore);
-        });
-
-        // Create labels and scores arrays
-        const gameLabels = Object.keys(scoresByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-
-        // Calculate overall average up to each date
-        let cumulativeSum = 0;
-        let cumulativeCount = 0;
-        const overallAverages = gameLabels.map(date => {
-            cumulativeSum += scoresByDate[date].reduce((sum, score) => sum + score, 0);
-            cumulativeCount += scoresByDate[date].length;
-            return cumulativeSum / cumulativeCount; // Overall average up to this date
-        });
-
-        // Calculate differences from the overall average
-        const differences = gameLabels.map((date, index) => {
-            const dailySum = scoresByDate[date].reduce((sum, score) => sum + score, 0);
-            const dailyAverage = dailySum / scoresByDate[date].length;
-            return dailyAverage - overallAverages[index]; // Difference from the overall average
-        });
-
-        // Calculate the number of games played each day
-        const gamesPlayedDaily = gameLabels.map(date => scoresByDate[date].length);
+        const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
 
         const ctx = this.scoreChart?.nativeElement;
         if (this.scoreChartInstance) {
             this.scoreChartInstance.destroy();
         }
-
 
         // Create a new chart instance with multiple datasets
         this.scoreChartInstance = new Chart(ctx, {
@@ -410,7 +462,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 datasets: [
                     {
                         label: 'Average',
-                        data: overallAverages.map(average => parseFloat(this.decimalPipe.transform(average, '1.2-2')!)),
+                        data: overallAverages,
                         backgroundColor: "rgba(75, 192, 192, 0.2)",
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1,
@@ -418,7 +470,7 @@ export class StatsPage implements OnInit, OnDestroy {
                     },
                     {
                         label: 'Difference from average',
-                        data: differences.map(difference => parseFloat(this.decimalPipe.transform(difference, '1.2-2')!)),
+                        data: differences,
                         backgroundColor: "rgba(255, 99, 132, 0.2)",
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1,
@@ -445,7 +497,6 @@ export class StatsPage implements OnInit, OnDestroy {
                                 size: 14
                             }
                         }
-
                     },
                     y1: {
                         beginAtZero: true,
@@ -517,6 +568,8 @@ export class StatsPage implements OnInit, OnDestroy {
     }
 
     generateThrowChart(): void {
+        const { opens, spares, strikes } = this.calculateThrowChartData();
+
         const ctx = this.throwChart?.nativeElement;
 
         if (this.throwChartInstance) {
@@ -529,7 +582,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 labels: ['Spare', 'Strike', 'Open'],
                 datasets: [{
                     label: 'Percentage',
-                    data: [parseFloat(this.decimalPipe.transform(this.sparePercentage, '1.2-2')!), parseFloat(this.decimalPipe.transform(this.strikePercentage, '1.2-2')!), parseFloat(this.decimalPipe.transform(this.openPercentage, '1.2-2')!)],
+                    data: [spares, strikes, opens],
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgb(54, 162, 235)',
                     pointBackgroundColor: 'rgb(54, 162, 235)',
@@ -568,6 +621,25 @@ export class StatsPage implements OnInit, OnDestroy {
                 plugins: {
                     tooltip: {
                         callbacks: {
+                            title: function (context) {
+                                // Get the value of the hovered point
+                                const value = context[0].raw;
+
+                                // Find all labels with the same value
+                                const matchingLabels = context[0].chart.data.labels!.filter((label, index) => {
+                                    // Check if the value matches any point in the datasets and is 0
+                                    return context[0].chart.data.datasets.some(dataset => dataset.data[index] === value && value === 0);
+                                });
+
+                                // Only modify the title if multiple labels match the same value
+                                if (matchingLabels.length > 1) {
+                                    // Return the combined titles as the title (e.g., "2, 3 Pins")
+                                    return matchingLabels.join(', ');
+                                }
+
+                                // Default behavior: return the original label if only one match
+                                return context[0].label || '';
+                            },
                             label: function (context) {
                                 let label = context.dataset.label || '';
                                 if (label) {
@@ -606,5 +678,4 @@ export class StatsPage implements OnInit, OnDestroy {
             }
         });
     }
-
 }

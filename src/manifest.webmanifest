@@ -2,58 +2,80 @@
   "name": "Bowling Stats",
   "short_name": "Bowling Stats",
   "theme_color": "#020a06",
+  "description": "Bowling Tracker is a comprehensive app designed to help bowlers track scores, analyze performance, and improve their game. Record your strikes, spares, and splits effortlessly and get detailed stats to take your bowling skills to the next level.",
   "background_color": "#020a06",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
-  "icons": [
-    {
+  "icons": [{
       "src": "assets/icons/android/android-launchericon-72-72.png",
       "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     },
     {
       "src": "assets/icons/android/android-launchericon-96-96.png",
       "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "assets/icons/ios/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     },
     {
       "src": "assets/icons/android/android-launchericon-144-144.png",
       "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     },
     {
       "src": "assets/icons/ios/touch-icon-152x152.png",
       "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     },
     {
       "src": "assets/icons/android/android-launchericon-192-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     },
     {
       "src": "assets/icons/android/android-launchericon-512-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/png"
     },
     {
       "src": "assets/icons/ios/touch-icon-1024x1024.png",
-      "sizes": "512x512",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [{
+      "src": "assets/screenshots/start_wide.png",
+      "sizes": "2777x1932",
       "type": "image/png",
-      "purpose": "maskable any"
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/screenshots/stats_wide.png",
+      "sizes": "2777x1932",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/screenshots/stats_wide.png",
+      "sizes": "2777x1932",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/screenshots/start.png",
+      "sizes": "1179x2556",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/screenshots/history.png",
+      "sizes": "1179x2556",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/screenshots/stats.png",
+      "sizes": "1179x2556",
+      "type": "image/png"
     }
   ]
+
 }

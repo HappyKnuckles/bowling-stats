@@ -6,6 +6,9 @@ import { GameDataTransformerService } from 'src/app/services/transform-game/tran
 import { NgFor, NgIf } from '@angular/common';
 import { IonGrid, IonRow, IonCol, IonInput } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
+import { HapticService } from 'src/app/services/haptic/haptic.service';
+import { ImpactStyle } from '@capacitor/haptics';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
     selector: 'app-track-grid',
@@ -19,17 +22,22 @@ export class TrackGridComponent implements OnInit {
     @Output() maxScoreChanged = new EventEmitter<number>();
     @Output() totalScoreChanged = new EventEmitter<number>();
     @ViewChildren(IonInput) inputs!: QueryList<IonInput>;
-
+    private inputSubject: Subject<any> = new Subject();
     totalScore: any;
     maxScore: any;
-    globalIndex: number = 0;
 
     constructor(public bowlingService: BowlingCalculatorService,
         private saveGameService: SaveGameDataService,
         private transformGameService: GameDataTransformerService,
-        private toastService: ToastService) { }
+        private toastService: ToastService,
+        private hapticService: HapticService) { }
 
     ngOnInit(): void {
+        this.inputSubject.pipe(
+            debounceTime(300)
+        ).subscribe(({ event, frameIndex, inputIndex }) => {
+            this.simulateScore(event, frameIndex, inputIndex);
+        });
         // Check if gameIndex exists in local storage
         this.maxScore = this.bowlingService.maxScore;
         this.totalScore = this.bowlingService.totalScore;
@@ -37,20 +45,30 @@ export class TrackGridComponent implements OnInit {
         this.totalScoreChanged.emit(this.totalScore);
     }
 
-    simulateScore(event: any): void {
+    simulateScore(event: any, frameIndex: number, inputIndex: number): void {
         const inputValue = parseInt(event.target.value, 10);
-        if (!isNaN(inputValue) && inputValue >= 0 && inputValue <= 10) {
+        const isValidNumber0to10 = !isNaN(inputValue) && inputValue >= 0 && inputValue <= 10;
+        
+        if (isValidNumber0to10) {
             this.totalScore = this.bowlingService.calculateScore();
             this.maxScore = this.bowlingService.calculateMaxScore();
             this.maxScoreChanged.emit(this.maxScore);
             this.totalScoreChanged.emit(this.totalScore);
+            this.focusNextInput(frameIndex, inputIndex);
+        } else {
+            this.hapticService.vibrate(ImpactStyle.Heavy, 300);
+            event.target.value = '';
         }
     }
 
-    async focusNextInput(frameIndex: number, inputIndex: number) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    onInput(event: any, frameIndex: number, inputIndex: number) {
+        this.inputSubject.next({ event, frameIndex, inputIndex }); // Emit the event to the Subject for debouncing
+    }
 
-        // Convert QueryList to an array               
+    async focusNextInput(frameIndex: number, inputIndex: number) {
+        await new Promise(resolve => setTimeout(resolve, 700)); // Delay to give time to user
+
+        // Convert QueryList to an array
         const inputArray = this.inputs.toArray();
         // Calculate the current index in the linear array of inputs
         const currentInputPosition = frameIndex * 2 + inputIndex;
@@ -61,7 +79,6 @@ export class TrackGridComponent implements OnInit {
             const nextInputElement = await nextInput.getInputElement();
 
             if (!nextInputElement.disabled) {
-                // Add a 1-second delay before focusing on the next available input
                 nextInput.setFocus();
                 break;
             }

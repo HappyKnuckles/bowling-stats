@@ -1,7 +1,7 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { filter, Subscription } from 'rxjs';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol, IonSegment, IonSegmentButton, IonLabel } from '@ionic/angular/standalone';
 import { NgIf, NgFor, NgStyle, DecimalPipe } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { ImpactStyle } from '@capacitor/haptics';
@@ -12,16 +12,24 @@ import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { LoadingService } from 'src/app/services/loader/loading.service';
 import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
+import { FormsModule } from '@angular/forms';
+import SwiperCore, { Swiper } from 'swiper';
+import { IonicSlides } from '@ionic/angular/standalone';
+
 @Component({
     selector: 'app-stats',
     templateUrl: 'stats.page.html',
     styleUrls: ['stats.page.scss'],
     standalone: true,
     providers: [DecimalPipe],
-    imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, NgIf, IonText, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, IonGrid, IonRow, IonCol, NgFor, NgStyle, DecimalPipe]
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [IonLabel, IonSegmentButton, IonSegment, IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, NgIf, IonText, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, IonGrid, IonRow, IonCol, NgFor, NgStyle, DecimalPipe, FormsModule]
 })
 export class StatsPage implements OnInit, OnDestroy {
-    gameHistory: Game[] = [];
+    swiperModules = [IonicSlides];
+
+    // Stats 
+    //TODO add interface for stats
     totalGames: number = 0;
     averageScore: number = 0;
     totalPins: number = 0;
@@ -45,14 +53,33 @@ export class StatsPage implements OnInit, OnDestroy {
     overallSpareRate: number = 0;
     totalMissed: number = 0;
     totalConverted: number = 0;
+
+    // Game Data
+    gameHistory: Game[] = [];
     gameHistoryChanged: boolean = true;
+    isLoading: boolean = false;
+    selectedSegment: string = 'default';
+
+    // Subscriptions
     newDataAddedSubscription!: Subscription;
     dataDeletedSubscription!: Subscription;
     private loadingSubscription: Subscription;
-    isLoading: boolean = false;
-    @ViewChild('scoreChart') scoreChart?: ElementRef;
-    @ViewChild('throwChart') throwChart?: ElementRef;
-    @ViewChild('pinChart') pinChart?: ElementRef;
+
+    // Viewchilds and Instances
+    @ViewChild('scoreChart', { static: false }) scoreChart?: ElementRef;
+    @ViewChild('pinChart', { static: false }) pinChart?: ElementRef;
+    @ViewChild('throwChart', { static: false }) throwChart?: ElementRef;
+    @ViewChild('swiper')
+    set swiper(swiperRef: ElementRef) {
+        /**
+         * This setTimeout waits for Ionic's async initialization to complete.
+         * Otherwise, an outdated swiper reference will be used.
+         */
+        setTimeout(() => {
+            this.swiperInstance = swiperRef.nativeElement.swiper;
+        }, 0);
+    }
+    private swiperInstance: Swiper | undefined;
     private pinChartInstance: Chart | null = null;
     private throwChartInstance: Chart | null = null;
     private scoreChartInstance: Chart | null = null;
@@ -174,10 +201,46 @@ export class StatsPage implements OnInit, OnDestroy {
         }
     }
 
-    generateCharts(): void {
-        this.generatePinChart();
-        this.generateScoreChart();
-        this.generateThrowChart();
+    onSegmentChanged(event: any) {
+        this.selectedSegment = event.detail.value;
+        this.swiperInstance?.slideTo(this.getSlideIndex(this.selectedSegment));
+        this.generateCharts();
+    }
+
+    getSlideIndex(segment: string): number {
+        switch (segment) {
+            case 'default': return 0;
+            case 'spares': return 1;
+            case 'throws': return 2;
+            default: return 0;
+        }
+    }
+
+    getSegmentValue(index: number): string {
+        switch (index) {
+            case 0: return 'default';
+            case 1: return 'spares';
+            case 2: return 'throws';
+            default: return 'default';
+        }
+    }
+
+    onSlideChanged() {
+        if (this.swiperInstance) {
+            const activeIndex = this.swiperInstance.activeIndex;
+            this.selectedSegment = this.getSegmentValue(activeIndex);
+            this.generateCharts();
+        }
+    }
+
+    generateCharts() {
+        if (this.selectedSegment === 'default') {
+            this.generateScoreChart();
+        } else if (this.selectedSegment === 'spares') {
+            this.generatePinChart();
+        } else if (this.selectedSegment === 'throws') {
+            this.generateThrowChart();
+        }
     }
 
     private subscribeToDataEvents(): void {
@@ -328,9 +391,8 @@ export class StatsPage implements OnInit, OnDestroy {
         const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
 
         const ctx = this.pinChart!.nativeElement;
-
         if (this.pinChartInstance) {
-            this.pinChartInstance.destroy();
+            return;
         }
 
         this.pinChartInstance = new Chart(ctx, {
@@ -428,7 +490,7 @@ export class StatsPage implements OnInit, OnDestroy {
                         text: 'Converted vs Missed spares',
                         color: 'white',
                         font: {
-                            size: 16
+                            size: 20
                         }
                     },
                     legend: {
@@ -450,7 +512,7 @@ export class StatsPage implements OnInit, OnDestroy {
 
         const ctx = this.scoreChart?.nativeElement;
         if (this.scoreChartInstance) {
-            this.scoreChartInstance.destroy();
+            return;
         }
 
         // Create a new chart instance with multiple datasets
@@ -516,7 +578,7 @@ export class StatsPage implements OnInit, OnDestroy {
                         text: 'Score analysis',
                         color: 'white',
                         font: {
-                            size: 16
+                            size: 20
                         }
                     },
                     legend: {
@@ -570,9 +632,8 @@ export class StatsPage implements OnInit, OnDestroy {
         const { opens, spares, strikes } = this.calculateThrowChartData();
 
         const ctx = this.throwChart?.nativeElement;
-
         if (this.throwChartInstance) {
-            this.throwChartInstance.destroy();
+            return;
         }
 
         this.throwChartInstance = new Chart(ctx, {
@@ -656,7 +717,7 @@ export class StatsPage implements OnInit, OnDestroy {
                         text: 'Throw distribution',
                         color: 'white',
                         font: {
-                            size: 16
+                            size: 20
                         }
                     },
                     legend: {

@@ -7,6 +7,8 @@ import { Subscription } from 'rxjs';
 import { NgIf } from '@angular/common';
 import { ToastComponent } from './components/toast/toast.component';
 import { SwUpdate } from '@angular/service-worker';
+import { register } from 'swiper/element/bundle';
+register();
 
 @Component({
     selector: 'app-root',
@@ -45,6 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
+
     initializeApp(): void {
         this.swUpdate.versionUpdates.subscribe(event => {
             if (event.type === 'VERSION_READY') {
@@ -54,7 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
             }
         });
     }
-    
+
     ngOnInit(): void {
         this.greetUser();
     }

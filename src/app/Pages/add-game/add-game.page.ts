@@ -53,9 +53,9 @@ export class AddGamePage implements OnInit {
     totalScores: number[] = new Array(8).fill(0);
     maxScores: number[] = new Array(8).fill(300);
     seriesMode: boolean[] = [true, false, false];
-    selectedMode: SeriesMode = SeriesMode.Single; // Initialize selected mode
-    trackIndexes: number[][] = [[0], [1, 2, 3], [4, 5, 6, 7]];
+    selectedMode: SeriesMode = SeriesMode.Single; // Initialize selected mode    
     selectedModeText: SeriesMode = SeriesMode.Single;
+    trackIndexes: number[][] = [[0], [1, 2, 3], [4, 5, 6, 7]];
     sheetOpen: boolean = false;
     isAlertOpen: boolean = false;
     alertButton = ['Dismiss'];

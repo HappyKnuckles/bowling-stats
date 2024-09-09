@@ -4,6 +4,17 @@
       Stats
     </ion-title>
   </ion-toolbar>
+  <ion-segment [(ngModel)]="selectedSegment" value="default" (ionChange)="onSegmentChanged($event)">
+    <ion-segment-button value="default">
+      <ion-label class="segmentLabel">Overall</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="spares">
+      <ion-label class="segmentLabel">Spares</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="throws">
+      <ion-label class="segmentLabel">Throws</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -18,18 +29,6 @@
 
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <ion-segment [(ngModel)]="selectedSegment" value="default" (ionChange)="onSegmentChanged($event)">
-      <ion-segment-button value="default">
-        <ion-label>Overall</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="spares">
-        <ion-label>Spares</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="throws">
-        <ion-label>Throws</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
     <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1"
       (swiperslidechangetransitionstart)="onSlideChanged()">
       <!-- Overall Segment -->

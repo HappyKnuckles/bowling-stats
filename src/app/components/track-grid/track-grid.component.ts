@@ -47,37 +47,76 @@ export class TrackGridComponent implements OnInit {
 
     simulateScore(event: any, frameIndex: number, inputIndex: number): void {
         const inputValue = parseInt(event.target.value, 10);
-    
+
         if (!this.isValidNumber0to10(inputValue)) {
             this.handleInvalidInput(event);
             return;
         }
-    
+
         if (!this.isValidFrameScore(inputValue, frameIndex, inputIndex)) {
             this.handleInvalidInput(event);
             return;
         }
-    
+
         this.bowlingService.frames[frameIndex][inputIndex] = inputValue;
         this.updateScores();
         this.focusNextInput(frameIndex, inputIndex);
     }
-    
+
     private isValidNumber0to10(value: number): boolean {
         return !isNaN(value) && value >= 0 && value <= 10;
     }
-    
+
     private isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number): boolean {
-        const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
-        const secondThrow = inputIndex === 1 ? inputValue : this.bowlingService.frames[frameIndex][1] || 0;
-        return firstThrow + secondThrow <= 10;
+        if (frameIndex < 9) {
+            // Regular frames (1-9)
+            const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+            const secondThrow = inputIndex === 1 ? inputValue : this.bowlingService.frames[frameIndex][1] || 0;
+            return firstThrow + secondThrow <= 10;
+        } else {
+            // 10th frame
+            const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+            const secondThrow = this.bowlingService.frames[frameIndex][1] || 0;
+
+            switch (inputIndex) {
+                case 0:
+                    return inputValue <= 10;
+                case 1:
+                    if (firstThrow === 10) {
+                        // First throw is a strike, second throw can be any value 0-10
+                        return inputValue <= 10;
+                    } else {
+                        // First throw is not a strike, second throw + first throw must be <= 10
+                        return firstThrow + inputValue <= 10;
+                    }
+                case 2:
+                    if (firstThrow === 10) {
+                        // First throw is a strike
+                        if (secondThrow === 10) {
+                            // Second throw is also a strike, third throw can be any value 0-10
+                            return inputValue <= 10;
+                        } else {
+                            // Second throw is not a strike, third throw can only be 10 - second throw
+                            return inputValue <= 10 - secondThrow;
+                        }
+                    } else if (firstThrow + secondThrow === 10) {
+                        // First two throws are a spare, third throw can be any value 0-10
+                        return inputValue <= 10;
+                    } else {
+                        // First two throws are not a strike or spare, no third throw allowed
+                        return false;
+                    }
+                default:
+                    return false;
+            }
+        }
     }
-    
+
     private handleInvalidInput(event: any): void {
         this.hapticService.vibrate(ImpactStyle.Heavy, 300);
         event.target.value = '';
     }
-    
+
     private updateScores(): void {
         this.totalScore = this.bowlingService.calculateScore();
         this.maxScore = this.bowlingService.calculateMaxScore();

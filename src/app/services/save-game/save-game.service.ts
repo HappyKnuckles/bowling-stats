@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Game } from 'src/app/models/game-model';
 import { Storage } from '@ionic/storage-angular';
+import * as cordovaSQLiteDriver from 'localforage-cordovasqlitedriver';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,9 @@ export class SaveGameDataService {
   }
 
   async init() {
-    await this.storage.create();
+    this.storage.defineDriver(cordovaSQLiteDriver)
+    await this.storage.create();    console.log(this.storage.driver)
+
   }
 
   async saveGameToLocalStorage(gameData: Game): Promise<void> {

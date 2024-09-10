@@ -206,6 +206,14 @@ export class StatsPage implements OnInit, OnDestroy {
         this.swiperInstance?.slideTo(this.getSlideIndex(this.selectedSegment));
         this.generateCharts();
     }
+    
+   onSlideChanged() {
+        if (this.swiperInstance) {
+            const activeIndex = this.swiperInstance.activeIndex;
+            this.selectedSegment = this.getSegmentValue(activeIndex);
+            this.generateCharts();
+        }
+    }
 
     getSlideIndex(segment: string): number {
         switch (segment) {
@@ -225,21 +233,16 @@ export class StatsPage implements OnInit, OnDestroy {
         }
     }
 
-    onSlideChanged() {
-        if (this.swiperInstance) {
-            const activeIndex = this.swiperInstance.activeIndex;
-            this.selectedSegment = this.getSegmentValue(activeIndex);
-            this.generateCharts();
-        }
-    }
-
+ 
     generateCharts() {
-        if (this.selectedSegment === 'default') {
-            this.generateScoreChart();
-        } else if (this.selectedSegment === 'spares') {
-            this.generatePinChart();
-        } else if (this.selectedSegment === 'throws') {
-            this.generateThrowChart();
+        if(this.gameHistory.length){
+            if (this.selectedSegment === 'default') {
+                this.generateScoreChart();
+            } else if (this.selectedSegment === 'spares') {
+                this.generatePinChart();
+            } else if (this.selectedSegment === 'throws') {
+                this.generateThrowChart();
+            }
         }
     }
 
@@ -296,7 +299,7 @@ export class StatsPage implements OnInit, OnDestroy {
 
         // Update throw chart
         if (this.throwChartInstance) {
-            this.throwChartInstance.data.datasets[0].data = [opens, spares, strikes];
+            this.throwChartInstance.data.datasets[0].data = [spares, strikes, opens];
             this.throwChartInstance.update();
         }
     }

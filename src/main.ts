@@ -23,9 +23,9 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideAnimationsAsync(), provideIonicAngular(),
     provideHttpClient(withInterceptorsFromDi()),
     provideServiceWorker('ngsw-worker.js', {
-        enabled: !isDevMode(),
-        registrationStrategy: 'registerWhenStable:30000'
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
     })
-]
+  ]
 })
   .catch(err => console.error(err));

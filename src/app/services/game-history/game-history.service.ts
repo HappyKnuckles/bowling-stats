@@ -25,7 +25,7 @@ export class GameHistoryService {
     return gameHistory;
   }
 
-  async sortGameHistoryByDate(gameHistory: Game[]): Promise<void> {
+  sortGameHistoryByDate(gameHistory: Game[]): void {
     gameHistory.sort((a: { date: number }, b: { date: number }) => {
       return a.date - b.date;
     });

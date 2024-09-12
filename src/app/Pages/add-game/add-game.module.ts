@@ -9,23 +9,23 @@ import { AddGamePage } from './add-game.page';
 
 @NgModule({
     imports: [
-    CommonModule,
-    FormsModule,
-    AddGamePageRoutingModule,
-    IonHeader,
-    IonToolbar,
-    IonButton,
-    IonIcon,
-    IonTitle,
-    IonAlert,
-    IonContent,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonModal,
-    IonButtons,
-    IonInput,
-    AddGamePage
-]
+        CommonModule,
+        FormsModule,
+        AddGamePageRoutingModule,
+        IonHeader,
+        IonToolbar,
+        IonButton,
+        IonIcon,
+        IonTitle,
+        IonAlert,
+        IonContent,
+        IonGrid,
+        IonRow,
+        IonCol,
+        IonModal,
+        IonButtons,
+        IonInput,
+        AddGamePage
+    ]
 })
 export class AddGamePageModule { }

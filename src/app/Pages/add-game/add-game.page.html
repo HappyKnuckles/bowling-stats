@@ -112,7 +112,8 @@
               <ion-row>
                 <ion-col class="middle count">
                   <ion-input type="text" class="frameScores" [value]="gameData.frameScores[frameIndex]"
-                    inputmode="numeric" clearOnEdit="true" (ionChange)="updateFrameScore($event.target.value, frameIndex)">
+                    inputmode="numeric" clearOnEdit="true"
+                    (ionChange)="updateFrameScore($event.target.value, frameIndex)">
                   </ion-input>
                 </ion-col>
               </ion-row>

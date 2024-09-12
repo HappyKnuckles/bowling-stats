@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonHeader, IonToolbar, IonContent, IonInput, IonIcon, IonTitle, IonItem, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -26,8 +26,8 @@ export class SettingsPage implements OnInit {
     { name: 'Gray', class: 'gray-option' }
   ];
   constructor(private userService: UserService, private toastService: ToastService) {
-    addIcons({ personCircleOutline, colorPaletteOutline});
-   }
+    addIcons({ personCircleOutline, colorPaletteOutline });
+  }
 
   ngOnInit() {
     this.currentColor = localStorage.getItem('theme');

@@ -528,7 +528,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     //     gameData.push(game);
     //   }
     // });
-    this.transformData(gameData);
+    await this.transformData(gameData);
   }
 
   // parseFrames(framesData: any): any {
@@ -544,8 +544,9 @@ export class HistoryPage implements OnInit, OnDestroy {
       reader.readAsArrayBuffer(file);
     });
   }
-
-  transformData(data: any[]): void {
+  
+  // TODO beobachten ob öfter / nach Strike in Excel -> NaN
+  async transformData(data: any[]): Promise<void> {
     const gameData = [];
 
     for (let i = 1; i < data.length; i++) {
@@ -583,7 +584,7 @@ export class HistoryPage implements OnInit, OnDestroy {
           .map((score: string) => parseInt(score)),
       };
 
-      this.saveService.saveGameToLocalStorage(game);
+      await this.saveService.saveGameToLocalStorage(game);
       gameData.push(game);
     }
   }

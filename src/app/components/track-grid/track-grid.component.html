@@ -38,7 +38,7 @@
     </ion-row>
     <ion-row
       *ngIf="!((bowlingService.frames[frameIndex][0] !== undefined || bowlingService.frames[frameIndex][1] !== undefined || (i === 10 && bowlingService.frames[frameIndex][0] !== undefined)) && isNumber(bowlingService.frameScores[i - 1]))">
-      <ion-col class="middle count" style="color: #294B29;">0</ion-col>
+      <ion-col class="middle count" style="color: var(--ion-color-quartiary);">0</ion-col>
     </ion-row>
   </ion-grid>
 </div>

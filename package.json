@@ -9,7 +9,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint && npx stylelint \"src/**/*.scss\"",
+    "lint:fix": "ng lint --fix && npx stylelint \"src/**/*.scss\" --fix"
   },
   "private": true,
   "dependencies": {
@@ -63,6 +64,7 @@
     "@ionic/angular-toolkit": "11.0.1",
     "@types/events": "^3.0.3",
     "@types/jasmine": "~5.1.0",
+    "@types/jest": "^29.5.12",
     "@types/node": "^22.5.4",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",

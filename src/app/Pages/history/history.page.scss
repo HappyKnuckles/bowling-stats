@@ -2,21 +2,23 @@
     --ion-grid-column-padding: 0;
 
     &:not(:nth-child(2)) {
-        margin: 0 3px 0 3px !important;
+        margin: 0 3px !important;
     }
 }
 
 ion-grid {
     background-color: var(--ion-color-quartiary);
+
     --ion-grid-padding: 0;
+
     border-radius: 3px;
 }
 
 
 .actionSheet {
-
     ion-button {
         background: none;
+
         --background-activated: none;
     }
 }
@@ -80,6 +82,7 @@ ion-row {
         ion-button {
             width: 6rem;
             height: 2rem;
+
             // --background: var(--ion-color-dark);
             // color: #fff;
         }

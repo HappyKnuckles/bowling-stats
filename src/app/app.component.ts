@@ -8,6 +8,7 @@ import { NgIf } from '@angular/common';
 import { ToastComponent } from './components/toast/toast.component';
 import { SwUpdate } from '@angular/service-worker';
 import { register } from 'swiper/element/bundle';
+import { ThemeChangerService } from './services/theme/theme-changer.service';
 register();
 
 @Component({
@@ -36,9 +37,11 @@ export class AppComponent implements OnInit, OnDestroy {
         private toastService: ToastService,
         private loadingService: LoadingService,
         private userService: UserService,
-        private swUpdate: SwUpdate
+        private swUpdate: SwUpdate,
+        private themeService: ThemeChangerService
     ) {
         this.initializeApp();
+
         this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
             this.isLoading = isLoading;
         });
@@ -59,6 +62,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        const currentTheme = this.themeService.getCurrentTheme();
+        this.themeService.applyTheme(currentTheme);
         this.greetUser();
     }
 
@@ -100,6 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     },
                 },
             ],
+            cssClass: 'alert-header-white alert-message-white'
         });
 
         await alert.present();
@@ -119,6 +125,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     }
                 }
             ],
+            cssClass: 'alert-header-white alert-message-white'
         });
 
         await alert.present();

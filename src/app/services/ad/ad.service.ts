@@ -69,12 +69,12 @@ export class AdService {
   
       return new Promise((resolve, reject) => {
         AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error) => {
-          console.log(error);
+          console.error(error);
           reject(new Error('Ad not watched'));
         });
   
         AdMob.addListener(RewardAdPluginEvents.FailedToShow, (error) => {
-          console.log(error);
+          console.error(error);
           reject(new Error('Ad not watched'));
         });
   
@@ -88,7 +88,7 @@ export class AdService {
         });
   
         AdMob.showRewardVideoAd().catch((error) => {
-          console.log(error);
+          console.error(error);
           reject(new Error('Ad not watched'));
         });
       });

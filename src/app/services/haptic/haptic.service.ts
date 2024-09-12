@@ -15,7 +15,7 @@ export class HapticService {
     } else if (navigator.vibrate) {
       navigator.vibrate(duration); // Vibrate for 200ms
     } else {
-      console.log('Haptic feedback not supported on this platform.');
+      console.error('Haptic feedback not supported on this platform.');
     }
   }
 }

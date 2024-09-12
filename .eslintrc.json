@@ -1,6 +1,16 @@
 {
   "root": true,
-  "ignorePatterns": ["projects/**/*", "**/*.spec.ts", "**/*.test.ts"],
+  "ignorePatterns": [
+    "projects/**/*",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "node_modules/**",
+    "dist/**",
+    "**/*.min.css",
+    "www/**",
+    "android/**",
+    "ios/**"
+  ],
   "overrides": [
     {
       "files": ["**/*.ts"],
@@ -47,7 +57,6 @@
         "@typescript-eslint/require-await": "error",
         "@typescript-eslint/no-misused-promises": "error",
         "no-console": ["warn", { "allow": ["warn", "error"] }]
-
       }
     },
     {

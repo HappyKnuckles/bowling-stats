@@ -1,29 +1,29 @@
 .Red {
     &::part(text) {
-        color: red;
+        color: #A91D3A;
     }
 }
 
 .Blue {
     &::part(text) {
-        color: blue;
+        color: #427D9D;
     }
 }
 
 .Green {
     &::part(text) {
-        color: green;
+        color: #789461;
     }
 }
 
-.Yellow {
+.Lila {
     &::part(text) {
-        color: yellow;
+        color: #31304D;
     }
 }
 
 .Gray {
     &::part(text) {
-        color: gray;
+        color: #7D7C7C;
     }
 }

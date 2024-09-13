@@ -61,7 +61,18 @@ import { IonicSlides } from '@ionic/angular/standalone';
 })
 export class StatsPage implements OnInit, OnDestroy {
   swiperModules = [IonicSlides];
-
+  // Previous Stats
+  prevStats = {
+    strikePercentage: 0,
+    sparePercentage: 0,
+    openPercentage: 0,
+    averageStrikesPerGame: 0,
+    averageSparesPerGame: 0,
+    averageOpensPerGame: 0,
+    averageFirstThrowCount: 0,
+    cleanGameCount: 0,
+    perfectGameCount: 0,
+  };
   // Stats
   //TODO add interface for stats
   totalGames: number = 0;

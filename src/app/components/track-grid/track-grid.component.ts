@@ -129,7 +129,7 @@ export class TrackGridComponent implements OnInit {
     }
 
     async focusNextInput(frameIndex: number, inputIndex: number) {
-        await new Promise(resolve => setTimeout(resolve, 700)); // Delay to give time to user
+        await new Promise(resolve => setTimeout(resolve, 600)); // Delay to give time to user
 
         // Convert QueryList to an array
         const inputArray = this.inputs.toArray();

@@ -77,7 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // Listen for version updates and prompt the user
         this.swUpdate.versionUpdates.subscribe(event => {
           if (event.type === 'VERSION_READY') {
-            if (confirm(`A new version is available. Changes: ${this.commitMessage || 'No commit message found'}. Load it?`)) {
+            if (confirm(`A new version is available. Changes: ${this.commitMessage || 'No commit message found'} Load it?`)) {
               window.location.reload();
             }
           }

@@ -6,7 +6,6 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",    
-    "prebuild": "git log -1 --pretty=%B > src/assets/commit-message.txt",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

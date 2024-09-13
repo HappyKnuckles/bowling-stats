@@ -73,7 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
             next: (data: any) => {
               // Extract the commit message from the API response
               this.commitMessage = data.commit.message;
-              if (confirm(`A new version is available. Changes: ${this.commitMessage}. Load it?`)) {
+              if (confirm(`A new version is available. Changes: ${this.commitMessage} Load it?`)) {
                 window.location.reload();
               }
             },

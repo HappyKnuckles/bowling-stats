@@ -3,7 +3,7 @@ import { Game } from 'src/app/models/game-model';
 import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SaveGameDataService {
   newDataAdded = new EventEmitter<void>();

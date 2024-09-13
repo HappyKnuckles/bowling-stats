@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HapticService {
-
-  constructor() { }
+  constructor() {}
 
   vibrate(style: ImpactStyle, duration: number) {
     // Add haptic feedback with fallback for web

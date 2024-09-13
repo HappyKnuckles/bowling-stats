@@ -38,19 +38,19 @@ export class GameStatsService {
     this.perfectGameCount = 0;
     this.cleanGameCount = 0;
 
-    gameHistory.forEach((game: { frames: any[], totalScore: number }) => {
+    gameHistory.forEach((game: { frames: any[]; totalScore: number }) => {
       if (game.totalScore === 300) {
         this.perfectGameCount++;
       }
-    
+
       let isCleanGame = true;
-    
+
       game.frames.forEach((frame, index) => {
         const throws = frame.throws;
-    
+
         // Count the first throw in each frame for firstThrowAverage
         firstThrowCount += parseInt(throws[0].value);
-    
+
         // Count strikes
         if (throws[0].value === 10) {
           this.totalStrikes++;
@@ -68,7 +68,7 @@ export class GameStatsService {
             this.totalStrikes++; // Increment by 1 if third throw is a strike
           }
         }
-    
+
         // Handle pin counts for spares
         if (throws.length === 2) {
           if (throws[0].value + throws[1].value === 10) {
@@ -93,7 +93,7 @@ export class GameStatsService {
             const pinsLeft = 10 - throws[1].value;
             this.pinCounts[pinsLeft]++;
           }
-    
+
           // Check for missed pins
           if (
             throws[0].value !== 10 &&
@@ -111,19 +111,22 @@ export class GameStatsService {
             this.missedCounts[pinsLeft]++;
           }
         }
-    
+
         // Check if the current frame has a score of less than 10
-        const frameScore = throws.reduce((acc: any, curr: { value: any; }) => acc + curr.value, 0);
+        const frameScore = throws.reduce(
+          (acc: any, curr: { value: any }) => acc + curr.value,
+          0
+        );
         if (frameScore < 10) {
           isCleanGame = false; // If any frame is less than 10, the game is not clean
         }
       });
-    
+
       if (isCleanGame) {
         this.cleanGameCount++;
       }
     });
-    
+
     for (let i = 1; i <= 10; i++) {
       this.totalSparesMissed += this.missedCounts[i] || 0;
       this.totalSparesConverted += this.pinCounts[i] || 0;
@@ -154,13 +157,6 @@ export class GameStatsService {
       0
     );
     return this.totalScoreSum / gameHistory.length;
-  }
-
-  private countOccurrences(
-    frames: any[],
-    condition: (frame: any) => boolean
-  ): number {
-    return frames.reduce((acc, frame) => acc + (condition(frame) ? 1 : 0), 0);
   }
 
   private getGameWithHighestScore(gameHistory: Game[]): number {

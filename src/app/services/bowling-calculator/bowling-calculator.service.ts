@@ -166,7 +166,6 @@ export class BowlingCalculatorService {
     return this.maxScore;
   }
 
-
   getSeriesMaxScore(index: number, maxScores: number[]): number {
     if (index === 1) {
       return maxScores[1] + maxScores[2] + maxScores[3];

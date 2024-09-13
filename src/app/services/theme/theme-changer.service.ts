@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ThemeChangerService {
-
   private readonly defaultTheme = 'Green';
 
-  constructor() { }
+  constructor() {}
 
   saveColorTheme(theme: string): void {
-    const previousTheme = this.getCurrentTheme().toLowerCase();  // Get the current theme before saving new one
+    const previousTheme = this.getCurrentTheme().toLowerCase(); // Get the current theme before saving new one
     localStorage.setItem('theme', theme);
     this.applyTheme(theme, previousTheme);
   }
@@ -18,9 +17,10 @@ export class ThemeChangerService {
   applyTheme(newTheme: string, previousTheme?: string): void {
     const currentTheme = newTheme.toLowerCase();
 
-    if(previousTheme){
-    // Clear the previous theme class on <html> and <body>
-    this.clearExistingThemes(previousTheme);}
+    if (previousTheme) {
+      // Clear the previous theme class on <html> and <body>
+      this.clearExistingThemes(previousTheme);
+    }
 
     // Apply the new theme class
     document.documentElement.classList.add(currentTheme);

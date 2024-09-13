@@ -54,35 +54,30 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
     initializeApp(): void {
-        // First, fetch the commit message from the file
+        // Fetch the commit message from the file
         this.http.get('assets/commit-message.txt', { responseType: 'text' })
-          .subscribe({
-            next: (message: string) => {
-              this.commitMessage = message;
-              // Now listen for version updates only after the commit message is fetched
-              this.checkForUpdates();
-            },
-            error: (error) => {
-              console.error('Failed to fetch commit message:', error);
-              // Even in case of error, we want to proceed with checking for updates
-              this.checkForUpdates(); // Proceed with checking for updates without commit message
-            },
-            complete: () => {
-              console.log('Commit message fetched successfully');
-            }
-          });
-      }
-      
-      checkForUpdates(): void {
-        // Listen for version updates and prompt the user
-        this.swUpdate.versionUpdates.subscribe(event => {
-          if (event.type === 'VERSION_READY') {
-            if (confirm(`A new version is available. Changes: ${this.commitMessage || 'No commit message found'} Load it?`)) {
-              window.location.reload();
-            }
+        .subscribe({
+          next: (message: string) => {
+            this.commitMessage = message;
+          },
+          error: (error) => {
+            console.error('Failed to fetch commit message:', error);
+          },
+          complete: () => {
+            console.log('Commit message fetched successfully');
           }
         });
-      }    
+      
+    
+           // Listen for version updates and prompt the user
+        this.swUpdate.versionUpdates.subscribe(event => {
+            if (event.type === 'VERSION_READY') {
+                if (confirm(`A new version is available. Last commit: ${this.commitMessage}. Load it?`)) {
+                window.location.reload();
+                }
+            }
+        });
+      }  
 
     ngOnInit(): void {
         const currentTheme = this.themeService.getCurrentTheme();

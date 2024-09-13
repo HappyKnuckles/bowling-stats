@@ -31,9 +31,7 @@ describe('BowlingCalculatorService', () => {
     ];
 
     // Expected max score after each frame
-    const expectedMaxScores = [
-      300, 280, 250, 250, 218, 208, 208, 208, 187, 177,
-    ];
+    const expectedMaxScores = [300, 280, 250, 250, 218, 208, 208, 208, 187, 177];
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
@@ -57,9 +55,7 @@ describe('BowlingCalculatorService', () => {
     ];
 
     // Expected max score after each frame
-    const expectedMaxScores = [
-      300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188,
-    ]; // Website
+    const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // Website
     // const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // App
 
     // Calculate and verify the max score after each frame
@@ -85,9 +81,7 @@ describe('BowlingCalculatorService', () => {
     ];
 
     // Expected max score after each frame
-    const expectedMaxScores = [
-      290, 279, 268, 257, 246, 235, 224, 213, 202, 182,
-    ]; // Website
+    const expectedMaxScores = [290, 279, 268, 257, 246, 235, 224, 213, 202, 182]; // Website
     // const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // App
 
     // Calculate and verify the max score after each frame
@@ -113,9 +107,7 @@ describe('BowlingCalculatorService', () => {
     ];
 
     // Expected max score after each frame
-    const expectedMaxScores = [
-      300, 280, 254, 254, 254, 220, 220, 180, 170, 170,
-    ]; // Website
+    const expectedMaxScores = [300, 280, 254, 254, 254, 220, 220, 180, 170, 170]; // Website
     // const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // App
 
     // Calculate and verify the max score after each frame
@@ -141,9 +133,7 @@ describe('BowlingCalculatorService', () => {
     ];
 
     // Expected max score after each frame
-    const expectedMaxScores = [
-      279, 269, 269, 237, 237, 205, 184, 174, 174, 174, 174,
-    ]; // Website
+    const expectedMaxScores = [279, 269, 269, 237, 237, 205, 184, 174, 174, 174, 174]; // Website
     // const expectedMaxScores = [300, 280, 280, 280, 259, 248, 248, 208, 198, 198, 188]; // App
 
     // Calculate and verify the max score after each frame
@@ -194,9 +184,7 @@ describe('BowlingCalculatorService', () => {
     ];
 
     // Expected max score after each frame
-    const expectedMaxScores = [
-      300, 300, 300, 300, 300, 300, 300, 300, 300, 300,
-    ];
+    const expectedMaxScores = [300, 300, 300, 300, 300, 300, 300, 300, 300, 300];
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
@@ -220,9 +208,7 @@ describe('BowlingCalculatorService', () => {
     ];
 
     // Expected max score after each frame
-    const expectedMaxScores = [
-      300, 300, 300, 300, 300, 300, 300, 300, 300, 279,
-    ];
+    const expectedMaxScores = [300, 300, 300, 300, 300, 300, 300, 300, 300, 279];
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {

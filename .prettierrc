@@ -1,4 +1,10 @@
 {
   "tabWidth": 2,
-  "useTabs": false
+  "useTabs": false,
+  "printWidth": 150,
+  "semi": true,
+  "bracketSameLine": true,
+  "bracketSpacing": true,
+  "htmlWhitespaceSensitivity": "css",
+  "endOfLine": "lf"
 }

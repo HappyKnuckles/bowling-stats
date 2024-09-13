@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  AdMob,
-  AdmobConsentStatus,
-  AdOptions,
-  RewardAdPluginEvents,
-} from '@capacitor-community/admob';
+import { AdMob, AdmobConsentStatus, AdOptions, RewardAdPluginEvents } from '@capacitor-community/admob';
 
 @Injectable({
   providedIn: 'root',
@@ -21,10 +16,7 @@ export class AdService {
   async initializeAdMob() {
     await AdMob.initialize();
 
-    const [trackingInfo, consentInfo] = await Promise.all([
-      AdMob.trackingAuthorizationStatus(),
-      AdMob.requestConsentInfo(),
-    ]);
+    const [trackingInfo, consentInfo] = await Promise.all([AdMob.trackingAuthorizationStatus(), AdMob.requestConsentInfo()]);
 
     if (trackingInfo.status === 'notDetermined') {
       /**
@@ -42,11 +34,7 @@ export class AdService {
     }
 
     const authorizationStatus = await AdMob.trackingAuthorizationStatus();
-    if (
-      authorizationStatus.status === 'authorized' &&
-      consentInfo.isConsentFormAvailable &&
-      consentInfo.status === AdmobConsentStatus.REQUIRED
-    ) {
+    if (authorizationStatus.status === 'authorized' && consentInfo.isConsentFormAvailable && consentInfo.status === AdmobConsentStatus.REQUIRED) {
       await AdMob.showConsentForm();
     }
   }

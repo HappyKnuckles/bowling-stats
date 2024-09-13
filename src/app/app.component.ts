@@ -1,11 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  AlertController,
-  IonApp,
-  IonBackdrop,
-  IonSpinner,
-  IonRouterOutlet,
-} from '@ionic/angular/standalone';
+import { AlertController, IonApp, IonBackdrop, IonSpinner, IonRouterOutlet } from '@ionic/angular/standalone';
 import { ToastService } from './services/toast/toast.service';
 import { LoadingService } from './services/loader/loading.service';
 import { UserService } from './services/user/user.service';
@@ -23,14 +17,7 @@ register();
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [
-    IonApp,
-    NgIf,
-    IonBackdrop,
-    IonSpinner,
-    IonRouterOutlet,
-    ToastComponent,
-  ],
+  imports: [IonApp, NgIf, IonBackdrop, IonSpinner, IonRouterOutlet, ToastComponent],
 })
 export class AppComponent implements OnInit, OnDestroy {
   isLoading = false;
@@ -50,16 +37,12 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {
     this.initializeApp();
 
-    this.loadingSubscription = this.loadingService.isLoading$.subscribe(
-      (isLoading) => {
-        this.isLoading = isLoading;
-      }
-    );
-    this.userNameSubscription = this.userService
-      .getUsername()
-      .subscribe((username: string) => {
-        this.username = username;
-      });
+    this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
+      this.isLoading = isLoading;
+    });
+    this.userNameSubscription = this.userService.getUsername().subscribe((username: string) => {
+      this.username = username;
+    });
   }
 
   initializeApp(): void {
@@ -67,39 +50,31 @@ export class AppComponent implements OnInit, OnDestroy {
     this.swUpdate.versionUpdates.subscribe((event) => {
       if (event.type === 'VERSION_READY') {
         // Fetch the latest commits from the master branch on GitHub
-        this.http
-          .get(
-            'https://api.github.com/repos/HappyKnuckles/bowling-stats/commits?sha=master'
-          )
-          .subscribe({
-            next: (data: any) => {
-              const lastCommitSha = localStorage.getItem('lastCommitSha');
-              const newCommits = [];
+        this.http.get('https://api.github.com/repos/HappyKnuckles/bowling-stats/commits?sha=master').subscribe({
+          next: (data: any) => {
+            const lastCommitSha = localStorage.getItem('lastCommitSha');
+            const newCommits = [];
 
-              for (const commit of data) {
-                if (lastCommitSha && commit.sha === lastCommitSha) break;
-                newCommits.push(commit.commit.message);
-              }
+            for (const commit of data) {
+              if (lastCommitSha && commit.sha === lastCommitSha) break;
+              newCommits.push(commit.commit.message);
+            }
 
-              if (newCommits.length > 0) {
-                const commitMessages = newCommits.join('\n');
-                if (
-                  confirm(
-                    `A new version is available. Changes:\n${commitMessages}\nLoad it?`
-                  )
-                ) {
-                  localStorage.setItem('lastCommitSha', data[0].sha);
-                  window.location.reload();
-                }
-              }
-            },
-            error: (error) => {
-              console.error('Failed to fetch the latest commits:', error);
-              if (confirm('A new version is available. Load it?')) {
+            if (newCommits.length > 0) {
+              const commitMessages = newCommits.join('\n');
+              if (confirm(`A new version is available. Changes:\n${commitMessages}\nLoad it?`)) {
+                localStorage.setItem('lastCommitSha', data[0].sha);
                 window.location.reload();
               }
-            },
-          });
+            }
+          },
+          error: (error) => {
+            console.error('Failed to fetch the latest commits:', error);
+            if (confirm('A new version is available. Load it?')) {
+              window.location.reload();
+            }
+          },
+        });
       }
     });
   }
@@ -142,10 +117,7 @@ export class AppComponent implements OnInit, OnDestroy {
             const newName = data.username.trim();
             if (newName !== '') {
               this.userService.setUsername(newName);
-              this.toastService.showToast(
-                `Name updated to ${this.username}`,
-                'reload-outline'
-              );
+              this.toastService.showToast(`Name updated to ${this.username}`, 'reload-outline');
             }
           },
         },

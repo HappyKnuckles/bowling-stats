@@ -21,10 +21,7 @@ export class UserService {
   setUsername(username: string): void {
     localStorage.setItem('username', username);
     this.usernameSubject.next(this.capitalizeFirstLetter(username));
-    this.toastService.showToast(
-      `Name updated to ${username}`,
-      'reload-outline'
-    );
+    this.toastService.showToast(`Name updated to ${username}`, 'reload-outline');
   }
 
   capitalizeFirstLetter(str: string): string {

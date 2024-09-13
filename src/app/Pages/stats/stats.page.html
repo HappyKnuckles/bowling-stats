@@ -2,11 +2,7 @@
   <ion-toolbar>
     <ion-title> Stats </ion-title>
   </ion-toolbar>
-  <ion-segment
-    [(ngModel)]="selectedSegment"
-    value="default"
-    (ionChange)="onSegmentChanged($event)"
-  >
+  <ion-segment [(ngModel)]="selectedSegment" value="default" (ionChange)="onSegmentChanged($event)">
     <ion-segment-button value="default">
       <ion-label class="segmentLabel">Overall</ion-label>
     </ion-segment-button>
@@ -20,34 +16,17 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-refresher
-    slot="fixed"
-    (ionRefresh)="handleRefresh($event)"
-  ></ion-refresher>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"></ion-refresher>
   <!-- Show this message if there are no game history items and it's not loading -->
   <ng-container *ngIf="gameHistory.length <= 0 && !isLoading; else content">
-    <ion-text
-      style="
-        width: 60%;
-        display: flex;
-        justify-content: center;
-        height: 100%;
-        align-items: center;
-        margin: 0 auto;
-      "
-    >
+    <ion-text style="width: 60%; display: flex; justify-content: center; height: 100%; align-items: center; margin: 0 auto">
       Start playing a few games to see your stats here!
     </ion-text>
   </ng-container>
 
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <swiper-container
-      [modules]="swiperModules"
-      #swiper
-      [slidesPerView]="1"
-      (swiperslidechangetransitionstart)="onSlideChanged()"
-    >
+    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechangetransitionstart)="onSlideChanged()">
       <!-- Overall Segment -->
       <swiper-slide class="tab">
         <div class="stats">
@@ -76,9 +55,7 @@
         </div>
         <div class="stats">
           <ion-text>First ball average: </ion-text>
-          <ion-text class="value"
-            >{{ averageFirstCount | number:'1.2-2' }}</ion-text
-          >
+          <ion-text class="value">{{ averageFirstCount | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
           <ion-text>Total strikes: </ion-text>
@@ -86,15 +63,11 @@
         </div>
         <div class="stats">
           <ion-text>Strikes per game: </ion-text>
-          <ion-text class="value"
-            >{{ averageStrikesPerGame | number:'1.2-2' }}</ion-text
-          >
+          <ion-text class="value">{{ averageStrikesPerGame | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
           <ion-text>Strike-percentage: </ion-text>
-          <ion-text class="value"
-            >{{ strikePercentage | number:'1.2-2' }}%</ion-text
-          >
+          <ion-text class="value">{{ strikePercentage | number:'1.2-2' }}%</ion-text>
         </div>
         <div class="stats">
           <ion-text>Total spares: </ion-text>
@@ -102,15 +75,11 @@
         </div>
         <div class="stats">
           <ion-text>Spares per game: </ion-text>
-          <ion-text class="value"
-            >{{ averageSparesPerGame | number:'1.2-2' }}</ion-text
-          >
+          <ion-text class="value">{{ averageSparesPerGame | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
           <ion-text>Spare-percentage: </ion-text>
-          <ion-text class="value"
-            >{{ sparePercentage | number:'1.2-2' }}%</ion-text
-          >
+          <ion-text class="value">{{ sparePercentage | number:'1.2-2' }}%</ion-text>
         </div>
         <div class="stats">
           <ion-text>Total opens: </ion-text>
@@ -118,21 +87,13 @@
         </div>
         <div class="stats">
           <ion-text>Opens per game: </ion-text>
-          <ion-text class="value"
-            >{{ averageOpensPerGame | number:'1.2-2' }}</ion-text
-          >
+          <ion-text class="value">{{ averageOpensPerGame | number:'1.2-2' }}</ion-text>
         </div>
         <div class="stats">
           <ion-text>Open-percentage: </ion-text>
-          <ion-text class="value"
-            >{{ openPercentage | number:'1.2-2' }}%</ion-text
-          >
+          <ion-text class="value">{{ openPercentage | number:'1.2-2' }}%</ion-text>
         </div>
-        <canvas
-          #scoreChart
-          class="score"
-          style="width: 300px; height: 300px"
-        ></canvas>
+        <canvas #scoreChart class="score" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 
       <!-- Spares Segment -->
@@ -150,13 +111,8 @@
             <ng-container *ngIf="i > 0">
               <ion-col><ion-text>{{ missedCounts[i] }}</ion-text></ion-col>
               <ion-col><ion-text>{{ pinCounts[i] }}</ion-text></ion-col>
-              <ion-col
-                *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"
-              ></ion-col>
-              <ion-col
-                *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0"
-                [ngStyle]="{'color': getRateColor(spareRates[i])}"
-              >
+              <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
+              <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0" [ngStyle]="{'color': getRateColor(spareRates[i])}">
                 {{ spareRates[i] | number:'1.2-2' }}%
               </ion-col>
             </ng-container>
@@ -164,32 +120,19 @@
             <ng-container *ngIf="i === 0">
               <ion-col><ion-text>{{ totalSparesMissed }}</ion-text></ion-col>
               <ion-col><ion-text>{{ totalSparesConverted }}</ion-text></ion-col>
-              <ion-col
-                *ngIf="totalSparesMissed + totalSparesConverted !== 0"
-                [ngStyle]="{'color': getRateColor(overallSpareRate)}"
-              >
+              <ion-col *ngIf="totalSparesMissed + totalSparesConverted !== 0" [ngStyle]="{'color': getRateColor(overallSpareRate)}">
                 {{ overallSpareRate | number:'1.2-2' }}%
               </ion-col>
-              <ion-col
-                *ngIf="totalSparesMissed + totalSparesConverted === 0"
-              ></ion-col>
+              <ion-col *ngIf="totalSparesMissed + totalSparesConverted === 0"></ion-col>
             </ng-container>
           </ion-row>
         </ion-grid>
-        <canvas
-          #pinChart
-          class="spares"
-          style="width: 300px; height: 300px"
-        ></canvas>
+        <canvas #pinChart class="spares" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 
       <!-- Throws Segment -->
       <swiper-slide class="tab">
-        <canvas
-          #throwChart
-          class="throws"
-          style="width: 300px; height: 300px"
-        ></canvas>
+        <canvas #throwChart class="throws" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
     </swiper-container> </ng-template
 ></ion-content>

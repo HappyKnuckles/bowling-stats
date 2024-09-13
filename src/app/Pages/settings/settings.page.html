@@ -15,8 +15,7 @@
       placeholder="{{username}}"
       (ionChange)="username = $event.target.value!.toString()"
       (ionChange)="changeName()"
-      style="margin-right: 21px"
-    >
+      style="margin-right: 21px">
     </ion-input>
   </ion-item>
   <ion-item>
@@ -27,13 +26,8 @@
       [(ngModel)]="currentColor"
       [ngClass]="currentColor"
       placeholder="{{currentColor}}"
-      (ionChange)="changeColor()"
-    >
-      <ion-select-option
-        *ngFor="let color of optionsWithClasses; let i = index;"
-        [value]="color.name"
-        [ngClass]="color.class"
-      >
+      (ionChange)="changeColor()">
+      <ion-select-option *ngFor="let color of optionsWithClasses; let i = index;" [value]="color.name" [ngClass]="color.class">
         {{ color.name }}
       </ion-select-option>
     </ion-select>

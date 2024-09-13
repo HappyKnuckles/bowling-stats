@@ -43,11 +43,7 @@ export class BowlingCalculatorService {
     let frameIndex = 0;
 
     for (let frame = 0; frame < 10; frame++) {
-      if (
-        this.isStrike(this.rolls[frameIndex]) &&
-        this.rolls[frameIndex] != null &&
-        this.rolls[frameIndex + 1] != null
-      ) {
+      if (this.isStrike(this.rolls[frameIndex]) && this.rolls[frameIndex] != null && this.rolls[frameIndex + 1] != null) {
         score += 10 + this.strikeBonus(frameIndex, this.rolls);
         frameIndex++;
       } else if (
@@ -57,10 +53,7 @@ export class BowlingCalculatorService {
       ) {
         score += 10 + this.spareBonus(frameIndex, this.rolls);
         frameIndex += 2;
-      } else if (
-        this.rolls[frameIndex] != null &&
-        this.rolls[frameIndex + 1] != null
-      ) {
+      } else if (this.rolls[frameIndex] != null && this.rolls[frameIndex + 1] != null) {
         score += this.sumOfBallsInFrame(frameIndex, this.rolls);
         frameIndex += 2;
       }
@@ -101,51 +94,28 @@ export class BowlingCalculatorService {
         // Handle other frames (1-8)
         else {
           if (secondThrow !== undefined) {
-            if (
-              i >= 2 &&
-              this.isPreviousStrike(i - 1) &&
-              this.isPreviousStrike(i)
-            ) {
+            if (i >= 2 && this.isPreviousStrike(i - 1) && this.isPreviousStrike(i)) {
               if (this.isSpare(firstThrow, secondThrow)) {
                 this.maxScore -= 30 - firstThrow;
               } else {
-                this.maxScore -=
-                  60 - (firstThrow + 2 * (firstThrow + secondThrow));
+                this.maxScore -= 60 - (firstThrow + 2 * (firstThrow + secondThrow));
               }
               continue;
             }
 
             if (i >= 1) {
               if (firstThrow !== 10) {
-                if (
-                  this.isPreviousStrike(i) &&
-                  this.isSpare(firstThrow, secondThrow)
-                ) {
+                if (this.isPreviousStrike(i) && this.isSpare(firstThrow, secondThrow)) {
                   this.maxScore -= 20;
-                } else if (
-                  this.isPreviousStrike(i) &&
-                  !this.isSpare(firstThrow, secondThrow)
-                ) {
+                } else if (this.isPreviousStrike(i) && !this.isSpare(firstThrow, secondThrow)) {
                   this.maxScore -= 50 - 2 * (firstThrow + secondThrow);
-                } else if (
-                  this.isPreviousSpare(i) &&
-                  this.isSpare(firstThrow, secondThrow)
-                ) {
+                } else if (this.isPreviousSpare(i) && this.isSpare(firstThrow, secondThrow)) {
                   this.maxScore -= 20 - firstThrow;
-                } else if (
-                  this.isPreviousSpare(i) &&
-                  !this.isSpare(firstThrow, secondThrow)
-                ) {
+                } else if (this.isPreviousSpare(i) && !this.isSpare(firstThrow, secondThrow)) {
                   this.maxScore -= 40 - (2 * firstThrow + secondThrow);
-                } else if (
-                  !this.isPreviousSpare(i) &&
-                  this.isSpare(firstThrow, secondThrow)
-                ) {
+                } else if (!this.isPreviousSpare(i) && this.isSpare(firstThrow, secondThrow)) {
                   this.maxScore -= 10;
-                } else if (
-                  !this.isPreviousSpare(i) &&
-                  this.isStrike(firstThrow)
-                ) {
+                } else if (!this.isPreviousSpare(i) && this.isStrike(firstThrow)) {
                   this.maxScore; // Example action
                 } else {
                   this.maxScore -= 30 - (firstThrow + secondThrow);
@@ -168,10 +138,7 @@ export class BowlingCalculatorService {
           if (this.isStrike(firstThrow)) {
             if (this.isPreviousStrike(i) && !this.isStrike(secondThrow)) {
               this.maxScore -= 20 - secondThrow;
-            } else if (
-              !this.isPreviousStrike(i) &&
-              !this.isStrike(secondThrow)
-            ) {
+            } else if (!this.isPreviousStrike(i) && !this.isStrike(secondThrow)) {
               this.maxScore -= 10;
             }
           } else if (!this.isSpare(firstThrow, secondThrow)) {
@@ -189,11 +156,7 @@ export class BowlingCalculatorService {
           if (!this.isStrike(firstThrow)) {
             this.maxScore -= 10;
           }
-        } else if (
-          this.isPreviousStrike(i - 1) &&
-          this.isPreviousStrike(i) &&
-          !this.isPreviousSpare(i)
-        ) {
+        } else if (this.isPreviousStrike(i - 1) && this.isPreviousStrike(i) && !this.isPreviousSpare(i)) {
           if (!this.isStrike(firstThrow)) {
             this.maxScore -= 30 - firstThrow;
           }

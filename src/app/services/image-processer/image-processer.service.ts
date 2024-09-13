@@ -29,9 +29,7 @@ export class ImageProcesserService {
           });
 
           if (!response.ok) {
-            throw new Error(
-              'Network response was not ok ' + response.statusText
-            );
+            throw new Error('Network response was not ok ' + response.statusText);
           }
 
           const extractedText = await response.text();

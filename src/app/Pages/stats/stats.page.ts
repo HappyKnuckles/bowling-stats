@@ -1,11 +1,4 @@
-import {
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { Subscription } from 'rxjs';
 import {
@@ -23,11 +16,7 @@ import {
   IonLabel,
 } from '@ionic/angular/standalone';
 import { NgIf, NgFor, NgStyle, DecimalPipe } from '@angular/common';
-import {
-  MatExpansionPanel,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle,
-} from '@angular/material/expansion';
+import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { ImpactStyle } from '@capacitor/haptics';
 import { Game } from 'src/app/models/game-model';
 import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
@@ -140,11 +129,9 @@ export class StatsPage implements OnInit, OnDestroy {
     private decimalPipe: DecimalPipe,
     private hapticService: HapticService
   ) {
-    this.loadingSubscription = this.loadingService.isLoading$.subscribe(
-      (isLoading) => {
-        this.isLoading = isLoading;
-      }
-    );
+    this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
+      this.isLoading = isLoading;
+    });
   }
 
   private async loadDataAndCalculateStats() {
@@ -154,11 +141,7 @@ export class StatsPage implements OnInit, OnDestroy {
         this.loadStats();
         this.gameHistoryChanged = false; // Reset the flag
       } catch (error) {
-        this.toastService.showToast(
-          `Error loading history and stats: ${error}`,
-          'bug',
-          true
-        );
+        this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true);
       }
     }
   }
@@ -167,11 +150,7 @@ export class StatsPage implements OnInit, OnDestroy {
     try {
       this.gameHistory = await this.gameHistoryService.loadGameHistory();
     } catch (error) {
-      this.toastService.showToast(
-        `Error loading history: ${error}`,
-        'bug',
-        true
-      );
+      this.toastService.showToast(`Error loading history: ${error}`, 'bug', true);
     }
   }
 
@@ -319,41 +298,32 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(
-      () => {
-        this.gameHistoryChanged = true;
-        this.loadDataAndCalculateStats()
-          .then(() => {
-            this.generateCharts();
-          })
-          .catch((error) => {
-            console.error('Error loading data and calculating stats:', error);
-          });
-      }
-    );
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
+      this.gameHistoryChanged = true;
+      this.loadDataAndCalculateStats()
+        .then(() => {
+          this.generateCharts();
+        })
+        .catch((error) => {
+          console.error('Error loading data and calculating stats:', error);
+        });
+    });
 
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(
-      () => {
-        this.gameHistoryChanged = true;
-        this.loadDataAndCalculateStats()
-          .then(() => {
-            this.generateCharts();
-          })
-          .catch((error) => {
-            console.error('Error loading data and calculating stats:', error);
-          });
-      }
-    );
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
+      this.gameHistoryChanged = true;
+      this.loadDataAndCalculateStats()
+        .then(() => {
+          this.generateCharts();
+        })
+        .catch((error) => {
+          console.error('Error loading data and calculating stats:', error);
+        });
+    });
   }
 
   calculateRates() {
-    this.spareRates = this.pinCounts.map((pinCount, i) =>
-      this.getRate(pinCount, this.missedCounts[i])
-    );
-    this.overallSpareRate = this.getRate(
-      this.totalSparesConverted,
-      this.totalSparesMissed
-    );
+    this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
+    this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
   }
 
   getLabel(i: number): string {
@@ -384,16 +354,12 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   calculatePinChartData() {
-    const filteredSpareRates: number[] = this.spareRates
-      .slice(1)
-      .map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
-    const filteredMissedCounts: number[] = this.missedCounts
-      .slice(1)
-      .map((count, i) => {
-        const rate = this.getRate(count, this.pinCounts[i + 1]);
-        const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
-        return parseFloat(transformedRate ?? '0');
-      });
+    const filteredSpareRates: number[] = this.spareRates.slice(1).map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
+    const filteredMissedCounts: number[] = this.missedCounts.slice(1).map((count, i) => {
+      const rate = this.getRate(count, this.pinCounts[i + 1]);
+      const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
+      return parseFloat(transformedRate ?? '0');
+    });
     return { filteredSpareRates, filteredMissedCounts };
   }
 
@@ -411,59 +377,38 @@ export class StatsPage implements OnInit, OnDestroy {
       scoresByDate[date].push(game.totalScore);
     });
 
-    const gameLabels = Object.keys(scoresByDate).sort(
-      (a, b) => new Date(a).getTime() - new Date(b).getTime()
-    );
+    const gameLabels = Object.keys(scoresByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
     let cumulativeSum = 0;
     let cumulativeCount = 0;
 
     const overallAverages = gameLabels.map((date) => {
-      cumulativeSum += scoresByDate[date].reduce(
-        (sum, score) => sum + score,
-        0
-      );
+      cumulativeSum += scoresByDate[date].reduce((sum, score) => sum + score, 0);
       cumulativeCount += scoresByDate[date].length;
       return cumulativeSum / cumulativeCount;
     });
-    overallAverages.map((average) =>
-      parseFloat(this.decimalPipe.transform(average, '1.2-2')!)
-    );
+    overallAverages.map((average) => parseFloat(this.decimalPipe.transform(average, '1.2-2')!));
 
     const differences = gameLabels.map((date, index) => {
-      const dailySum = scoresByDate[date].reduce(
-        (sum, score) => sum + score,
-        0
-      );
+      const dailySum = scoresByDate[date].reduce((sum, score) => sum + score, 0);
       const dailyAverage = dailySum / scoresByDate[date].length;
       return dailyAverage - overallAverages[index];
     });
-    differences.map((difference) =>
-      parseFloat(this.decimalPipe.transform(difference, '1.2-2')!)
-    );
+    differences.map((difference) => parseFloat(this.decimalPipe.transform(difference, '1.2-2')!));
 
-    const gamesPlayedDaily = gameLabels.map(
-      (date) => scoresByDate[date].length
-    );
+    const gamesPlayedDaily = gameLabels.map((date) => scoresByDate[date].length);
     return { gameLabels, overallAverages, differences, gamesPlayedDaily };
   }
 
   calculateThrowChartData() {
-    const opens = parseFloat(
-      this.decimalPipe.transform(this.openPercentage, '1.2-2')!
-    );
-    const spares = parseFloat(
-      this.decimalPipe.transform(this.sparePercentage, '1.2-2')!
-    );
-    const strikes = parseFloat(
-      this.decimalPipe.transform(this.strikePercentage, '1.2-2')!
-    );
+    const opens = parseFloat(this.decimalPipe.transform(this.openPercentage, '1.2-2')!);
+    const spares = parseFloat(this.decimalPipe.transform(this.sparePercentage, '1.2-2')!);
+    const strikes = parseFloat(this.decimalPipe.transform(this.strikePercentage, '1.2-2')!);
     return { opens, spares, strikes };
   }
 
   //TODO adjust look of this
   generatePinChart(): void {
-    const { filteredSpareRates, filteredMissedCounts } =
-      this.calculatePinChartData();
+    const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
 
     const ctx = this.pinChart!.nativeElement;
     if (this.pinChartInstance) {
@@ -474,18 +419,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.pinChartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: [
-            '1 Pin',
-            '2 Pins',
-            '3 Pins',
-            '4 Pins',
-            '5 Pins',
-            '6 Pins',
-            '7 Pins',
-            '8 Pins',
-            '9 Pins',
-            '10 Pins',
-          ], // Labels for each pin count
+          labels: ['1 Pin', '2 Pins', '3 Pins', '4 Pins', '5 Pins', '6 Pins', '7 Pins', '8 Pins', '9 Pins', '10 Pins'], // Labels for each pin count
           datasets: [
             {
               label: 'Converted',
@@ -537,15 +471,10 @@ export class StatsPage implements OnInit, OnDestroy {
                   const value = context[0].raw;
 
                   // Find all labels with the same value
-                  const matchingLabels = context[0].chart.data.labels!.filter(
-                    (label, index) => {
-                      // Check if the value matches any point in the datasets and is 0
-                      return context[0].chart.data.datasets.some(
-                        (dataset) =>
-                          dataset.data[index] === value && value === 0
-                      );
-                    }
-                  );
+                  const matchingLabels = context[0].chart.data.labels!.filter((label, index) => {
+                    // Check if the value matches any point in the datasets and is 0
+                    return context[0].chart.data.datasets.some((dataset) => dataset.data[index] === value && value === 0);
+                  });
 
                   // Only modify the title if multiple labels match the same value
                   if (matchingLabels.length > 1) {
@@ -600,8 +529,7 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   generateScoreChart(): void {
-    const { gameLabels, overallAverages, differences, gamesPlayedDaily } =
-      this.calculateScoreChartData();
+    const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
 
     const ctx = this.scoreChart?.nativeElement;
     if (this.scoreChartInstance) {
@@ -701,15 +629,10 @@ export class StatsPage implements OnInit, OnDestroy {
                 const meta = ci.getDatasetMeta(index);
 
                 // Toggle the visibility of the dataset
-                meta.hidden =
-                  meta.hidden === null
-                    ? !ci.data.datasets[index].hidden
-                    : !meta.hidden;
+                meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : !meta.hidden;
 
                 // Find the index of the "Games Played" dataset
-                const gamesPlayedIndex = ci.data.datasets.findIndex(
-                  (dataset) => dataset.label === 'Games played'
-                );
+                const gamesPlayedIndex = ci.data.datasets.findIndex((dataset) => dataset.label === 'Games played');
 
                 // Check if the "Games Played" dataset exists
                 if (gamesPlayedIndex !== -1) {
@@ -792,15 +715,10 @@ export class StatsPage implements OnInit, OnDestroy {
                   const value = context[0].raw;
 
                   // Find all labels with the same value
-                  const matchingLabels = context[0].chart.data.labels!.filter(
-                    (label, index) => {
-                      // Check if the value matches any point in the datasets and is 0
-                      return context[0].chart.data.datasets.some(
-                        (dataset) =>
-                          dataset.data[index] === value && value === 0
-                      );
-                    }
-                  );
+                  const matchingLabels = context[0].chart.data.labels!.filter((label, index) => {
+                    // Check if the value matches any point in the datasets and is 0
+                    return context[0].chart.data.datasets.some((dataset) => dataset.data[index] === value && value === 0);
+                  });
 
                   // Only modify the title if multiple labels match the same value
                   if (matchingLabels.length > 1) {

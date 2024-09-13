@@ -27,12 +27,5 @@
     "scss/dollar-variable-pattern": "^foo",
     "declaration-block-no-ignored-properties": true
   },
-  "ignoreFiles": [
-    "node_modules/**",
-    "dist/**",
-    "**/*.min.css",
-    "www/**",
-    "android/**",
-    "ios/**"
-  ]
+  "ignoreFiles": ["node_modules/**", "dist/**", "**/*.min.css", "www/**", "android/**", "ios/**"]
 }

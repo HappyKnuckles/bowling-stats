@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  EventEmitter,
-  Output,
-  QueryList,
-  ViewChildren,
-} from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren } from '@angular/core';
 import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
 import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
@@ -42,11 +35,9 @@ export class TrackGridComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.inputSubject
-      .pipe(debounceTime(300))
-      .subscribe(({ event, frameIndex, inputIndex }) => {
-        this.simulateScore(event, frameIndex, inputIndex);
-      });
+    this.inputSubject.pipe(debounceTime(300)).subscribe(({ event, frameIndex, inputIndex }) => {
+      this.simulateScore(event, frameIndex, inputIndex);
+    });
     // Check if gameIndex exists in local storage
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;
@@ -76,18 +67,11 @@ export class TrackGridComponent implements OnInit {
     return !isNaN(value) && value >= 0 && value <= 10;
   }
 
-  private isValidFrameScore(
-    inputValue: number,
-    frameIndex: number,
-    inputIndex: number
-  ): boolean {
+  private isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number): boolean {
     if (frameIndex < 9) {
       // Regular frames (1-9)
       const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
-      const secondThrow =
-        inputIndex === 1
-          ? inputValue
-          : this.bowlingService.frames[frameIndex][1] || 0;
+      const secondThrow = inputIndex === 1 ? inputValue : this.bowlingService.frames[frameIndex][1] || 0;
       return firstThrow + secondThrow <= 10;
     } else {
       // 10th frame
@@ -175,47 +159,31 @@ export class TrackGridComponent implements OnInit {
       this.toastService.showToast('Game saved succesfully.', 'add');
       this.clearFrames();
     } catch (error) {
-      this.toastService.showToast(
-        `Error saving game data to local storage: ${error}`,
-        'bug',
-        true
-      );
+      this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);
     }
   }
 
   isGameValid(): boolean {
-    const allInputsValid = this.bowlingService.frames.every(
-      (frame: any[], index: number) => {
-        if (index < 9) {
-          // For frames 1 to 9: Check if there are either 2 throws (unless it's a strike) or 1 throw (for strike)
-          return (
-            (frame[0] === 10 && frame.length === 1) ||
-            (frame.length === 2 &&
-              frame.reduce((acc, curr) => acc + curr, 0) <= 10 &&
-              frame.every((throwValue) => throwValue >= 0 && throwValue <= 10))
-          );
-        } else {
-          // For frame 10: Check if there are either 3 throws (if there's a strike or spare in the first two throws),
-          // or 2 throws (if there's no strike or spare in the first two throws)
-          return (
-            (frame[0] === 10 &&
-              frame.length === 3 &&
-              frame.every(
-                (throwValue) => throwValue >= 0 && throwValue <= 10
-              )) ||
-            (frame.length === 2 &&
-              frame[0] + frame[1] < 10 &&
-              frame.every(
-                (throwValue) => throwValue >= 0 && throwValue <= 10
-              )) ||
-            (frame.length === 3 &&
-              frame[0] + frame[1] >= 10 &&
-              frame[1] !== undefined &&
-              frame.every((throwValue) => throwValue >= 0 && throwValue <= 10))
-          );
-        }
+    const allInputsValid = this.bowlingService.frames.every((frame: any[], index: number) => {
+      if (index < 9) {
+        // For frames 1 to 9: Check if there are either 2 throws (unless it's a strike) or 1 throw (for strike)
+        return (
+          (frame[0] === 10 && frame.length === 1) ||
+          (frame.length === 2 && frame.reduce((acc, curr) => acc + curr, 0) <= 10 && frame.every((throwValue) => throwValue >= 0 && throwValue <= 10))
+        );
+      } else {
+        // For frame 10: Check if there are either 3 throws (if there's a strike or spare in the first two throws),
+        // or 2 throws (if there's no strike or spare in the first two throws)
+        return (
+          (frame[0] === 10 && frame.length === 3 && frame.every((throwValue) => throwValue >= 0 && throwValue <= 10)) ||
+          (frame.length === 2 && frame[0] + frame[1] < 10 && frame.every((throwValue) => throwValue >= 0 && throwValue <= 10)) ||
+          (frame.length === 3 &&
+            frame[0] + frame[1] >= 10 &&
+            frame[1] !== undefined &&
+            frame.every((throwValue) => throwValue >= 0 && throwValue <= 10))
+        );
       }
-    );
+    });
     return allInputsValid;
   }
 

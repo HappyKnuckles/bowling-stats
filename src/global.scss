@@ -26,128 +26,128 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 ion-header {
-    background-color: #080f08;
+  background-color: #080f08;
 
-    ion-title {
-        font-size: 22px;
-        color: white;
-    }
+  ion-title {
+    font-size: 22px;
+    color: white;
+  }
 }
 
 .invalid-input {
-    border: 1px solid red !important;
+  border: 1px solid red !important;
 }
-  
+
 ion-item {
-    color: white;
+  color: white;
 }
 
 ion-toolbar {
-    height: 59px !important;
-    display: flex;
-    flex: 1 1 0%;
-    align-items: center;
+  height: 59px !important;
+  display: flex;
+  flex: 1 1 0%;
+  align-items: center;
 }
 
 .grid-container {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(30px, 1fr));
-    gap: 8px;
-    margin: 5px 5px 10px;
-    max-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(30px, 1fr));
+  gap: 8px;
+  margin: 5px 5px 10px;
+  max-width: 100%;
 
-    // font-weight: 600;
-    justify-items: center;
+  // font-weight: 600;
+  justify-items: center;
 
-    ion-input:not(.frameScores) {
-        color: var(--ion-input-color);
-    }
+  ion-input:not(.frameScores) {
+    color: var(--ion-input-color);
+  }
 }
 
 .middle {
-    text-align: center;
+  text-align: center;
 
-    &.frame {
-        background-color: var(--ion-color-dark);
-        border-radius: 3px 3px 0 0;
-    }
+  &.frame {
+    background-color: var(--ion-color-dark);
+    border-radius: 3px 3px 0 0;
+  }
 
-    &.count {
-        font-weight: 500;
+  &.count {
+    font-weight: 500;
 
-        --ion-grid-column-padding: 1px;
-    }
+    --ion-grid-column-padding: 1px;
+  }
 }
 
 .nameInput {
-    background-color: white !important;
-    color: black;
+  background-color: white !important;
+  color: black;
 }
 
 .sc-ion-select-popover-ios {
-    .blue-option {
-        ion-radio {
-            color: #427D9D;
-        }
+  .blue-option {
+    ion-radio {
+      color: #427d9d;
     }
+  }
 
-    .red-option {
-        ion-radio {
-            color: #A91D3A;
-        }
+  .red-option {
+    ion-radio {
+      color: #a91d3a;
     }
+  }
 
-    .gray-option {
-        ion-radio {
-            color: #7D7C7C;
-        }
+  .gray-option {
+    ion-radio {
+      color: #7d7c7c;
     }
+  }
 
-    .lila-option {
-        ion-radio {
-            color: #31304D;
-        }
+  .lila-option {
+    ion-radio {
+      color: #31304d;
     }
+  }
 
-    .green-option {
-        ion-radio {
-            color: #789461;
-        }
+  .green-option {
+    ion-radio {
+      color: #789461;
     }
+  }
 }
 
 .alert-header-white .alert-title {
-    color: white !important;
+  color: white !important;
 }
 
 ion-button {
-    --background-activated: none;
-    --background-hover: none;
-    --background-focused: none;
+  --background-activated: none;
+  --background-hover: none;
+  --background-focused: none;
 }
 
 ion-content {
-    font-size: 19px;
+  font-size: 19px;
 }
 
 div.mat-expansion-panel-body {
-    padding: 0;
+  padding: 0;
 }
 
 mat-expansion-panel {
-    background: none !important;
-    box-shadow: none !important;
+  background: none !important;
+  box-shadow: none !important;
 }
 
 .mat-expansion-panel-header {
-    align-items: baseline;
-    background: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
+  align-items: baseline;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .mat-expansion-panel-header-description {
-    justify-content: flex-end;
-    background: none !important;
-    box-shadow: none;
+  justify-content: flex-end;
+  background: none !important;
+  box-shadow: none;
 }

@@ -6,12 +6,29 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { ActionSheetController, AlertController, IonModal, isPlatform, IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonButtons, IonInput } from '@ionic/angular/standalone';
+import {
+  ActionSheetController,
+  AlertController,
+  IonModal,
+  isPlatform,
+  IonHeader,
+  IonToolbar,
+  IonButton,
+  IonIcon,
+  IonTitle,
+  IonAlert,
+  IonContent,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonButtons,
+  IonInput,
+} from '@ionic/angular/standalone';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { SeriesMode } from './seriesModeEnum';
 import { Game } from 'src/app/models/game-model';
-import { addIcons } from "ionicons";
-import { add, chevronDown, chevronUp } from "ionicons/icons";
+import { addIcons } from 'ionicons';
+import { add, chevronDown, chevronUp } from 'ionicons/icons';
 import { NgIf, NgFor, CommonModule } from '@angular/common';
 import { ImpactStyle } from '@capacitor/haptics';
 import { TrackGridComponent } from 'src/app/components/track-grid/track-grid.component';
@@ -46,7 +63,7 @@ import { UserService } from 'src/app/services/user/user.service';
     IonModal,
     IonButtons,
     IonInput,
-    CommonModule
+    CommonModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -54,14 +71,14 @@ export class AddGamePage implements OnInit {
   totalScores: number[] = new Array(8).fill(0);
   maxScores: number[] = new Array(8).fill(300);
   seriesMode: boolean[] = [true, false, false];
-  selectedMode: SeriesMode = SeriesMode.Single; // Initialize selected mode    
+  selectedMode: SeriesMode = SeriesMode.Single; // Initialize selected mode
   selectedModeText: SeriesMode = SeriesMode.Single;
   trackIndexes: number[][] = [[0], [1, 2, 3], [4, 5, 6, 7]];
   sheetOpen: boolean = false;
   isAlertOpen: boolean = false;
   alertButton = ['Dismiss'];
   isModalOpen: boolean = false;
-  username = "";
+  username = '';
   gameData!: Game;
 
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
@@ -103,16 +120,18 @@ export class AddGamePage implements OnInit {
   }
 
   async takeOrChoosePicture(): Promise<File | Blob | undefined> {
-    if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
-      const permissionRequestResult = (await Camera.checkPermissions());
+    if (
+      (isPlatform('android') || isPlatform('ios')) &&
+      !isPlatform('mobileweb')
+    ) {
+      const permissionRequestResult = await Camera.checkPermissions();
 
       if (permissionRequestResult.photos === 'prompt') {
         (await Camera.requestPermissions()).photos;
         await this.handleImageUpload();
       } else if (permissionRequestResult.photos === 'denied') {
         this.showPermissionDeniedAlert();
-      }
-      else {
+      } else {
         const image = await Camera.getPhoto({
           quality: 90,
           allowEditing: false,
@@ -120,7 +139,7 @@ export class AddGamePage implements OnInit {
           source: CameraSource.Prompt,
         });
 
-        const blob = await fetch(image.webPath!).then(r => r.blob());
+        const blob = await fetch(image.webPath!).then((r) => r.blob());
 
         return blob;
       }
@@ -137,7 +156,8 @@ export class AddGamePage implements OnInit {
   async showPermissionDeniedAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Permission Denied',
-      message: 'To take or choose a picture, you need to grant camera access permission. Please enable camera access in your device settings.',
+      message:
+        'To take or choose a picture, you need to grant camera access permission. Please enable camera access in your device settings.',
       buttons: [
         {
           text: 'OK',
@@ -146,32 +166,44 @@ export class AddGamePage implements OnInit {
             if (permissionRequestResult.photos === 'granted') {
               this.takeOrChoosePicture();
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     await alert.present();
   }
 
   async handleImageUpload(): Promise<void> {
     try {
-      if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
+      if (
+        (isPlatform('android') || isPlatform('ios')) &&
+        !isPlatform('mobileweb')
+      ) {
         const adWatched = await this.showAdAlert();
         if (!adWatched) {
-          this.toastService.showToast("You need to watch the ad to use this service.", "bug", true);
+          this.toastService.showToast(
+            'You need to watch the ad to use this service.',
+            'bug',
+            true
+          );
           return;
         }
       }
-      const imageUrl: File | Blob | undefined = await this.takeOrChoosePicture();
+      const imageUrl: File | Blob | undefined =
+        await this.takeOrChoosePicture();
       if (imageUrl instanceof File) {
         this.loadingService.setLoading(true);
         const gameText = await this.imageProcessingService.performOCR(imageUrl);
         this.parseBowlingScores(gameText!);
       } else {
-        this.toastService.showToast("No image uploaded.", "bug", true);
+        this.toastService.showToast('No image uploaded.', 'bug', true);
       }
     } catch (error) {
-      this.toastService.showToast(`Error uploading image: ${error}`, "bug", true);
+      this.toastService.showToast(
+        `Error uploading image: ${error}`,
+        'bug',
+        true
+      );
     } finally {
       this.loadingService.setLoading(false);
     }
@@ -179,45 +211,54 @@ export class AddGamePage implements OnInit {
 
   showAdAlert(): Promise<boolean> {
     return new Promise((resolve) => {
-      this.alertController.create({
-        header: 'Ad required',
-        message: 'To use this service, you need to watch an ad.',
-        buttons: [
-          {
-            text: 'Watch ad',
-            handler: async () => {
-              try {
-                await this.adService.showRewardedAd();
-                resolve(true);
-              } catch (error) {
+      this.alertController
+        .create({
+          header: 'Ad required',
+          message: 'To use this service, you need to watch an ad.',
+          buttons: [
+            {
+              text: 'Watch ad',
+              handler: async () => {
+                try {
+                  await this.adService.showRewardedAd();
+                  resolve(true);
+                } catch (error) {
+                  resolve(false);
+                }
+              },
+            },
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
                 resolve(false);
-              }
-            }
-          },
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            handler: () => {
-              resolve(false);
-            }
-          }
-        ]
-      }).then(alert => alert.present());
+              },
+            },
+          ],
+        })
+        .then((alert) => alert.present());
     });
   }
 
-
   parseBowlingScores(input: string): void {
     try {
-      const lines = input.split('\n').filter(line => line.trim() !== '');
+      const lines = input.split('\n').filter((line) => line.trim() !== '');
 
-      const userIndex = lines.findIndex(line => line.toLowerCase().includes(this.username!.toLowerCase()));
+      const userIndex = lines.findIndex((line) =>
+        line.toLowerCase().includes(this.username!.toLowerCase())
+      );
 
-      const linesAfterUsername = userIndex >= 0 ? lines.slice(userIndex + 1) : [];
+      const linesAfterUsername =
+        userIndex >= 0 ? lines.slice(userIndex + 1) : [];
 
-      const nextNonXLineIndex = linesAfterUsername.findIndex(line => /^[a-wyz]/i.test(line));
+      const nextNonXLineIndex = linesAfterUsername.findIndex((line) =>
+        /^[a-wyz]/i.test(line)
+      );
 
-      const relevantLines = nextNonXLineIndex >= 0 ? linesAfterUsername.slice(0, nextNonXLineIndex) : linesAfterUsername;
+      const relevantLines =
+        nextNonXLineIndex >= 0
+          ? linesAfterUsername.slice(0, nextNonXLineIndex)
+          : linesAfterUsername;
 
       if (relevantLines.length < 2) {
         throw new Error(`Insufficient score data for user ${this.username}`);
@@ -228,9 +269,13 @@ export class AddGamePage implements OnInit {
 
       if (throwValues.length < 12) {
         throwValues = throwValues.concat(relevantLines[1].split(''));
-        frameScores = relevantLines.slice(2).map(line => line.split(' ').map(Number));
+        frameScores = relevantLines
+          .slice(2)
+          .map((line) => line.split(' ').map(Number));
       } else {
-        frameScores = relevantLines.slice(1).map(line => line.split(' ').map(Number));
+        frameScores = relevantLines
+          .slice(1)
+          .map((line) => line.split(' ').map(Number));
       }
 
       // Scores können doppelt vorkommen, endScore immer zweimal (erscheinen der höchsten Zahl immer unm 1 reduzieren)
@@ -240,10 +285,10 @@ export class AddGamePage implements OnInit {
         frameScores.splice(frameScores.length - 1, 1);
       }
 
-      throwValues = throwValues.filter(value => value.trim() !== '');
+      throwValues = throwValues.filter((value) => value.trim() !== '');
       let prevValue: number | undefined;
 
-      throwValues = throwValues.map(value => {
+      throwValues = throwValues.map((value) => {
         if (value === 'X' || value === '×') {
           prevValue = 10;
           return '10';
@@ -268,7 +313,10 @@ export class AddGamePage implements OnInit {
         const isNinthFrame = frames.length === 9;
         if (frames.length < 10) {
           currentFrame.push(value);
-          if ((currentFrame.length === 2 && !isNinthFrame) || (isNinthFrame && currentFrame.length === 3)) {
+          if (
+            (currentFrame.length === 2 && !isNinthFrame) ||
+            (isNinthFrame && currentFrame.length === 3)
+          ) {
             frames.push([...currentFrame]);
             currentFrame = [];
           } else if (value === '10' && !isNinthFrame) {
@@ -284,9 +332,17 @@ export class AddGamePage implements OnInit {
 
       const totalScore = frameScores[9];
 
-      this.gameData = this.transformGameService.transformGameData(frames, frameScores, totalScore);
+      this.gameData = this.transformGameService.transformGameData(
+        frames,
+        frameScores,
+        totalScore
+      );
 
-      if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {
+      if (
+        this.gameData.frames.length === 10 &&
+        this.gameData.frameScores.length === 10 &&
+        this.gameData.totalScore <= 300
+      ) {
         this.isModalOpen = true;
       } else {
         // this.toastService.showToast('Spielinhalt wurde nicht richtig erkannt! Probiere einen anderen Winkel.', 'bug-outline', true);
@@ -307,26 +363,34 @@ export class AddGamePage implements OnInit {
         this.hapticService.vibrate(ImpactStyle.Heavy, 300);
         this.toastService.showToast('Invalid input.', 'bug', true);
         return;
-      }
-      else {
+      } else {
         this.saveGameService.saveGameToLocalStorage(this.gameData);
-        this.toastService.showToast("Game saved successfully.", "add");
+        this.toastService.showToast('Game saved successfully.', 'add');
         this.modal.dismiss(null, 'confirm');
       }
     } catch (error) {
-      this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);
+      this.toastService.showToast(
+        `Error saving game data to local storage: ${error}`,
+        'bug',
+        true
+      );
     }
   }
 
   isGameValid(game: Game): boolean {
     let isValid = true;
-    
+
     game.frames.forEach((frame: any, index: number) => {
-      const throws = frame.throws.map((t: { value: any; }) => t.value);
+      const throws = frame.throws.map((t: { value: any }) => t.value);
       if (index < 9) {
         // For frames 1 to 9
-        const frameValid = (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
-          (throws[0] !== 10 && throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        const frameValid =
+          (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
+          (throws[0] !== 10 &&
+            throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 &&
+            throws.every(
+              (throwValue: number) => throwValue >= 0 && throwValue <= 10
+            ));
         if (!frameValid) {
           isValid = false;
           frame.isInvalid = true;
@@ -335,9 +399,23 @@ export class AddGamePage implements OnInit {
         }
       } else {
         // For frame 10
-        const frameValid = (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
-          (throws.length === 2 && throws[0] + throws[1] < 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
-          (throws.length === 3 && throws[0] + throws[1] >= 10 && throws[1] !== undefined && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        const frameValid =
+          (throws[0] === 10 &&
+            throws.length === 3 &&
+            throws.every(
+              (throwValue: number) => throwValue >= 0 && throwValue <= 10
+            )) ||
+          (throws.length === 2 &&
+            throws[0] + throws[1] < 10 &&
+            throws.every(
+              (throwValue: number) => throwValue >= 0 && throwValue <= 10
+            )) ||
+          (throws.length === 3 &&
+            throws[0] + throws[1] >= 10 &&
+            throws[1] !== undefined &&
+            throws.every(
+              (throwValue: number) => throwValue >= 0 && throwValue <= 10
+            ));
         if (!frameValid) {
           isValid = false;
           frame.isInvalid = true;
@@ -346,7 +424,7 @@ export class AddGamePage implements OnInit {
         }
       }
     });
-    
+
     return isValid;
   }
 
@@ -386,11 +464,13 @@ export class AddGamePage implements OnInit {
             perfectGame = true;
           }
           trackGrid.saveGameToLocalStorage();
-
         });
         if (perfectGame) {
         }
-        if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
+        if (
+          (isPlatform('android') || isPlatform('ios')) &&
+          !isPlatform('mobileweb')
+        ) {
           await this.adService.showIntertistalAd();
         }
         this.hapticService.vibrate(ImpactStyle.Medium, 200);

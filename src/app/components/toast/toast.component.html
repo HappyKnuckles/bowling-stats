@@ -1,3 +1,11 @@
-<ion-toast [isOpen]="isOpen" message="{{message}}" [duration]="4000"
-  (willDismiss)="isOpen = false" class="customToast" icon="{{icon}}" [class.error]="isError" swipeGesture="vertical">
+<ion-toast
+  [isOpen]="isOpen"
+  message="{{ message }}"
+  [duration]="4000"
+  (willDismiss)="isOpen = false"
+  class="customToast"
+  icon="{{ icon }}"
+  [class.error]="isError"
+  swipeGesture="vertical"
+>
 </ion-toast>

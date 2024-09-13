@@ -66,19 +66,35 @@ export class AppComponent implements OnInit, OnDestroy {
     // Listen for version updates and prompt the user
     this.swUpdate.versionUpdates.subscribe((event) => {
       if (event.type === 'VERSION_READY') {
-        // Fetch the latest commit from GitHub
+        // Fetch the latest commits from the master branch on GitHub
         this.http
-          .get('https://api.github.com/repos/HappyKnuckles/bowling-stats/commits/master')
+          .get(
+            'https://api.github.com/repos/HappyKnuckles/bowling-stats/commits?sha=master'
+          )
           .subscribe({
             next: (data: any) => {
-              // Extract the commit message from the API response
-              this.commitMessage = data.commit.message;
-              if (confirm(`A new version is available. Changes: ${this.commitMessage} Load it?`)) {
-                window.location.reload();
+              const lastCommitSha = localStorage.getItem('lastCommitSha');
+              const newCommits = [];
+
+              for (const commit of data) {
+                if (lastCommitSha && commit.sha === lastCommitSha) break;
+                newCommits.push(commit.commit.message);
+              }
+
+              if (newCommits.length > 0) {
+                const commitMessages = newCommits.join('\n');
+                if (
+                  confirm(
+                    `A new version is available. Changes:\n${commitMessages}\nLoad it?`
+                  )
+                ) {
+                  localStorage.setItem('lastCommitSha', data[0].sha);
+                  window.location.reload();
+                }
               }
             },
             error: (error) => {
-              console.error('Failed to fetch the latest commit:', error);
+              console.error('Failed to fetch the latest commits:', error);
               if (confirm('A new version is available. Load it?')) {
                 window.location.reload();
               }
@@ -87,8 +103,6 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
-  
 
   ngOnInit(): void {
     const currentTheme = this.themeService.getCurrentTheme();

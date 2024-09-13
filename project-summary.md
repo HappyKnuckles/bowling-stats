@@ -7,6 +7,7 @@
 - 🟩 [@capacitor/keyboard@6.0.0](https://github.com/ionic-team/capacitor-plugins.git) - (Latest 6.0.2)
 - 🟩 [@capacitor/splash-screen@6.0.0](https://github.com/ionic-team/capacitor-plugins.git) - (Latest 6.0.2)
 - 🟩 [@capacitor/status-bar@6.0.0](https://github.com/ionic-team/capacitor-plugins.git) - (Latest 6.0.1)
+
 ## Cordova Plugins
 
 ## Dependencies
@@ -63,12 +64,13 @@
 - 🟩 [tslib@2.6.2](https://github.com/Microsoft/tslib.git) - (Latest 2.6.3)
 - 🟩 [typescript@5.4.5](https://github.com/Microsoft/TypeScript.git) - (Latest 5.5.4)
 - 🟩 [zone.js@0.14.4](https://github.com/angular/angular.git) - (Latest 0.14.10)
+
 ### Maintenance Score
+
 24 out of 59 dependencies were up to date without issues.
 
-
-
 ## Nonstandard naming
+
 The following files and folders do not follow the standard naming convention:
 
 - \app\add-game\seriesModeEnum.ts

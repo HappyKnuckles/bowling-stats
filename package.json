@@ -1,11 +1,11 @@
 {
   "name": "bowling-stats",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "Nicolas Hoffmann",
+  "homepage": "https://github.com/repos/HappyKnuckles/bowling-stats",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",    
+    "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

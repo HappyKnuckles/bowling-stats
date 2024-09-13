@@ -3,12 +3,12 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ToastService } from '../toast/toast.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private usernameSubject = new BehaviorSubject<string>('');
 
-  constructor(private toastService: ToastService) { }
+  constructor(private toastService: ToastService) {}
 
   getUsername(): Observable<string> {
     const storedUsername = localStorage.getItem('username');
@@ -21,7 +21,10 @@ export class UserService {
   setUsername(username: string): void {
     localStorage.setItem('username', username);
     this.usernameSubject.next(this.capitalizeFirstLetter(username));
-    this.toastService.showToast(`Name updated to ${username}`, 'reload-outline');
+    this.toastService.showToast(
+      `Name updated to ${username}`,
+      'reload-outline'
+    );
   }
 
   capitalizeFirstLetter(str: string): string {

@@ -1,9 +1,33 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import Chart from 'chart.js/auto';
 import { Subscription } from 'rxjs';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol, IonSegment, IonSegmentButton, IonLabel } from '@ionic/angular/standalone';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonRefresher,
+  IonText,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+} from '@ionic/angular/standalone';
 import { NgIf, NgFor, NgStyle, DecimalPipe } from '@angular/common';
-import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+} from '@angular/material/expansion';
 import { ImpactStyle } from '@capacitor/haptics';
 import { Game } from 'src/app/models/game-model';
 import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
@@ -23,38 +47,59 @@ import { IonicSlides } from '@ionic/angular/standalone';
   standalone: true,
   providers: [DecimalPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [IonLabel, IonSegmentButton, IonSegment, IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, NgIf, IonText, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, IonGrid, IonRow, IonCol, NgFor, NgStyle, DecimalPipe, FormsModule]
+  imports: [
+    IonLabel,
+    IonSegmentButton,
+    IonSegment,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonRefresher,
+    NgIf,
+    IonText,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    IonGrid,
+    IonRow,
+    IonCol,
+    NgFor,
+    NgStyle,
+    DecimalPipe,
+    FormsModule,
+  ],
 })
 export class StatsPage implements OnInit, OnDestroy {
   swiperModules = [IonicSlides];
 
-    // Stats 
-    //TODO add interface for stats
-    totalGames: number = 0;
-    perfectGameCount: number = 0;
-    cleanGameCount: number = 0;  
-    averageScore: number = 0;
-    totalPins: number = 0;
-    totalStrikes: number = 0;
-    totalSpares: number = 0;
-    totalSparesMissed: number = 0;
-    totalSparesConverted: number = 0;
-    firstThrowCount: number = 0;
-    averageFirstCount: number = 0;
-    averageStrikesPerGame: number = 0;
-    averageSparesPerGame: number = 0;
-    averageOpensPerGame: number = 0;
-    strikePercentage: number = 0;
-    sparePercentage: number = 0;
-    openPercentage: number = 0;
-    spareConversionPercentage: number = 0;
-    highGame: number = 0;
-    pinCounts: number[] = Array(11).fill(0);
-    missedCounts: number[] = Array(11).fill(0);
-    spareRates: number[] = [];
-    overallSpareRate: number = 0;
-    totalMissed: number = 0;
-    totalConverted: number = 0;
+  // Stats
+  //TODO add interface for stats
+  totalGames: number = 0;
+  perfectGameCount: number = 0;
+  cleanGameCount: number = 0;
+  averageScore: number = 0;
+  totalPins: number = 0;
+  totalStrikes: number = 0;
+  totalSpares: number = 0;
+  totalSparesMissed: number = 0;
+  totalSparesConverted: number = 0;
+  firstThrowCount: number = 0;
+  averageFirstCount: number = 0;
+  averageStrikesPerGame: number = 0;
+  averageSparesPerGame: number = 0;
+  averageOpensPerGame: number = 0;
+  strikePercentage: number = 0;
+  sparePercentage: number = 0;
+  openPercentage: number = 0;
+  spareConversionPercentage: number = 0;
+  highGame: number = 0;
+  pinCounts: number[] = Array(11).fill(0);
+  missedCounts: number[] = Array(11).fill(0);
+  spareRates: number[] = [];
+  overallSpareRate: number = 0;
+  totalMissed: number = 0;
+  totalConverted: number = 0;
 
   // Game Data
   gameHistory: Game[] = [];
@@ -86,7 +131,8 @@ export class StatsPage implements OnInit, OnDestroy {
   private throwChartInstance: Chart | null = null;
   private scoreChartInstance: Chart | null = null;
 
-  constructor(private loadingService: LoadingService,
+  constructor(
+    private loadingService: LoadingService,
     private statsService: GameStatsService,
     private toastService: ToastService,
     private gameHistoryService: GameHistoryService,
@@ -94,9 +140,11 @@ export class StatsPage implements OnInit, OnDestroy {
     private decimalPipe: DecimalPipe,
     private hapticService: HapticService
   ) {
-    this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
-      this.isLoading = isLoading;
-    });
+    this.loadingSubscription = this.loadingService.isLoading$.subscribe(
+      (isLoading) => {
+        this.isLoading = isLoading;
+      }
+    );
   }
 
   private async loadDataAndCalculateStats() {
@@ -106,7 +154,11 @@ export class StatsPage implements OnInit, OnDestroy {
         this.loadStats();
         this.gameHistoryChanged = false; // Reset the flag
       } catch (error) {
-        this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true)
+        this.toastService.showToast(
+          `Error loading history and stats: ${error}`,
+          'bug',
+          true
+        );
       }
     }
   }
@@ -115,7 +167,11 @@ export class StatsPage implements OnInit, OnDestroy {
     try {
       this.gameHistory = await this.gameHistoryService.loadGameHistory();
     } catch (error) {
-      this.toastService.showToast(`Error loading history: ${error}`, 'bug', true)
+      this.toastService.showToast(
+        `Error loading history: ${error}`,
+        'bug',
+        true
+      );
     }
   }
 
@@ -123,52 +179,52 @@ export class StatsPage implements OnInit, OnDestroy {
     try {
       this.statsService.calculateStats(this.gameHistory);
 
-            const {
-                totalGames,
-                perfectGameCount,
-                cleanGameCount,
-                averageScore,
-                averageFirstCount,
-                totalScoreSum: totalPins,
-                totalStrikes,
-                averageStrikesPerGame,
-                strikePercentage,
-                totalSpares,
-                totalSparesConverted,
-                totalSparesMissed,
-                averageSparesPerGame,
-                sparePercentage,
-                averageOpensPerGame,
-                openPercentage,
-                missedCounts,
-                pinCounts,
-                highGame
-            } = this.statsService;
+      const {
+        totalGames,
+        perfectGameCount,
+        cleanGameCount,
+        averageScore,
+        averageFirstCount,
+        totalScoreSum: totalPins,
+        totalStrikes,
+        averageStrikesPerGame,
+        strikePercentage,
+        totalSpares,
+        totalSparesConverted,
+        totalSparesMissed,
+        averageSparesPerGame,
+        sparePercentage,
+        averageOpensPerGame,
+        openPercentage,
+        missedCounts,
+        pinCounts,
+        highGame,
+      } = this.statsService;
 
-            this.totalGames = totalGames;
-            this.cleanGameCount = cleanGameCount;
-            this.perfectGameCount = perfectGameCount;
-            this.averageScore = averageScore;
-            this.averageFirstCount = averageFirstCount;
-            this.totalPins = totalPins;
-            this.totalStrikes = totalStrikes;
-            this.averageStrikesPerGame = averageStrikesPerGame;
-            this.strikePercentage = strikePercentage;
-            this.totalSpares = totalSpares;
-            this.totalSparesConverted = totalSparesConverted;
-            this.totalSparesMissed = totalSparesMissed;
-            this.averageSparesPerGame = averageSparesPerGame;
-            this.sparePercentage = sparePercentage;
-            this.averageOpensPerGame = averageOpensPerGame;
-            this.openPercentage = openPercentage;
-            this.missedCounts = missedCounts;
-            this.pinCounts = pinCounts;
-            this.highGame = highGame;
-            this.calculateRates();
-        } catch (error) {
-            this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
-        }
+      this.totalGames = totalGames;
+      this.cleanGameCount = cleanGameCount;
+      this.perfectGameCount = perfectGameCount;
+      this.averageScore = averageScore;
+      this.averageFirstCount = averageFirstCount;
+      this.totalPins = totalPins;
+      this.totalStrikes = totalStrikes;
+      this.averageStrikesPerGame = averageStrikesPerGame;
+      this.strikePercentage = strikePercentage;
+      this.totalSpares = totalSpares;
+      this.totalSparesConverted = totalSparesConverted;
+      this.totalSparesMissed = totalSparesMissed;
+      this.averageSparesPerGame = averageSparesPerGame;
+      this.sparePercentage = sparePercentage;
+      this.averageOpensPerGame = averageOpensPerGame;
+      this.openPercentage = openPercentage;
+      this.missedCounts = missedCounts;
+      this.pinCounts = pinCounts;
+      this.highGame = highGame;
+      this.calculateRates();
+    } catch (error) {
+      this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
     }
+  }
 
   async ngOnInit(): Promise<void> {
     try {
@@ -176,11 +232,9 @@ export class StatsPage implements OnInit, OnDestroy {
       await this.loadDataAndCalculateStats();
       this.subscribeToDataEvents();
       this.generateCharts();
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
-    }
-    finally {
+    } finally {
       this.loadingService.setLoading(false);
     }
   }
@@ -200,7 +254,7 @@ export class StatsPage implements OnInit, OnDestroy {
           .then(() => {
             event.target.complete();
           })
-          .catch(error => {
+          .catch((error) => {
             console.error('Error loading data and calculating stats:', error);
           });
       }, 100);
@@ -228,19 +282,27 @@ export class StatsPage implements OnInit, OnDestroy {
 
   getSlideIndex(segment: string): number {
     switch (segment) {
-      case 'default': return 0;
-      case 'spares': return 1;
-      case 'throws': return 2;
-      default: return 0;
+      case 'default':
+        return 0;
+      case 'spares':
+        return 1;
+      case 'throws':
+        return 2;
+      default:
+        return 0;
     }
   }
 
   getSegmentValue(index: number): string {
     switch (index) {
-      case 0: return 'default';
-      case 1: return 'spares';
-      case 2: return 'throws';
-      default: return 'default';
+      case 0:
+        return 'default';
+      case 1:
+        return 'spares';
+      case 2:
+        return 'throws';
+      default:
+        return 'default';
     }
   }
 
@@ -257,32 +319,41 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
-      this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats()
-        .then(() => {
-          this.generateCharts();
-        })
-        .catch(error => {
-          console.error('Error loading data and calculating stats:', error);
-        });
-    });
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(
+      () => {
+        this.gameHistoryChanged = true;
+        this.loadDataAndCalculateStats()
+          .then(() => {
+            this.generateCharts();
+          })
+          .catch((error) => {
+            console.error('Error loading data and calculating stats:', error);
+          });
+      }
+    );
 
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
-      this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats()
-        .then(() => {
-          this.generateCharts();
-        })
-        .catch(error => {
-          console.error('Error loading data and calculating stats:', error);
-        });
-    });
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(
+      () => {
+        this.gameHistoryChanged = true;
+        this.loadDataAndCalculateStats()
+          .then(() => {
+            this.generateCharts();
+          })
+          .catch((error) => {
+            console.error('Error loading data and calculating stats:', error);
+          });
+      }
+    );
   }
 
   calculateRates() {
-    this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
-    this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
+    this.spareRates = this.pinCounts.map((pinCount, i) =>
+      this.getRate(pinCount, this.missedCounts[i])
+    );
+    this.overallSpareRate = this.getRate(
+      this.totalSparesConverted,
+      this.totalSparesMissed
+    );
   }
 
   getLabel(i: number): string {
@@ -300,7 +371,7 @@ export class StatsPage implements OnInit, OnDestroy {
 
   getRateColor(conversionRate: number): string {
     if (conversionRate > 95) {
-      return '#4faeff'
+      return '#4faeff';
     } else if (conversionRate > 75) {
       return '#008000';
     } else if (conversionRate > 50) {
@@ -313,12 +384,16 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   calculatePinChartData() {
-    const filteredSpareRates: number[] = this.spareRates.slice(1).map(rate => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
-    const filteredMissedCounts: number[] = this.missedCounts.slice(1).map((count, i) => {
-      const rate = this.getRate(count, this.pinCounts[i + 1]);
-      const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
-      return parseFloat(transformedRate ?? '0');
-    });
+    const filteredSpareRates: number[] = this.spareRates
+      .slice(1)
+      .map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
+    const filteredMissedCounts: number[] = this.missedCounts
+      .slice(1)
+      .map((count, i) => {
+        const rate = this.getRate(count, this.pinCounts[i + 1]);
+        const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
+        return parseFloat(transformedRate ?? '0');
+      });
     return { filteredSpareRates, filteredMissedCounts };
   }
 
@@ -328,7 +403,7 @@ export class StatsPage implements OnInit, OnDestroy {
       const date = new Date(game.date).toLocaleDateString('de-DE', {
         day: '2-digit',
         month: '2-digit',
-        year: '2-digit'
+        year: '2-digit',
       });
       if (!scoresByDate[date]) {
         scoresByDate[date] = [];
@@ -336,51 +411,81 @@ export class StatsPage implements OnInit, OnDestroy {
       scoresByDate[date].push(game.totalScore);
     });
 
-    const gameLabels = Object.keys(scoresByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    const gameLabels = Object.keys(scoresByDate).sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    );
     let cumulativeSum = 0;
     let cumulativeCount = 0;
 
-    const overallAverages = gameLabels.map(date => {
-      cumulativeSum += scoresByDate[date].reduce((sum, score) => sum + score, 0);
+    const overallAverages = gameLabels.map((date) => {
+      cumulativeSum += scoresByDate[date].reduce(
+        (sum, score) => sum + score,
+        0
+      );
       cumulativeCount += scoresByDate[date].length;
       return cumulativeSum / cumulativeCount;
     });
-    overallAverages.map(average => parseFloat(this.decimalPipe.transform(average, '1.2-2')!))
+    overallAverages.map((average) =>
+      parseFloat(this.decimalPipe.transform(average, '1.2-2')!)
+    );
 
     const differences = gameLabels.map((date, index) => {
-      const dailySum = scoresByDate[date].reduce((sum, score) => sum + score, 0);
+      const dailySum = scoresByDate[date].reduce(
+        (sum, score) => sum + score,
+        0
+      );
       const dailyAverage = dailySum / scoresByDate[date].length;
       return dailyAverage - overallAverages[index];
     });
-    differences.map(difference => parseFloat(this.decimalPipe.transform(difference, '1.2-2')!))
+    differences.map((difference) =>
+      parseFloat(this.decimalPipe.transform(difference, '1.2-2')!)
+    );
 
-    const gamesPlayedDaily = gameLabels.map(date => scoresByDate[date].length);
+    const gamesPlayedDaily = gameLabels.map(
+      (date) => scoresByDate[date].length
+    );
     return { gameLabels, overallAverages, differences, gamesPlayedDaily };
   }
 
   calculateThrowChartData() {
-    const opens = parseFloat(this.decimalPipe.transform(this.openPercentage, '1.2-2')!);
-    const spares = parseFloat(this.decimalPipe.transform(this.sparePercentage, '1.2-2')!);
-    const strikes = parseFloat(this.decimalPipe.transform(this.strikePercentage, '1.2-2')!);
+    const opens = parseFloat(
+      this.decimalPipe.transform(this.openPercentage, '1.2-2')!
+    );
+    const spares = parseFloat(
+      this.decimalPipe.transform(this.sparePercentage, '1.2-2')!
+    );
+    const strikes = parseFloat(
+      this.decimalPipe.transform(this.strikePercentage, '1.2-2')!
+    );
     return { opens, spares, strikes };
   }
 
   //TODO adjust look of this
   generatePinChart(): void {
-    const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
+    const { filteredSpareRates, filteredMissedCounts } =
+      this.calculatePinChartData();
 
     const ctx = this.pinChart!.nativeElement;
     if (this.pinChartInstance) {
       this.pinChartInstance.data.datasets[0].data = filteredSpareRates;
       this.pinChartInstance.data.datasets[1].data = filteredMissedCounts;
       this.pinChartInstance.update();
-    }
-
-    else {
+    } else {
       this.pinChartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: ['1 Pin', '2 Pins', '3 Pins', '4 Pins', '5 Pins', '6 Pins', '7 Pins', '8 Pins', '9 Pins', '10 Pins'], // Labels for each pin count
+          labels: [
+            '1 Pin',
+            '2 Pins',
+            '3 Pins',
+            '4 Pins',
+            '5 Pins',
+            '6 Pins',
+            '7 Pins',
+            '8 Pins',
+            '9 Pins',
+            '10 Pins',
+          ], // Labels for each pin count
           datasets: [
             {
               label: 'Converted',
@@ -388,7 +493,7 @@ export class StatsPage implements OnInit, OnDestroy {
               backgroundColor: 'rgba(75, 192, 192, 0.2)',
               borderColor: 'rgba(75, 192, 192, 1)',
               borderWidth: 1,
-              pointHitRadius: 10
+              pointHitRadius: 10,
             },
             {
               label: 'Missed',
@@ -396,9 +501,9 @@ export class StatsPage implements OnInit, OnDestroy {
               backgroundColor: 'rgba(255, 99, 132, 0.2)',
               borderColor: 'rgba(255, 99, 132, 1)',
               borderWidth: 1,
-              pointHitRadius: 10
-            }
-          ]
+              pointHitRadius: 10,
+            },
+          ],
         },
         options: {
           scales: {
@@ -414,15 +519,15 @@ export class StatsPage implements OnInit, OnDestroy {
               pointLabels: {
                 color: 'gray',
                 font: {
-                  size: 14
-                }
+                  size: 14,
+                },
               },
               ticks: {
                 backdropColor: 'transparent',
                 color: 'white',
                 display: false,
-              }
-            }
+              },
+            },
           },
           plugins: {
             tooltip: {
@@ -432,15 +537,20 @@ export class StatsPage implements OnInit, OnDestroy {
                   const value = context[0].raw;
 
                   // Find all labels with the same value
-                  const matchingLabels = context[0].chart.data.labels!.filter((label, index) => {
-                    // Check if the value matches any point in the datasets and is 0
-                    return context[0].chart.data.datasets.some(dataset => dataset.data[index] === value && value === 0);
-                  });
+                  const matchingLabels = context[0].chart.data.labels!.filter(
+                    (label, index) => {
+                      // Check if the value matches any point in the datasets and is 0
+                      return context[0].chart.data.datasets.some(
+                        (dataset) =>
+                          dataset.data[index] === value && value === 0
+                      );
+                    }
+                  );
 
                   // Only modify the title if multiple labels match the same value
                   if (matchingLabels.length > 1) {
                     // Extract only the numbers from each label and join them
-                    const extractedNumbers = matchingLabels.map(label => {
+                    const extractedNumbers = matchingLabels.map((label) => {
                       // Use regex to extract the number part from the label (e.g., "1 Pin" -> "1")
                       const match = (label as string).match(/\d+/);
                       return match ? match[0] : ''; // Return the matched number or an empty string if no match
@@ -464,33 +574,34 @@ export class StatsPage implements OnInit, OnDestroy {
                   }
 
                   return label;
-                }
-              }
+                },
+              },
             },
             title: {
               display: true,
               text: 'Converted vs Missed spares',
               color: 'white',
               font: {
-                size: 20
-              }
+                size: 20,
+              },
             },
             legend: {
               display: true,
               labels: {
                 font: {
-                  size: 15
+                  size: 15,
                 },
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       });
     }
   }
 
   generateScoreChart(): void {
-    const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
+    const { gameLabels, overallAverages, differences, gamesPlayedDaily } =
+      this.calculateScoreChartData();
 
     const ctx = this.scoreChart?.nativeElement;
     if (this.scoreChartInstance) {
@@ -511,29 +622,29 @@ export class StatsPage implements OnInit, OnDestroy {
             {
               label: 'Average',
               data: overallAverages,
-              backgroundColor: "rgba(75, 192, 192, 0.2)",
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
               borderColor: 'rgba(75, 192, 192, 1)',
               borderWidth: 1,
-              pointHitRadius: 10
+              pointHitRadius: 10,
             },
             {
               label: 'Difference from average',
               data: differences,
-              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
               borderColor: 'rgba(255, 99, 132, 1)',
               borderWidth: 1,
-              pointHitRadius: 10
+              pointHitRadius: 10,
             },
             {
               label: 'Games played',
               data: gamesPlayedDaily,
               type: 'bar',
-              backgroundColor: "rgba(153, 102, 255, 0.1)",
+              backgroundColor: 'rgba(153, 102, 255, 0.1)',
               borderColor: 'rgba(153, 102, 255, .5)',
               borderWidth: 1,
-              yAxisID: 'y1' // Use a second y-axis for this dataset
-            }
-          ]
+              yAxisID: 'y1', // Use a second y-axis for this dataset
+            },
+          ],
         },
         options: {
           scales: {
@@ -542,22 +653,22 @@ export class StatsPage implements OnInit, OnDestroy {
               suggestedMax: 300,
               ticks: {
                 font: {
-                  size: 14
-                }
-              }
+                  size: 14,
+                },
+              },
             },
             y1: {
               beginAtZero: true,
               position: 'right',
               grid: {
-                drawOnChartArea: false // Only draw grid lines for the first y-axis
+                drawOnChartArea: false, // Only draw grid lines for the first y-axis
               },
               ticks: {
                 font: {
-                  size: 14
-                }
-              }
-            }
+                  size: 14,
+                },
+              },
+            },
           },
           plugins: {
             title: {
@@ -565,14 +676,14 @@ export class StatsPage implements OnInit, OnDestroy {
               text: 'Score analysis',
               color: 'white',
               font: {
-                size: 20
-              }
+                size: 20,
+              },
             },
             legend: {
               display: true, // Show legend to differentiate datasets
               labels: {
                 font: {
-                  size: 15
+                  size: 15,
                 },
               },
               onClick: (e, legendItem) => {
@@ -582,7 +693,7 @@ export class StatsPage implements OnInit, OnDestroy {
                 // Ensure that chartInstance is defined and points to your chart
                 const ci = this.scoreChartInstance;
                 if (!ci) {
-                  console.error("Chart instance is not defined.");
+                  console.error('Chart instance is not defined.');
                   return;
                 }
 
@@ -590,10 +701,15 @@ export class StatsPage implements OnInit, OnDestroy {
                 const meta = ci.getDatasetMeta(index);
 
                 // Toggle the visibility of the dataset
-                meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : !meta.hidden;
+                meta.hidden =
+                  meta.hidden === null
+                    ? !ci.data.datasets[index].hidden
+                    : !meta.hidden;
 
                 // Find the index of the "Games Played" dataset
-                const gamesPlayedIndex = ci.data.datasets.findIndex(dataset => dataset.label === 'Games played');
+                const gamesPlayedIndex = ci.data.datasets.findIndex(
+                  (dataset) => dataset.label === 'Games played'
+                );
 
                 // Check if the "Games Played" dataset exists
                 if (gamesPlayedIndex !== -1) {
@@ -608,10 +724,10 @@ export class StatsPage implements OnInit, OnDestroy {
 
                 // Update the chart to apply the changes
                 ci.update();
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       });
     }
   }
@@ -623,24 +739,24 @@ export class StatsPage implements OnInit, OnDestroy {
     if (this.throwChartInstance) {
       this.throwChartInstance.data.datasets[0].data = [spares, strikes, opens];
       this.throwChartInstance.update();
-    }
-
-    else {
+    } else {
       this.throwChartInstance = new Chart(ctx, {
         type: 'radar',
         data: {
           labels: ['Spare', 'Strike', 'Open'],
-          datasets: [{
-            label: 'Percentage',
-            data: [spares, strikes, opens],
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgb(54, 162, 235)',
-            pointBackgroundColor: 'rgb(54, 162, 235)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgb(54, 162, 235)',
-            pointHitRadius: 10
-          }]
+          datasets: [
+            {
+              label: 'Percentage',
+              data: [spares, strikes, opens],
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgb(54, 162, 235)',
+              pointBackgroundColor: 'rgb(54, 162, 235)',
+              pointBorderColor: '#fff',
+              pointHoverBackgroundColor: '#fff',
+              pointHoverBorderColor: 'rgb(54, 162, 235)',
+              pointHitRadius: 10,
+            },
+          ],
         },
         options: {
           scales: {
@@ -649,24 +765,24 @@ export class StatsPage implements OnInit, OnDestroy {
               max: 100,
               grid: {
                 color: 'rgba(128, 128, 128, 0.3)',
-                lineWidth: 0.5
+                lineWidth: 0.5,
               },
               angleLines: {
                 color: 'rgba(128, 128, 128, 0.3)',
-                lineWidth: 0.5
+                lineWidth: 0.5,
               },
               pointLabels: {
                 color: 'gray',
                 font: {
-                  size: 14
-                }
+                  size: 14,
+                },
               },
               ticks: {
                 display: false,
                 backdropColor: 'transparent',
-                color: 'white'
-              }
-            }
+                color: 'white',
+              },
+            },
           },
           plugins: {
             tooltip: {
@@ -676,10 +792,15 @@ export class StatsPage implements OnInit, OnDestroy {
                   const value = context[0].raw;
 
                   // Find all labels with the same value
-                  const matchingLabels = context[0].chart.data.labels!.filter((label, index) => {
-                    // Check if the value matches any point in the datasets and is 0
-                    return context[0].chart.data.datasets.some(dataset => dataset.data[index] === value && value === 0);
-                  });
+                  const matchingLabels = context[0].chart.data.labels!.filter(
+                    (label, index) => {
+                      // Check if the value matches any point in the datasets and is 0
+                      return context[0].chart.data.datasets.some(
+                        (dataset) =>
+                          dataset.data[index] === value && value === 0
+                      );
+                    }
+                  );
 
                   // Only modify the title if multiple labels match the same value
                   if (matchingLabels.length > 1) {
@@ -699,33 +820,33 @@ export class StatsPage implements OnInit, OnDestroy {
                     label += context.parsed.r + '%';
                   }
                   return label;
-                }
-              }
+                },
+              },
             },
             title: {
               display: true,
               text: 'Throw distribution',
               color: 'white',
               font: {
-                size: 20
-              }
+                size: 20,
+              },
             },
             legend: {
-              display: false
-            }
+              display: false,
+            },
           },
           layout: {
             padding: {
               top: 10,
-              bottom: 10
-            }
+              bottom: 10,
+            },
           },
           elements: {
             line: {
-              borderWidth: 2
-            }
-          }
-        }
+              borderWidth: 2,
+            },
+          },
+        },
       });
     }
   }

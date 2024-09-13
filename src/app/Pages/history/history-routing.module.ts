@@ -6,11 +6,11 @@ const routes: Routes = [
   {
     path: '',
     component: HistoryPage,
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class HistoryPageRoutingModule {}

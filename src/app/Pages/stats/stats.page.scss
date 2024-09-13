@@ -1,63 +1,63 @@
 .stats {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 15px 0 20px;
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 15px 0 20px;
 
-    ion-text {
-        padding: 5px;
-        color: white;
-    }
+  ion-text {
+    padding: 5px;
+    color: white;
+  }
 
-    .value {
-        border: 1px solid var(--ion-color-dark);
-        border-radius: 5px;
-        background-color: var(--ion-color-secondary);
-        color: var(--ion-input-color);
-        text-align: center;
-        min-width: fit-content;
-        width: clamp(50px, 100%, 85px);
-    }
+  .value {
+    border: 1px solid var(--ion-color-dark);
+    border-radius: 5px;
+    background-color: var(--ion-color-secondary);
+    color: var(--ion-input-color);
+    text-align: center;
+    min-width: fit-content;
+    width: clamp(50px, 100%, 85px);
+  }
 }
 
 .tab {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 canvas {
-    margin: 15px 8px 0;
+  margin: 15px 8px 0;
 }
 
 .throws {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .segmentLabel {
-    font-size: 17px;
+  font-size: 17px;
 }
 
 .padding {
-    padding: 10px 20px 0 0 !important;
+  padding: 10px 20px 0 0 !important;
 }
 
 .statGrid {
-    text-align: center;
-    padding: 5px 10px 0 5px;
+  text-align: center;
+  padding: 5px 10px 0 5px;
 }
 
 .green {
-    color: green;
+  color: green;
 }
 
 .orange {
-    color: orange;
+  color: orange;
 }
 
 .red {
-    color: red;
+  color: red;
 }
 
-ion-segment{
-    // --background: var(--ion-tab-bar-background, var(--ion-color-step-50, #f7f7f7))
-    // --background: var(--ion-color-dark);
-    --background: #252525;
+ion-segment {
+  // --background: var(--ion-tab-bar-background, var(--ion-color-step-50, #f7f7f7))
+  // --background: var(--ion-color-dark);
+  --background: #252525;
 }

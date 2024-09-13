@@ -5,11 +5,6 @@ import { SettingsPageRoutingModule } from './settings-routing.module';
 import { SettingsPage } from './settings.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    SettingsPageRoutingModule,
-    SettingsPage,
-  ]
+  imports: [CommonModule, FormsModule, SettingsPageRoutingModule, SettingsPage],
 })
 export class SettingsPageModule {}

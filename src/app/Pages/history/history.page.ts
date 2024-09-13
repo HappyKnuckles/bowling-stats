@@ -1,12 +1,43 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AlertController, isPlatform, IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonBadge, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol, IonInput, IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular/standalone';
+import {
+  AlertController,
+  isPlatform,
+  IonHeader,
+  IonToolbar,
+  IonButton,
+  IonIcon,
+  IonTitle,
+  IonBadge,
+  IonContent,
+  IonRefresher,
+  IonText,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonInput,
+  IonItemSliding,
+  IonItem,
+  IonItemOptions,
+  IonItemOption,
+} from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Subscription } from 'rxjs';
 import * as ExcelJS from 'exceljs';
-import { addIcons } from "ionicons";
-import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline } from "ionicons/icons";
+import { addIcons } from 'ionicons';
+import {
+  cloudUploadOutline,
+  cloudDownloadOutline,
+  trashOutline,
+  createOutline,
+  shareOutline,
+} from 'ionicons/icons';
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+  MatExpansionPanelDescription,
+} from '@angular/material/expansion';
 import { Share } from '@capacitor/share';
 import { FormsModule } from '@angular/forms';
 import { toPng } from 'html-to-image';
@@ -24,7 +55,11 @@ import { Game } from 'src/app/models/game-model';
   styleUrls: ['history.page.scss'],
   standalone: true,
   providers: [DatePipe],
-  imports: [IonItemOption, IonItemOptions, IonItem, IonItemSliding,
+  imports: [
+    IonItemOption,
+    IonItemOptions,
+    IonItem,
+    IonItemSliding,
     IonHeader,
     IonToolbar,
     IonButton,
@@ -45,7 +80,7 @@ import { Game } from 'src/app/models/game-model';
     IonCol,
     IonInput,
     FormsModule,
-    CommonModule
+    CommonModule,
   ],
 })
 export class HistoryPage implements OnInit, OnDestroy {
@@ -60,7 +95,6 @@ export class HistoryPage implements OnInit, OnDestroy {
   isEditMode: { [key: string]: boolean } = {};
   private originalGameState: { [key: string]: Game } = {};
 
-
   constructor(
     private alertController: AlertController,
     private toastService: ToastService,
@@ -70,10 +104,18 @@ export class HistoryPage implements OnInit, OnDestroy {
     private datePipe: DatePipe,
     private hapticService: HapticService
   ) {
-    this.loadingSubscription = this.loadingService.isLoading$.subscribe(isLoading => {
-      this.isLoading = isLoading;
+    this.loadingSubscription = this.loadingService.isLoading$.subscribe(
+      (isLoading) => {
+        this.isLoading = isLoading;
+      }
+    );
+    addIcons({
+      cloudUploadOutline,
+      cloudDownloadOutline,
+      trashOutline,
+      createOutline,
+      shareOutline,
     });
-    addIcons({ cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline });
   }
 
   parseIntValue(value: any): any {
@@ -93,7 +135,10 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
   }
 
-  saveOriginalStateAndEnableEdit(game: Game, expansionPanel?: MatExpansionPanel) {
+  saveOriginalStateAndEnableEdit(
+    game: Game,
+    expansionPanel?: MatExpansionPanel
+  ) {
     this.originalGameState[game.gameId] = JSON.parse(JSON.stringify(game));
     this.enableEdit(game, expansionPanel);
   }
@@ -125,26 +170,37 @@ export class HistoryPage implements OnInit, OnDestroy {
         this.hapticService.vibrate(ImpactStyle.Heavy, 300);
         this.toastService.showToast('Invalid input.', 'bug', true);
         return;
-      }
-      else {
+      } else {
         await this.saveService.saveGameToLocalStorage(game);
-        this.toastService.showToast("Game edit saved sucessfully!", "refresh-outline");
+        this.toastService.showToast(
+          'Game edit saved sucessfully!',
+          'refresh-outline'
+        );
         this.enableEdit(game);
       }
     } catch (error) {
-      this.toastService.showToast(`Error saving game to localstorage: ${error}`, 'bug', true);
+      this.toastService.showToast(
+        `Error saving game to localstorage: ${error}`,
+        'bug',
+        true
+      );
     }
   }
 
   isGameValid(game: Game): boolean {
     let isValid = true;
-    
+
     game.frames.forEach((frame: any, index: number) => {
-      const throws = frame.throws.map((t: { value: any; }) => t.value);
+      const throws = frame.throws.map((t: { value: any }) => t.value);
       if (index < 9) {
         // For frames 1 to 9
-        const frameValid = (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
-          (throws[0] !== 10 && throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        const frameValid =
+          (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
+          (throws[0] !== 10 &&
+            throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 &&
+            throws.every(
+              (throwValue: number) => throwValue >= 0 && throwValue <= 10
+            ));
         if (!frameValid) {
           isValid = false;
           frame.isInvalid = true;
@@ -153,9 +209,23 @@ export class HistoryPage implements OnInit, OnDestroy {
         }
       } else {
         // For frame 10
-        const frameValid = (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
-          (throws.length === 2 && throws[0] + throws[1] < 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
-          (throws.length === 3 && throws[0] + throws[1] >= 10 && throws[1] !== undefined && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        const frameValid =
+          (throws[0] === 10 &&
+            throws.length === 3 &&
+            throws.every(
+              (throwValue: number) => throwValue >= 0 && throwValue <= 10
+            )) ||
+          (throws.length === 2 &&
+            throws[0] + throws[1] < 10 &&
+            throws.every(
+              (throwValue: number) => throwValue >= 0 && throwValue <= 10
+            )) ||
+          (throws.length === 3 &&
+            throws[0] + throws[1] >= 10 &&
+            throws[1] !== undefined &&
+            throws.every(
+              (throwValue: number) => throwValue >= 0 && throwValue <= 10
+            ));
         if (!frameValid) {
           isValid = false;
           frame.isInvalid = true;
@@ -164,14 +234,18 @@ export class HistoryPage implements OnInit, OnDestroy {
         }
       }
     });
-    
+
     return isValid;
   }
-  
 
-  async takeScreenshotAndShare(game: Game, expansionPanel: MatExpansionPanel): Promise<void> {
+  async takeScreenshotAndShare(
+    game: Game,
+    expansionPanel: MatExpansionPanel
+  ): Promise<void> {
     const panelContent = expansionPanel._body.nativeElement;
-    const scoreTemplate = panelContent.querySelector('.grid-container') as HTMLElement;
+    const scoreTemplate = panelContent.querySelector(
+      '.grid-container'
+    ) as HTMLElement;
 
     if (!scoreTemplate) {
       throw new Error('Score template not found in the expansion panel');
@@ -194,13 +268,16 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     try {
       this.loadingService.setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Generate screenshot
       const dataUrl = await toPng(scoreTemplate, { quality: 0.7 });
       const base64Data = dataUrl.split(',')[1];
 
-      if (navigator.share && navigator.canShare({ files: [new File([], '')] })) {
+      if (
+        navigator.share &&
+        navigator.canShare({ files: [new File([], '')] })
+      ) {
         // Web Share API is supported
         const blob = await (await fetch(dataUrl)).blob();
         const filesArray = [
@@ -208,7 +285,6 @@ export class HistoryPage implements OnInit, OnDestroy {
             type: blob.type,
           }),
         ];
-
 
         await navigator.share({
           title: 'Game Score',
@@ -223,21 +299,24 @@ export class HistoryPage implements OnInit, OnDestroy {
           path: fileName,
           data: base64Data,
           directory: Directory.Cache,
-          encoding: Encoding.UTF8
+          encoding: Encoding.UTF8,
         });
 
         const fileUri = await Filesystem.getUri({
           directory: Directory.Cache,
-          path: fileName
+          path: fileName,
         });
 
         await Share.share({
           title: 'Game Score',
           text: message,
           url: fileUri.uri,
-          dialogTitle: 'Share Game Score'
+          dialogTitle: 'Share Game Score',
         });
-        this.toastService.showToast('Screenshot shared successfully.', 'share-social-outline');
+        this.toastService.showToast(
+          'Screenshot shared successfully.',
+          'share-social-outline'
+        );
       }
     } catch (error) {
       console.error('Error taking screenshot and sharing', error);
@@ -259,14 +338,17 @@ export class HistoryPage implements OnInit, OnDestroy {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => { },
+          handler: () => {},
         },
         {
           text: 'Delete',
           handler: () => {
             const key = 'game' + gameId;
             this.saveService.deleteGame(key);
-            this.toastService.showToast('Game deleted sucessfully.', 'checkmark-outline');
+            this.toastService.showToast(
+              'Game deleted sucessfully.',
+              'checkmark-outline'
+            );
           },
         },
       ],
@@ -293,17 +375,20 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents() {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
-      this.loadGameHistory().catch(error => {
-        console.error('Error loading game history:', error);
-      });
-    });
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(
+      () => {
+        this.loadGameHistory().catch((error) => {
+          console.error('Error loading game history:', error);
+        });
+      }
+    );
 
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
-      this.loadGameHistory().catch(error => {
-        console.error('Error loading game history:', error);
-      });
-    }
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(
+      () => {
+        this.loadGameHistory().catch((error) => {
+          console.error('Error loading game history:', error);
+        });
+      }
     );
   }
 
@@ -322,7 +407,7 @@ export class HistoryPage implements OnInit, OnDestroy {
           .then(() => {
             event.target.complete();
           })
-          .catch(error => {
+          .catch((error) => {
             console.error('Error loading game history:', error);
           });
       }, 100);
@@ -376,7 +461,9 @@ export class HistoryPage implements OnInit, OnDestroy {
     const fileName = `game_data_${formattedDate}`;
     let i = 1;
 
-    const existingFiles = JSON.parse(localStorage.getItem('savedFilenames') || '[]');
+    const existingFiles = JSON.parse(
+      localStorage.getItem('savedFilenames') || '[]'
+    );
 
     if (isPlatform('mobileweb')) {
       while (existingFiles.includes(fileName + suffix + '.xlsx')) {
@@ -395,7 +482,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       existingFiles.push(`${fileName + suffix}.xlsx`);
       localStorage.setItem('savedFilenames', JSON.stringify(existingFiles));
     }
-    this.loadingService.setLoading(false)
+    this.loadingService.setLoading(false);
   }
 
   async fileExists(path: string): Promise<boolean> {
@@ -484,7 +571,10 @@ export class HistoryPage implements OnInit, OnDestroy {
         anchor.click();
         document.body.removeChild(anchor);
 
-        this.toastService.showToast(`File saved sucessfully.`, 'checkmark-outline');
+        this.toastService.showToast(
+          `File saved sucessfully.`,
+          'checkmark-outline'
+        );
       } else {
         const savedFile = await Filesystem.writeFile({
           path: fileName,
@@ -492,7 +582,10 @@ export class HistoryPage implements OnInit, OnDestroy {
           directory: Directory.Documents,
           recursive: true,
         });
-        this.toastService.showToast(`File saved at path: ${savedFile.uri}`, 'checkmark-outline');
+        this.toastService.showToast(
+          `File saved at path: ${savedFile.uri}`,
+          'checkmark-outline'
+        );
       }
       this.hapticService.vibrate(ImpactStyle.Light, 100);
     } catch (error) {
@@ -505,7 +598,10 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.loadingService.setLoading(true);
       this.file = event.target.files[0];
       await this.readExcelData();
-      this.toastService.showToast('Uploaded Excel file successfully.', 'checkmark-outline');
+      this.toastService.showToast(
+        'Uploaded Excel file successfully.',
+        'checkmark-outline'
+      );
     } catch (error) {
       this.toastService.showToast(`Error: ${error}`, 'bug', true);
     } finally {
@@ -560,7 +656,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       reader.readAsArrayBuffer(file);
     });
   }
-  
+
   // TODO beobachten ob öfter / nach Strike in Excel -> NaN
   async transformData(data: any[]): Promise<void> {
     const gameData = [];

@@ -1,5 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { IonHeader, IonToolbar, IonContent, IonInput, IonIcon, IonTitle, IonItem, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
+import {
+  IonHeader,
+  IonToolbar,
+  IonContent,
+  IonInput,
+  IonIcon,
+  IonTitle,
+  IonItem,
+  IonSelect,
+  IonSelectOption,
+} from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { colorPaletteOutline, personCircleOutline } from 'ionicons/icons';
@@ -13,8 +23,19 @@ import { ThemeChangerService } from 'src/app/services/theme/theme-changer.servic
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
   standalone: true,
-  imports: [IonItem, IonTitle, IonIcon, IonInput, IonContent, IonToolbar, IonHeader, IonSelect, IonSelectOption, FormsModule, CommonModule],
-
+  imports: [
+    IonItem,
+    IonTitle,
+    IonIcon,
+    IonInput,
+    IonContent,
+    IonToolbar,
+    IonHeader,
+    IonSelect,
+    IonSelectOption,
+    FormsModule,
+    CommonModule,
+  ],
 })
 export class SettingsPage implements OnInit {
   username: string | null = '';
@@ -24,9 +45,13 @@ export class SettingsPage implements OnInit {
     { name: 'Lila', class: 'lila-option' },
     { name: 'Green', class: 'green-option' },
     { name: 'Red', class: 'red-option' },
-    { name: 'Gray', class: 'gray-option' }
+    { name: 'Gray', class: 'gray-option' },
   ];
-  constructor(private userService: UserService, private toastService: ToastService, private themeService: ThemeChangerService) {
+  constructor(
+    private userService: UserService,
+    private toastService: ToastService,
+    private themeService: ThemeChangerService
+  ) {
     addIcons({ personCircleOutline, colorPaletteOutline });
   }
 
@@ -44,6 +69,9 @@ export class SettingsPage implements OnInit {
 
   changeColor() {
     this.themeService.saveColorTheme(this.currentColor!);
-    this.toastService.showToast(`Changed theme to ${this.currentColor}.`, 'checkmark-outline');
+    this.toastService.showToast(
+      `Changed theme to ${this.currentColor}.`,
+      'checkmark-outline'
+    );
   }
 }

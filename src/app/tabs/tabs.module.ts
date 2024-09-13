@@ -13,7 +13,7 @@ import { TabsPage } from './tabs.page';
     CommonModule,
     FormsModule,
     TabsPageRoutingModule,
-    TabsPage
+    TabsPage,
   ],
 })
 export class TabsPageModule {}

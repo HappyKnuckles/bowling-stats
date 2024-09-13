@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImageProcesserService {
-
-  constructor() {
-  }
+  constructor() {}
 
   async performOCR(image: File): Promise<string> {
     // Convert image file to base64 string
@@ -25,13 +23,15 @@ export class ImageProcesserService {
           const response = await fetch(environment.endPoint, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ image: base64Image })
+            body: JSON.stringify({ image: base64Image }),
           });
 
           if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+            throw new Error(
+              'Network response was not ok ' + response.statusText
+            );
           }
 
           const extractedText = await response.text();
@@ -49,5 +49,3 @@ export class ImageProcesserService {
     });
   }
 }
-
-

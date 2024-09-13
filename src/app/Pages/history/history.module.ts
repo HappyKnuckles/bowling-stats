@@ -6,10 +6,24 @@ import { MatExpansionModule } from '@angular/material/expansion';
 
 import { HistoryPageRoutingModule } from './history-routing.module';
 
-import { IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonBadge, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol, IonInput } from "@ionic/angular/standalone";
+import {
+  IonHeader,
+  IonToolbar,
+  IonButton,
+  IonIcon,
+  IonTitle,
+  IonBadge,
+  IonContent,
+  IonRefresher,
+  IonText,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonInput,
+} from '@ionic/angular/standalone';
 
 @NgModule({
-    imports: [
+  imports: [
     CommonModule,
     FormsModule,
     HistoryPageRoutingModule,
@@ -27,7 +41,7 @@ import { IonHeader, IonToolbar, IonButton, IonIcon, IonTitle, IonBadge, IonConte
     IonRow,
     IonCol,
     IonInput,
-    HistoryPage
-]
+    HistoryPage,
+  ],
 })
-export class HistoryPageModule { }
+export class HistoryPageModule {}

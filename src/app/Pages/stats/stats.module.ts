@@ -5,24 +5,34 @@ import { StatsPage } from './stats.page';
 
 import { StatsPageRoutingModule } from './stats-routing.module';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonText, IonGrid, IonRow, IonCol } from "@ionic/angular/standalone";
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonRefresher,
+  IonText,
+  IonGrid,
+  IonRow,
+  IonCol,
+} from '@ionic/angular/standalone';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        FormsModule,
-        StatsPageRoutingModule,
-        MatExpansionModule,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonRefresher,
-        IonText,
-        IonGrid,
-        IonRow,
-        IonCol,
-        StatsPage
-    ]
+  imports: [
+    CommonModule,
+    FormsModule,
+    StatsPageRoutingModule,
+    MatExpansionModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonRefresher,
+    IonText,
+    IonGrid,
+    IonRow,
+    IonCol,
+    StatsPage,
+  ],
 })
-export class StatsPageModule { }
+export class StatsPageModule {}

@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
-import { AdMob, AdmobConsentStatus, AdOptions, RewardAdPluginEvents } from '@capacitor-community/admob';
+import {
+  AdMob,
+  AdmobConsentStatus,
+  AdOptions,
+  RewardAdPluginEvents,
+} from '@capacitor-community/admob';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdService {
-
   constructor() {
     this.init();
   }
@@ -50,7 +54,7 @@ export class AdService {
   async showIntertistalAd() {
     const options: AdOptions = {
       // adId: 'ca-app-pub-5244538287702059/5612009313',
-      adId: 'ca-app-pub-3940256099942544/1033173712'
+      adId: 'ca-app-pub-3940256099942544/1033173712',
     };
 
     await AdMob.prepareInterstitial(options);
@@ -63,30 +67,30 @@ export class AdService {
       adId: 'ca-app-pub-3940256099942544/5224354917', // Replace with your Ad Unit ID
       isTesting: true, // Remove this line when you are ready to go live
     };
-  
+
     try {
       await AdMob.prepareRewardVideoAd(options);
-  
+
       return new Promise((resolve, reject) => {
         AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error) => {
           console.error(error);
           reject(new Error('Ad not watched'));
         });
-  
+
         AdMob.addListener(RewardAdPluginEvents.FailedToShow, (error) => {
           console.error(error);
           reject(new Error('Ad not watched'));
         });
-  
+
         AdMob.addListener(RewardAdPluginEvents.Showed, () => {
           resolve();
         });
-  
+
         AdMob.addListener(RewardAdPluginEvents.Rewarded, () => {
           // User watched the ad and should be rewarded
           resolve();
         });
-  
+
         AdMob.showRewardVideoAd().catch((error) => {
           console.error(error);
           reject(new Error('Ad not watched'));

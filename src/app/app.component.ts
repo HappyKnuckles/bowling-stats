@@ -63,34 +63,30 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   initializeApp(): void {
-    // Fetch the commit message from the file
-    this.http
-      .get('assets/commit-message.txt', { responseType: 'text' })
-      .subscribe({
-        next: (message: string) => {
-          this.commitMessage = message;
-        },
-        error: (error) => {
-          console.error('Failed to fetch commit message:', error);
-        },
-        complete: () => {
-          console.log('Commit message fetched successfully');
-        },
-      });
-
     // Listen for version updates and prompt the user
     this.swUpdate.versionUpdates.subscribe((event) => {
       if (event.type === 'VERSION_READY') {
-        if (
-          confirm(
-            `A new version is available. Changes: ${this.commitMessage} Load it?`
-          )
-        ) {
-          window.location.reload();
-        }
+        // Fetch the commit message only if a new version is available
+        this.http
+          .get('assets/commit-message.txt', { responseType: 'text' })
+          .subscribe({
+            next: (message: string) => {
+              this.commitMessage = message;
+              if (confirm(`A new version is available. Changes: ${this.commitMessage}. Load it?`)) {
+                window.location.reload();
+              }
+            },
+            error: (error) => {
+              console.error('Failed to fetch commit message:', error);
+              if (confirm('A new version is available. Load it?')) {
+                window.location.reload();
+              }
+            },
+          });
       }
     });
   }
+  
 
   ngOnInit(): void {
     const currentTheme = this.themeService.getCurrentTheme();

@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import * as ExcelJS from 'exceljs';
 import { addIcons } from "ionicons";
 import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline } from "ionicons/icons";
-import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
 import { Share } from '@capacitor/share';
 import { FormsModule } from '@angular/forms';
@@ -44,7 +44,8 @@ import { Game } from 'src/app/models/game-model';
     IonRow,
     IonCol,
     IonInput,
-    FormsModule
+    FormsModule,
+    CommonModule
   ],
 })
 export class HistoryPage implements OnInit, OnDestroy {
@@ -136,22 +137,37 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   isGameValid(game: Game): boolean {
-    const allInputsValid = game.frames.every((frame: any, index: number) => {
+    let isValid = true;
+    
+    game.frames.forEach((frame: any, index: number) => {
       const throws = frame.throws.map((t: { value: any; }) => t.value);
       if (index < 9) {
-        // For frames 1 to 9: Check if there are either 2 throws (unless it's a strike) or 1 throw (for strike)
-        return (throws[0] === 10 && throws.length === 1) ||
-          (throws.length === 2 && throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        // For frames 1 to 9
+        const frameValid = (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
+          (throws[0] !== 10 && throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        if (!frameValid) {
+          isValid = false;
+          frame.isInvalid = true;
+        } else {
+          frame.isInvalid = false;
+        }
       } else {
-        // For frame 10: Check if there are either 3 throws (if there's a strike or spare in the first two throws),
-        // or 2 throws (if there's no strike or spare in the first two throws)
-        return (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
+        // For frame 10
+        const frameValid = (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
           (throws.length === 2 && throws[0] + throws[1] < 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
           (throws.length === 3 && throws[0] + throws[1] >= 10 && throws[1] !== undefined && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        if (!frameValid) {
+          isValid = false;
+          frame.isInvalid = true;
+        } else {
+          frame.isInvalid = false;
+        }
       }
     });
-    return allInputsValid;
+    
+    return isValid;
   }
+  
 
   async takeScreenshotAndShare(game: Game, expansionPanel: MatExpansionPanel): Promise<void> {
     const panelContent = expansionPanel._body.nativeElement;

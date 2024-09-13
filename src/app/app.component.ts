@@ -77,7 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 }
             }
         });
-      }  
+    }  
 
     ngOnInit(): void {
         const currentTheme = this.themeService.getCurrentTheme();

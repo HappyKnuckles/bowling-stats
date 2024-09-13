@@ -28,31 +28,33 @@ import { IonicSlides } from '@ionic/angular/standalone';
 export class StatsPage implements OnInit, OnDestroy {
   swiperModules = [IonicSlides];
 
-  // Stats 
-  //TODO add interface for stats
-  totalGames: number = 0;
-  averageScore: number = 0;
-  totalPins: number = 0;
-  totalStrikes: number = 0;
-  totalSpares: number = 0;
-  totalSparesMissed: number = 0;
-  totalSparesConverted: number = 0;
-  firstThrowCount: number = 0;
-  averageFirstCount: number = 0;
-  averageStrikesPerGame: number = 0;
-  averageSparesPerGame: number = 0;
-  averageOpensPerGame: number = 0;
-  strikePercentage: number = 0;
-  sparePercentage: number = 0;
-  openPercentage: number = 0;
-  spareConversionPercentage: number = 0;
-  highGame: number = 0;
-  pinCounts: number[] = Array(11).fill(0);
-  missedCounts: number[] = Array(11).fill(0);
-  spareRates: number[] = [];
-  overallSpareRate: number = 0;
-  totalMissed: number = 0;
-  totalConverted: number = 0;
+    // Stats 
+    //TODO add interface for stats
+    totalGames: number = 0;
+    perfectGameCount: number = 0;
+    cleanGameCount: number = 0;  
+    averageScore: number = 0;
+    totalPins: number = 0;
+    totalStrikes: number = 0;
+    totalSpares: number = 0;
+    totalSparesMissed: number = 0;
+    totalSparesConverted: number = 0;
+    firstThrowCount: number = 0;
+    averageFirstCount: number = 0;
+    averageStrikesPerGame: number = 0;
+    averageSparesPerGame: number = 0;
+    averageOpensPerGame: number = 0;
+    strikePercentage: number = 0;
+    sparePercentage: number = 0;
+    openPercentage: number = 0;
+    spareConversionPercentage: number = 0;
+    highGame: number = 0;
+    pinCounts: number[] = Array(11).fill(0);
+    missedCounts: number[] = Array(11).fill(0);
+    spareRates: number[] = [];
+    overallSpareRate: number = 0;
+    totalMissed: number = 0;
+    totalConverted: number = 0;
 
   // Game Data
   gameHistory: Game[] = [];
@@ -121,48 +123,52 @@ export class StatsPage implements OnInit, OnDestroy {
     try {
       this.statsService.calculateStats(this.gameHistory);
 
-      const {
-        totalGames,
-        averageScore,
-        averageFirstCount,
-        totalScoreSum: totalPins,
-        totalStrikes,
-        averageStrikesPerGame,
-        strikePercentage,
-        totalSpares,
-        totalSparesConverted,
-        totalSparesMissed,
-        averageSparesPerGame,
-        sparePercentage,
-        averageOpensPerGame,
-        openPercentage,
-        missedCounts,
-        pinCounts,
-        highGame
-      } = this.statsService;
+            const {
+                totalGames,
+                perfectGameCount,
+                cleanGameCount,
+                averageScore,
+                averageFirstCount,
+                totalScoreSum: totalPins,
+                totalStrikes,
+                averageStrikesPerGame,
+                strikePercentage,
+                totalSpares,
+                totalSparesConverted,
+                totalSparesMissed,
+                averageSparesPerGame,
+                sparePercentage,
+                averageOpensPerGame,
+                openPercentage,
+                missedCounts,
+                pinCounts,
+                highGame
+            } = this.statsService;
 
-      this.totalGames = totalGames;
-      this.averageScore = averageScore;
-      this.averageFirstCount = averageFirstCount;
-      this.totalPins = totalPins;
-      this.totalStrikes = totalStrikes;
-      this.averageStrikesPerGame = averageStrikesPerGame;
-      this.strikePercentage = strikePercentage;
-      this.totalSpares = totalSpares;
-      this.totalSparesConverted = totalSparesConverted;
-      this.totalSparesMissed = totalSparesMissed;
-      this.averageSparesPerGame = averageSparesPerGame;
-      this.sparePercentage = sparePercentage;
-      this.averageOpensPerGame = averageOpensPerGame;
-      this.openPercentage = openPercentage;
-      this.missedCounts = missedCounts;
-      this.pinCounts = pinCounts;
-      this.highGame = highGame;
-      this.calculateRates();
-    } catch (error) {
-      this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
+            this.totalGames = totalGames;
+            this.cleanGameCount = cleanGameCount;
+            this.perfectGameCount = perfectGameCount;
+            this.averageScore = averageScore;
+            this.averageFirstCount = averageFirstCount;
+            this.totalPins = totalPins;
+            this.totalStrikes = totalStrikes;
+            this.averageStrikesPerGame = averageStrikesPerGame;
+            this.strikePercentage = strikePercentage;
+            this.totalSpares = totalSpares;
+            this.totalSparesConverted = totalSparesConverted;
+            this.totalSparesMissed = totalSparesMissed;
+            this.averageSparesPerGame = averageSparesPerGame;
+            this.sparePercentage = sparePercentage;
+            this.averageOpensPerGame = averageOpensPerGame;
+            this.openPercentage = openPercentage;
+            this.missedCounts = missedCounts;
+            this.pinCounts = pinCounts;
+            this.highGame = highGame;
+            this.calculateRates();
+        } catch (error) {
+            this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
+        }
     }
-  }
 
   async ngOnInit(): Promise<void> {
     try {

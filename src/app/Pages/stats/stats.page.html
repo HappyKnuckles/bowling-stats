@@ -42,6 +42,14 @@
           <ion-text class="value">{{ totalGames }}</ion-text>
         </div>
         <div class="stats">
+          <ion-text>Clean games: </ion-text>
+          <ion-text class="value">{{ cleanGameCount }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Perfect games: </ion-text>
+          <ion-text class="value">{{ perfectGameCount }}</ion-text>
+        </div>
+        <div class="stats">
           <ion-text>Average: </ion-text>
           <ion-text class="value">{{ averageScore | number:'1.2-2' }}</ion-text>
         </div>

@@ -9,6 +9,7 @@ import { ToastComponent } from './components/toast/toast.component';
 import { SwUpdate } from '@angular/service-worker';
 import { register } from 'swiper/element/bundle';
 import { ThemeChangerService } from './services/theme/theme-changer.service';
+import { HttpClient } from '@angular/common/http';
 register();
 
 @Component({
@@ -29,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
     isLoading = false;
     private loadingSubscription: Subscription;
     private userNameSubscription: Subscription;
-
+    commitMessage = '';
     username = '';
 
     constructor(
@@ -38,7 +39,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private loadingService: LoadingService,
         private userService: UserService,
         private swUpdate: SwUpdate,
-        private themeService: ThemeChangerService
+        private themeService: ThemeChangerService,
+        private http: HttpClient
     ) {
         this.initializeApp();
 
@@ -52,14 +54,35 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
     initializeApp(): void {
-        this.swUpdate.versionUpdates.subscribe(event => {
-            if (event.type === 'VERSION_READY') {
-                if (confirm('A new version is available. Load it?')) {
-                    window.location.reload();
-                }
+        // First, fetch the commit message from the file
+        this.http.get('assets/commit-message.txt', { responseType: 'text' })
+          .subscribe({
+            next: (message: string) => {
+              this.commitMessage = message;
+              // Now listen for version updates only after the commit message is fetched
+              this.checkForUpdates();
+            },
+            error: (error) => {
+              console.error('Failed to fetch commit message:', error);
+              // Even in case of error, we want to proceed with checking for updates
+              this.checkForUpdates(); // Proceed with checking for updates without commit message
+            },
+            complete: () => {
+              console.log('Commit message fetched successfully');
             }
+          });
+      }
+      
+      checkForUpdates(): void {
+        // Listen for version updates and prompt the user
+        this.swUpdate.versionUpdates.subscribe(event => {
+          if (event.type === 'VERSION_READY') {
+            if (confirm(`A new version is available. Changes: ${this.commitMessage || 'No commit message found'}. Load it?`)) {
+              window.location.reload();
+            }
+          }
         });
-    }
+      }    
 
     ngOnInit(): void {
         const currentTheme = this.themeService.getCurrentTheme();

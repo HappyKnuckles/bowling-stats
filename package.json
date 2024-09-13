@@ -10,9 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint && npx stylelint \"src/**/*.scss\"",
-    "lint:fix": "ng lint --fix && npx stylelint \"src/**/*.scss\" --fix",
-    "prebuild": "git log -1 --pretty=%B > src/assets/commit-message.txt"
-
+    "lint:fix": "ng lint --fix && npx stylelint \"src/**/*.scss\" --fix"
   },
   "private": true,
   "dependencies": {

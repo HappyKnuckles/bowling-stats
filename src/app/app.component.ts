@@ -66,18 +66,19 @@ export class AppComponent implements OnInit, OnDestroy {
     // Listen for version updates and prompt the user
     this.swUpdate.versionUpdates.subscribe((event) => {
       if (event.type === 'VERSION_READY') {
-        // Fetch the commit message only if a new version is available
+        // Fetch the latest commit from GitHub
         this.http
-          .get('assets/commit-message.txt', { responseType: 'text' })
+          .get('https://api.github.com/repos/HappyKnuckles/bowling-stats/commits/master')
           .subscribe({
-            next: (message: string) => {
-              this.commitMessage = message;
+            next: (data: any) => {
+              // Extract the commit message from the API response
+              this.commitMessage = data.commit.message;
               if (confirm(`A new version is available. Changes: ${this.commitMessage}. Load it?`)) {
                 window.location.reload();
               }
             },
             error: (error) => {
-              console.error('Failed to fetch commit message:', error);
+              console.error('Failed to fetch the latest commit:', error);
               if (confirm('A new version is available. Load it?')) {
                 window.location.reload();
               }
@@ -86,6 +87,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
   }
+  
   
 
   ngOnInit(): void {

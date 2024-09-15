@@ -16,7 +16,7 @@ export class GameStatsService {
     averageFirstThrowCount: 0,
     cleanGameCount: 0,
     perfectGameCount: 0,
-    averageScore: 0
+    averageScore: 0,
   };
 
   // Stats
@@ -40,33 +40,33 @@ export class GameStatsService {
   averageScore: number = 0;
   totalScoreSum: number = 0;
   highGame: number = 0;
-  constructor() { }
+  constructor() {}
 
   calculateStats(gameHistory: Game[]): void {
     const currentDateTimestamp = Number(gameHistory[gameHistory.length - 1].date);
-    const lastGameDate = localStorage.getItem('lastComparisonDate');
+    const lastGameDate = localStorage.getItem('lastComparisonDate') ?? '0';
     const previousDateTimestamp = this.findPreviousDateTimestamp(gameHistory, currentDateTimestamp);
+    if (lastGameDate !== '0') {
+      // If the previous game date is different, update the stats comparison
+      if (!this.isSameDay(previousDateTimestamp, currentDateTimestamp) && !this.isSameDay(parseInt(lastGameDate), currentDateTimestamp)) {
+        // Save previous stats
+        this.prevStats = {
+          strikePercentage: this.strikePercentage,
+          sparePercentage: this.sparePercentage,
+          openPercentage: this.openPercentage,
+          averageStrikesPerGame: this.averageStrikesPerGame,
+          averageSparesPerGame: this.averageSparesPerGame,
+          averageOpensPerGame: this.averageOpensPerGame,
+          averageFirstThrowCount: this.averageFirstCount,
+          cleanGameCount: this.cleanGameCount,
+          perfectGameCount: this.perfectGameCount,
+          averageScore: this.averageScore,
+        };
 
-    // If the previous game date is different, update the stats comparison
-    if (!this.isSameDay(previousDateTimestamp, currentDateTimestamp) && !this.isSameDay(parseInt(lastGameDate ?? '0'), currentDateTimestamp)) {
-      // Save previous stats
-      this.prevStats = {
-        strikePercentage: this.strikePercentage,
-        sparePercentage: this.sparePercentage,
-        openPercentage: this.openPercentage,
-        averageStrikesPerGame: this.averageStrikesPerGame,
-        averageSparesPerGame: this.averageSparesPerGame,
-        averageOpensPerGame: this.averageOpensPerGame,
-        averageFirstThrowCount: this.averageFirstCount,
-        cleanGameCount: this.cleanGameCount,
-        perfectGameCount: this.perfectGameCount,
-        averageScore: this.averageScore
-      };
-
-      localStorage.setItem('prevStats', JSON.stringify(this.prevStats)); // Save the previous stats in localStorage
-      localStorage.setItem('lastComparisonDate', currentDateTimestamp.toString());
+        localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
+        localStorage.setItem('lastComparisonDate', currentDateTimestamp.toString());
+      }
     }
-
 
     this.totalStrikes = 0;
     this.totalSpares = 0;
@@ -173,6 +173,23 @@ export class GameStatsService {
     this.openPercentage = (this.totalSparesMissed / totalFrames) * 100;
 
     this.averageFirstCount = firstThrowCount / totalFrames;
+
+    if (lastGameDate === '0') {
+      this.prevStats = {
+        strikePercentage: this.strikePercentage,
+        sparePercentage: this.sparePercentage,
+        openPercentage: this.openPercentage,
+        averageStrikesPerGame: this.averageStrikesPerGame,
+        averageSparesPerGame: this.averageSparesPerGame,
+        averageOpensPerGame: this.averageOpensPerGame,
+        averageFirstThrowCount: this.averageFirstCount,
+        cleanGameCount: this.cleanGameCount,
+        perfectGameCount: this.perfectGameCount,
+        averageScore: this.averageScore,
+      };
+      localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
+      localStorage.setItem('lastComparisonDate', currentDateTimestamp.toString());
+    }
   }
 
   private isSameDay(timestamp1: number, timestamp2: number): boolean {
@@ -186,10 +203,20 @@ export class GameStatsService {
       date1.getFullYear() === date2.getFullYear()
     );
   }
+
   private findPreviousDateTimestamp(gameHistory: Game[], currentDateTimestamp: number): number {
+    const currentDate = new Date(currentDateTimestamp);
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDate();
+
     for (let i = gameHistory.length - 2; i >= 0; i--) {
       const gameDate = new Date(Number(gameHistory[i].date));
-      if (gameDate.getTime() < currentDateTimestamp) {
+      const gameYear = gameDate.getFullYear();
+      const gameMonth = gameDate.getMonth();
+      const gameDay = gameDate.getDate();
+
+      if (gameYear !== currentYear || gameMonth !== currentMonth || gameDay !== currentDay) {
         return gameDate.getTime();
       }
     }

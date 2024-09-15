@@ -19,16 +19,14 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"></ion-refresher>
   <!-- Show this message if there are no game history items and it's not loading -->
   <ng-container *ngIf="gameHistory.length <= 0 && !isLoading; else content">
-    <ion-text
-      style="width: 60%; display: flex; justify-content: center; height: 100%; align-items: center; margin: 0 auto">
+    <ion-text style="width: 60%; display: flex; justify-content: center; height: 100%; align-items: center; margin: 0 auto">
       Start playing a few games to see your stats here!
     </ion-text>
   </ng-container>
 
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1"
-      (swiperslidechangetransitionstart)="onSlideChanged()">
+    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechangetransitionstart)="onSlideChanged()">
       <!-- Overall Segment -->
       <swiper-slide class="tab">
         <div class="stats">
@@ -37,93 +35,105 @@
         </div>
         <div class="stats">
           <ion-text>Clean games: </ion-text>
-          <ion-text class="value">{{ cleanGameCount }}<ion-icon [name]="getArrowIcon(cleanGameCount, prevStats.cleanGameCount)"
-            [color]="getArrowColor(cleanGameCount, prevStats.cleanGameCount)"></ion-icon>
+          <ion-text class="value"
+            >{{ cleanGameCount }}<ion-icon
+              [name]="getArrowIcon(cleanGameCount, prevStats.cleanGameCount)"
+              [color]="getArrowColor(cleanGameCount, prevStats.cleanGameCount)"></ion-icon>
           </ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Perfect games: </ion-text>
-            <ion-text class="value">{{ perfectGameCount }}<ion-icon
-                [name]="getArrowIcon(perfectGameCount, prevStats.perfectGameCount)"
-                [color]="getArrowColor(perfectGameCount, prevStats.perfectGameCount)"></ion-icon>
-            </ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Average: </ion-text>
-            <ion-text class="value">{{ averageScore | number:'1.2-2' }}<ion-icon
-                [name]="getArrowIcon(averageScore, prevStats.averageScore)"
-                [color]="getArrowColor(averageScore, prevStats.averageScore)"></ion-icon></ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>High game: </ion-text>
-            <ion-text class="value">{{ highGame }}</ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Total pins: </ion-text>
-            <ion-text class="value">{{ totalPins }}</ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>First ball average: </ion-text>
-            <ion-text class="value">{{ averageFirstCount | number:'1.2-2' }}<ion-icon
-                [name]="getArrowIcon(averageFirstCount, prevStats.averageFirstThrowCount)"
-                [color]="getArrowColor(averageFirstCount, prevStats.averageFirstThrowCount)"></ion-icon>
-            </ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Total strikes: </ion-text>
-            <ion-text class="value">{{ totalStrikes }}</ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Strikes per game: </ion-text>
-            <ion-text class="value">{{ averageStrikesPerGame | number:'1.2-2' }}<ion-icon
-                [name]="getArrowIcon(averageStrikesPerGame, prevStats.averageStrikesPerGame)"
-                [color]="getArrowColor(averageStrikesPerGame, prevStats.averageStrikesPerGame)"></ion-icon>
-            </ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Strike-percentage: </ion-text>
-            <ion-text class="value">{{ strikePercentage | number:'1.2-2' }}%<ion-icon
-                [name]="getArrowIcon(strikePercentage, prevStats.strikePercentage)"
-                [color]="getArrowColor(strikePercentage, prevStats.strikePercentage)"></ion-icon>
-            </ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Total spares: </ion-text>
-            <ion-text class="value">{{ totalSpares }}</ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Spares per game: </ion-text>
-            <ion-text class="value">{{ averageSparesPerGame | number:'1.2-2' }}<ion-icon
-                [name]="getArrowIcon(averageSparesPerGame, prevStats.averageSparesPerGame)"
-                [color]="getArrowColor(averageSparesPerGame, prevStats.averageSparesPerGame)"></ion-icon>
-            </ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Spare-percentage: </ion-text>
-            <ion-text class="value">{{ sparePercentage | number:'1.2-2' }}%<ion-icon
-                [name]="getArrowIcon(sparePercentage, prevStats.sparePercentage)"
-                [color]="getArrowColor(sparePercentage, prevStats.sparePercentage)"></ion-icon>
-            </ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Total opens: </ion-text>
-            <ion-text class="value">{{ totalSparesMissed }}</ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Opens per game: </ion-text>
-            <ion-text class="value">{{ averageOpensPerGame | number:'1.2-2' }}<ion-icon
-                [name]="getArrowIcon(averageOpensPerGame, prevStats.averageOpensPerGame)"
-                [color]="getArrowColor(averageOpensPerGame, prevStats.averageOpensPerGame)"></ion-icon>
-            </ion-text>
-          </div>
-          <div class="stats">
-            <ion-text>Open-percentage: </ion-text>
-            <ion-text class="value">{{ openPercentage | number:'1.2-2' }}%<ion-icon
-                [name]="getArrowIcon(openPercentage, prevStats.openPercentage)"
-                [color]="getArrowColor(openPercentage, prevStats.openPercentage)"></ion-icon>
-            </ion-text>
-          </div>
-     
+        </div>
+        <div class="stats">
+          <ion-text>Perfect games: </ion-text>
+          <ion-text class="value"
+            >{{ perfectGameCount }}<ion-icon
+              [name]="getArrowIcon(perfectGameCount, prevStats.perfectGameCount)"
+              [color]="getArrowColor(perfectGameCount, prevStats.perfectGameCount)"></ion-icon>
+          </ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Average: </ion-text>
+          <ion-text class="value"
+            >{{ averageScore | number:'1.2-2' }}<ion-icon
+              [name]="getArrowIcon(averageScore, prevStats.averageScore)"
+              [color]="getArrowColor(averageScore, prevStats.averageScore)"></ion-icon
+          ></ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>High game: </ion-text>
+          <ion-text class="value">{{ highGame }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total pins: </ion-text>
+          <ion-text class="value">{{ totalPins }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>First ball average: </ion-text>
+          <ion-text class="value"
+            >{{ averageFirstCount | number:'1.2-2' }}<ion-icon
+              [name]="getArrowIcon(averageFirstCount, prevStats.averageFirstThrowCount)"
+              [color]="getArrowColor(averageFirstCount, prevStats.averageFirstThrowCount)"></ion-icon>
+          </ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total strikes: </ion-text>
+          <ion-text class="value">{{ totalStrikes }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Strikes per game: </ion-text>
+          <ion-text class="value"
+            >{{ averageStrikesPerGame | number:'1.2-2' }}<ion-icon
+              [name]="getArrowIcon(averageStrikesPerGame, prevStats.averageStrikesPerGame)"
+              [color]="getArrowColor(averageStrikesPerGame, prevStats.averageStrikesPerGame)"></ion-icon>
+          </ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Strike-percentage: </ion-text>
+          <ion-text class="value"
+            >{{ strikePercentage | number:'1.2-2' }}%<ion-icon
+              [name]="getArrowIcon(strikePercentage, prevStats.strikePercentage)"
+              [color]="getArrowColor(strikePercentage, prevStats.strikePercentage)"></ion-icon>
+          </ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total spares: </ion-text>
+          <ion-text class="value">{{ totalSpares }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Spares per game: </ion-text>
+          <ion-text class="value"
+            >{{ averageSparesPerGame | number:'1.2-2' }}<ion-icon
+              [name]="getArrowIcon(averageSparesPerGame, prevStats.averageSparesPerGame)"
+              [color]="getArrowColor(averageSparesPerGame, prevStats.averageSparesPerGame)"></ion-icon>
+          </ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Spare-percentage: </ion-text>
+          <ion-text class="value"
+            >{{ sparePercentage | number:'1.2-2' }}%<ion-icon
+              [name]="getArrowIcon(sparePercentage, prevStats.sparePercentage)"
+              [color]="getArrowColor(sparePercentage, prevStats.sparePercentage)"></ion-icon>
+          </ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Total opens: </ion-text>
+          <ion-text class="value">{{ totalSparesMissed }}</ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Opens per game: </ion-text>
+          <ion-text class="value"
+            >{{ averageOpensPerGame | number:'1.2-2' }}<ion-icon
+              [name]="getArrowIcon(averageOpensPerGame, prevStats.averageOpensPerGame)"
+              [color]="getArrowColor(averageOpensPerGame, prevStats.averageOpensPerGame)"></ion-icon>
+          </ion-text>
+        </div>
+        <div class="stats">
+          <ion-text>Open-percentage: </ion-text>
+          <ion-text class="value"
+            >{{ openPercentage | number:'1.2-2' }}%<ion-icon
+              [name]="getArrowIcon(openPercentage, prevStats.openPercentage)"
+              [color]="getArrowColor(openPercentage, prevStats.openPercentage)"></ion-icon>
+          </ion-text>
+        </div>
+
         <canvas #scoreChart class="score" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 
@@ -143,8 +153,7 @@
               <ion-col><ion-text>{{ missedCounts[i] }}</ion-text></ion-col>
               <ion-col><ion-text>{{ pinCounts[i] }}</ion-text></ion-col>
               <ion-col *ngIf="pinCounts[i] === 0 && missedCounts[i] === 0"></ion-col>
-              <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0"
-                [ngStyle]="{'color': getRateColor(spareRates[i])}">
+              <ion-col *ngIf="pinCounts[i] !== 0 || missedCounts[i] !== 0" [ngStyle]="{'color': getRateColor(spareRates[i])}">
                 {{ spareRates[i] | number:'1.2-2' }}%
               </ion-col>
             </ng-container>
@@ -152,8 +161,7 @@
             <ng-container *ngIf="i === 0">
               <ion-col><ion-text>{{ totalSparesMissed }}</ion-text></ion-col>
               <ion-col><ion-text>{{ totalSparesConverted }}</ion-text></ion-col>
-              <ion-col *ngIf="totalSparesMissed + totalSparesConverted !== 0"
-                [ngStyle]="{'color': getRateColor(overallSpareRate)}">
+              <ion-col *ngIf="totalSparesMissed + totalSparesConverted !== 0" [ngStyle]="{'color': getRateColor(overallSpareRate)}">
                 {{ overallSpareRate | number:'1.2-2' }}%
               </ion-col>
               <ion-col *ngIf="totalSparesMissed + totalSparesConverted === 0"></ion-col>
@@ -167,4 +175,5 @@
       <swiper-slide class="tab">
         <canvas #throwChart class="throws" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
-    </swiper-container> </ng-template></ion-content>
+    </swiper-container> </ng-template
+></ion-content>

@@ -74,7 +74,7 @@ export class StatsPage implements OnInit, OnDestroy {
     averageFirstThrowCount: 0,
     cleanGameCount: 0,
     perfectGameCount: 0,
-    averageScore: 0
+    averageScore: 0,
   };
   // Stats
   //TODO add interface for stats
@@ -192,7 +192,7 @@ export class StatsPage implements OnInit, OnDestroy {
         openPercentage,
         missedCounts,
         pinCounts,
-        highGame
+        highGame,
       } = this.statsService;
 
       this.totalGames = totalGames;
@@ -214,7 +214,10 @@ export class StatsPage implements OnInit, OnDestroy {
       this.missedCounts = missedCounts;
       this.pinCounts = pinCounts;
       this.highGame = highGame;
-      this.prevStats = JSON.parse(localStorage.getItem('prevStats')!);
+      const prevStats = localStorage.getItem('prevStats');
+      if (prevStats) {
+        this.prevStats = JSON.parse(prevStats);
+      }
       this.calculateRates();
     } catch (error) {
       this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
@@ -232,26 +235,6 @@ export class StatsPage implements OnInit, OnDestroy {
       console.error(error);
     } finally {
       this.loadingService.setLoading(false);
-    }
-  }
-
-  getArrowIcon(currentValue: number, previousValue: number): string {
-    if (currentValue > previousValue) {
-      return 'arrow-up';
-    } else if (currentValue < previousValue) {
-      return 'arrow-down';
-    } else {
-      return '';
-    }
-  }
-
-  getArrowColor(currentValue: number, previousValue: number): string {
-    if (currentValue > previousValue) {
-      return 'success'; // Green color
-    } else if (currentValue < previousValue) {
-      return 'danger'; // Red color
-    } else {
-      return ''; 
     }
   }
 
@@ -361,6 +344,20 @@ export class StatsPage implements OnInit, OnDestroy {
   calculateRates() {
     this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
     this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
+  }
+
+  getArrowIcon(currentValue: number, previousValue: number): string {
+    if (!previousValue) {
+      return '';
+    }
+    return currentValue > previousValue ? 'arrow-up' : currentValue < previousValue ? 'arrow-down' : '';
+  }
+
+  getArrowColor(currentValue: number, previousValue: number): string {
+    if (!previousValue) {
+      return '';
+    }
+    return currentValue > previousValue ? 'success' : currentValue < previousValue ? 'danger' : '';
   }
 
   getLabel(i: number): string {

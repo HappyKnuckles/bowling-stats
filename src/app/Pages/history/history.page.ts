@@ -499,7 +499,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       const base64Data = btoa(binary);
       const dataUri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
 
-      if (isPlatform('desktop') || isPlatform('mobileweb')) {
+      if (isPlatform('desktop') || isPlatform('mobileweb') || isPlatform('pwa') {
         const anchor = document.createElement('a');
         anchor.href = dataUri;
         anchor.download = fileName;

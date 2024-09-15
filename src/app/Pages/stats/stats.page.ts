@@ -28,6 +28,8 @@ import { ToastService } from 'src/app/services/toast/toast.service';
 import { FormsModule } from '@angular/forms';
 import { Swiper } from 'swiper';
 import { IonicSlides } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { arrowDown, arrowUp } from 'ionicons/icons';
 
 @Component({
   selector: 'app-stats',
@@ -72,6 +74,7 @@ export class StatsPage implements OnInit, OnDestroy {
     averageFirstThrowCount: 0,
     cleanGameCount: 0,
     perfectGameCount: 0,
+    averageScore: 0
   };
   // Stats
   //TODO add interface for stats
@@ -143,6 +146,7 @@ export class StatsPage implements OnInit, OnDestroy {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
+    addIcons({ arrowUp, arrowDown });
   }
 
   private async loadDataAndCalculateStats() {
@@ -188,7 +192,7 @@ export class StatsPage implements OnInit, OnDestroy {
         openPercentage,
         missedCounts,
         pinCounts,
-        highGame,
+        highGame
       } = this.statsService;
 
       this.totalGames = totalGames;
@@ -210,11 +214,13 @@ export class StatsPage implements OnInit, OnDestroy {
       this.missedCounts = missedCounts;
       this.pinCounts = pinCounts;
       this.highGame = highGame;
+      this.prevStats = JSON.parse(localStorage.getItem('prevStats')!);
       this.calculateRates();
     } catch (error) {
       this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
     }
   }
+  // TODO compare prevstats with current stats and apply icon accordingly
 
   async ngOnInit(): Promise<void> {
     try {
@@ -226,6 +232,26 @@ export class StatsPage implements OnInit, OnDestroy {
       console.error(error);
     } finally {
       this.loadingService.setLoading(false);
+    }
+  }
+
+  getArrowIcon(currentValue: number, previousValue: number): string {
+    if (currentValue > previousValue) {
+      return 'arrow-up';
+    } else if (currentValue < previousValue) {
+      return 'arrow-down';
+    } else {
+      return '';
+    }
+  }
+
+  getArrowColor(currentValue: number, previousValue: number): string {
+    if (currentValue > previousValue) {
+      return 'success'; // Green color
+    } else if (currentValue < previousValue) {
+      return 'danger'; // Red color
+    } else {
+      return ''; 
     }
   }
 

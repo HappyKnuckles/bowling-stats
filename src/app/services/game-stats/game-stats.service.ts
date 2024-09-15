@@ -5,6 +5,21 @@ import { Game } from 'src/app/models/game-model';
   providedIn: 'root',
 })
 export class GameStatsService {
+  // Previous Stats
+  prevStats = {
+    strikePercentage: 0,
+    sparePercentage: 0,
+    openPercentage: 0,
+    averageStrikesPerGame: 0,
+    averageSparesPerGame: 0,
+    averageOpensPerGame: 0,
+    averageFirstThrowCount: 0,
+    cleanGameCount: 0,
+    perfectGameCount: 0,
+    averageScore: 0
+  };
+
+  // Stats
   totalGames: number = 0;
   perfectGameCount: number = 0;
   cleanGameCount: number = 0;
@@ -25,9 +40,34 @@ export class GameStatsService {
   averageScore: number = 0;
   totalScoreSum: number = 0;
   highGame: number = 0;
-  constructor() {}
+  constructor() { }
 
   calculateStats(gameHistory: Game[]): void {
+    const currentDateTimestamp = Number(gameHistory[gameHistory.length - 1].date);
+    const lastGameDate = localStorage.getItem('lastComparisonDate');
+    const previousDateTimestamp = this.findPreviousDateTimestamp(gameHistory, currentDateTimestamp);
+
+    // If the previous game date is different, update the stats comparison
+    if (!this.isSameDay(previousDateTimestamp, currentDateTimestamp) && !this.isSameDay(parseInt(lastGameDate ?? '0'), currentDateTimestamp)) {
+      // Save previous stats
+      this.prevStats = {
+        strikePercentage: this.strikePercentage,
+        sparePercentage: this.sparePercentage,
+        openPercentage: this.openPercentage,
+        averageStrikesPerGame: this.averageStrikesPerGame,
+        averageSparesPerGame: this.averageSparesPerGame,
+        averageOpensPerGame: this.averageOpensPerGame,
+        averageFirstThrowCount: this.averageFirstCount,
+        cleanGameCount: this.cleanGameCount,
+        perfectGameCount: this.perfectGameCount,
+        averageScore: this.averageScore
+      };
+
+      localStorage.setItem('prevStats', JSON.stringify(this.prevStats)); // Save the previous stats in localStorage
+      localStorage.setItem('lastComparisonDate', currentDateTimestamp.toString());
+    }
+
+
     this.totalStrikes = 0;
     this.totalSpares = 0;
     this.totalSparesConverted = 0;
@@ -133,6 +173,27 @@ export class GameStatsService {
     this.openPercentage = (this.totalSparesMissed / totalFrames) * 100;
 
     this.averageFirstCount = firstThrowCount / totalFrames;
+  }
+
+  private isSameDay(timestamp1: number, timestamp2: number): boolean {
+    const date1 = new Date(timestamp1);
+    const date2 = new Date(timestamp2);
+
+    // Compare day, month, and year
+    return (
+      date1.getDate() === date2.getDate() &&
+      date1.getMonth() === date2.getMonth() && // Months are 0-based, so no need to adjust here
+      date1.getFullYear() === date2.getFullYear()
+    );
+  }
+  private findPreviousDateTimestamp(gameHistory: Game[], currentDateTimestamp: number): number {
+    for (let i = gameHistory.length - 2; i >= 0; i--) {
+      const gameDate = new Date(Number(gameHistory[i].date));
+      if (gameDate.getTime() < currentDateTimestamp) {
+        return gameDate.getTime();
+      }
+    }
+    return 0;
   }
 
   private getAverage(gameHistory: Game[]): number {

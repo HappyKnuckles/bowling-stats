@@ -352,27 +352,27 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   getArrowIcon(currentValue: number, previousValue: number): string {
-    if (previousValue === 0 || currentValue === previousValue) {
+    if (currentValue === previousValue) {
       return '';
     }
     return currentValue > previousValue ? 'arrow-up' : 'arrow-down';
   }
 
-  getArrowColor(currentValue: number, previousValue: number): string {
-    if (previousValue === 0 || currentValue === previousValue) {
+  getDiffColor(currentValue: number, previousValue: number): string {
+    if (currentValue === previousValue) {
       return '';
     }
     return currentValue > previousValue ? 'success' : 'danger';
   }
 
   getStatDifference(currentValue: number, previousValue: number): string {
-    if (previousValue === 0) {
-      return 'No previous data';
-    }
     const difference = (currentValue - previousValue).toFixed(2);
-    const percentageChange = ((Number(difference) / previousValue) * 100).toFixed(2);
+    if (Number(difference) === 0) {
+      return '0';
+    }
+    const percentageChange = previousValue === 0 ? '' : ((Number(difference) / previousValue) * 100).toFixed(2);
     const differenceWithSign = Number(difference) > 0 ? `+${difference}` : difference;
-    return `${differenceWithSign} (${percentageChange}%)`;
+    return previousValue === 0 ? `${differenceWithSign}` : `${differenceWithSign} (${percentageChange}%)`;
   }
 
   getLabel(i: number): string {

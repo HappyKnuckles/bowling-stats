@@ -45,6 +45,7 @@ ion-item {
 .diffPopover {
   --background: #020a06;
   text-align: center;
+  --min-width: 110px;
   --max-width: fit-content;
 
   &::part(content) {

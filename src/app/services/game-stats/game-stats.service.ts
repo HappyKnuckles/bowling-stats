@@ -175,18 +175,33 @@ export class GameStatsService {
     this.averageFirstCount = firstThrowCount / totalFrames;
 
     if (lastGameDate === '0') {
-      this.prevStats = {
-        strikePercentage: this.strikePercentage,
-        sparePercentage: this.sparePercentage,
-        openPercentage: this.openPercentage,
-        averageStrikesPerGame: this.averageStrikesPerGame,
-        averageSparesPerGame: this.averageSparesPerGame,
-        averageOpensPerGame: this.averageOpensPerGame,
-        averageFirstCount: this.averageFirstCount,
-        cleanGameCount: this.cleanGameCount,
-        perfectGameCount: this.perfectGameCount,
-        averageScore: this.averageScore,
-      };
+      if (this.totalGames > 0) {
+        this.prevStats = {
+          strikePercentage: this.strikePercentage,
+          sparePercentage: this.sparePercentage,
+          openPercentage: this.openPercentage,
+          averageStrikesPerGame: this.averageStrikesPerGame,
+          averageSparesPerGame: this.averageSparesPerGame,
+          averageOpensPerGame: this.averageOpensPerGame,
+          averageFirstCount: this.averageFirstCount,
+          cleanGameCount: this.cleanGameCount,
+          perfectGameCount: this.perfectGameCount,
+          averageScore: this.averageScore,
+        };
+      } else {
+        this.prevStats = {
+          strikePercentage: 0,
+          sparePercentage: 0,
+          openPercentage: 0,
+          averageStrikesPerGame: 0,
+          averageSparesPerGame: 0,
+          averageOpensPerGame: 0,
+          averageFirstCount: 0,
+          cleanGameCount: 0,
+          perfectGameCount: 0,
+          averageScore: 0,
+        };
+      }
       localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
       localStorage.setItem('lastComparisonDate', Date.now().toString());
     }

@@ -71,7 +71,7 @@ export class StatsPage implements OnInit, OnDestroy {
     averageStrikesPerGame: 0,
     averageSparesPerGame: 0,
     averageOpensPerGame: 0,
-    averageFirstThrowCount: 0,
+    averageFirstCount: 0,
     cleanGameCount: 0,
     perfectGameCount: 0,
     averageScore: 0,
@@ -363,6 +363,16 @@ export class StatsPage implements OnInit, OnDestroy {
       return '';
     }
     return currentValue > previousValue ? 'success' : 'danger';
+  }
+
+  getStatDifference(currentValue: number, previousValue: number): string {
+    if (previousValue === 0) {
+      return 'No previous data';
+    }
+    const difference = (currentValue - previousValue).toFixed(2);
+    const percentageChange = ((Number(difference) / previousValue) * 100).toFixed(2);
+    const differenceWithSign = Number(difference) > 0 ? `+${difference}` : difference;
+    return `${differenceWithSign} (${percentageChange}%)`;
   }
 
   getLabel(i: number): string {

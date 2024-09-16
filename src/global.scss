@@ -42,6 +42,16 @@ ion-item {
   color: white;
 }
 
+.diffPopover {
+  --background: #020a06;
+  text-align: center;
+  --max-width: fit-content;
+
+  &::part(content) {
+    padding: 4px;
+  }
+}
+
 ion-toolbar {
   height: 59px !important;
   display: flex;

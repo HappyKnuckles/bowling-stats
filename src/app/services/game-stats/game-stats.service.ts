@@ -188,7 +188,7 @@ export class GameStatsService {
         averageScore: this.averageScore,
       };
       localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
-      localStorage.setItem('lastComparisonDate', Date.now());
+      localStorage.setItem('lastComparisonDate', Date.now().toString());
     }
   }
 

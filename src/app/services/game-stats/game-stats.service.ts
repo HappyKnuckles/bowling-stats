@@ -43,12 +43,12 @@ export class GameStatsService {
   constructor() {}
 
   calculateStats(gameHistory: Game[]): void {
-    const currentDateTimestamp = Number(gameHistory[gameHistory.length - 1].date);
     const lastGameDate = localStorage.getItem('lastComparisonDate') ?? '0';
-    const previousDateTimestamp = this.findPreviousDateTimestamp(gameHistory, currentDateTimestamp);
+    const today = Date.now();
+
     if (lastGameDate !== '0') {
       // If the previous game date is different, update the stats comparison
-      if (!this.isSameDay(previousDateTimestamp, currentDateTimestamp) && !this.isSameDay(parseInt(lastGameDate), currentDateTimestamp)) {
+      if (!this.isSameDay(parseInt(lastGameDate), today)) {
         // Save previous stats
         this.prevStats = {
           strikePercentage: this.strikePercentage,
@@ -64,7 +64,7 @@ export class GameStatsService {
         };
 
         localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
-        localStorage.setItem('lastComparisonDate', currentDateTimestamp.toString());
+        localStorage.setItem('lastComparisonDate', today.toString());
       }
     }
 
@@ -202,25 +202,6 @@ export class GameStatsService {
       date1.getMonth() === date2.getMonth() && // Months are 0-based, so no need to adjust here
       date1.getFullYear() === date2.getFullYear()
     );
-  }
-
-  private findPreviousDateTimestamp(gameHistory: Game[], currentDateTimestamp: number): number {
-    const currentDate = new Date(currentDateTimestamp);
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-    const currentDay = currentDate.getDate();
-
-    for (let i = gameHistory.length - 2; i >= 0; i--) {
-      const gameDate = new Date(Number(gameHistory[i].date));
-      const gameYear = gameDate.getFullYear();
-      const gameMonth = gameDate.getMonth();
-      const gameDay = gameDate.getDate();
-
-      if (gameYear !== currentYear || gameMonth !== currentMonth || gameDay !== currentDay) {
-        return gameDate.getTime();
-      }
-    }
-    return 0;
   }
 
   private getAverage(gameHistory: Game[]): number {

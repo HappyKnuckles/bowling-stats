@@ -10,6 +10,8 @@ import { SwUpdate } from '@angular/service-worker';
 import { register } from 'swiper/element/bundle';
 import { ThemeChangerService } from './services/theme/theme-changer.service';
 import { HttpClient } from '@angular/common/http';
+import { GameStatsService } from './services/game-stats/game-stats.service';
+import { GameHistoryService } from './services/game-history/game-history.service';
 register();
 
 @Component({
@@ -33,10 +35,11 @@ export class AppComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private swUpdate: SwUpdate,
     private themeService: ThemeChangerService,
-    private http: HttpClient
+    private http: HttpClient,
+    private gameStatsService: GameStatsService,
+    private gameHistoryService: GameHistoryService
   ) {
     this.initializeApp();
-
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
@@ -82,9 +85,14 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    // Load stats here initially so prevstats are loaded before the first game
+    const gameHistory = await this.gameHistoryService.loadGameHistory();
+    this.gameStatsService.calculateStats(gameHistory);
+
     const currentTheme = this.themeService.getCurrentTheme();
     this.themeService.applyTheme(currentTheme);
+
     this.greetUser();
   }
 

@@ -149,11 +149,30 @@ export class StatsPage implements OnInit, OnDestroy {
     addIcons({ arrowUp, arrowDown });
   }
 
-  private async loadDataAndCalculateStats() {
+  async ngOnInit(): Promise<void> {
+    try {
+      this.loadingService.setLoading(true);
+      await this.loadDataAndCalculateStats(true);
+      this.subscribeToDataEvents();
+      this.generateCharts();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingService.setLoading(false);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.newDataAddedSubscription.unsubscribe();
+    this.dataDeletedSubscription.unsubscribe();
+    this.loadingSubscription.unsubscribe();
+  }
+
+  private async loadDataAndCalculateStats(isInit?: boolean) {
     if (this.gameHistoryChanged) {
       try {
         await this.loadGameHistory();
-        this.loadStats();
+        this.loadStats(isInit);
         this.gameHistoryChanged = false; // Reset the flag
       } catch (error) {
         this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true);
@@ -169,9 +188,13 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  loadStats() {
+  loadStats(isInit?: boolean) {
     try {
-      this.statsService.calculateStats(this.gameHistory);
+      // Recalculate only on changes, first calculated on app start so the prevStats are always
+      // accurate according to the date and dont rely on loading component
+      if (!isInit) {
+        this.statsService.calculateStats(this.gameHistory);
+      }
 
       const {
         totalGames,
@@ -214,34 +237,16 @@ export class StatsPage implements OnInit, OnDestroy {
       this.missedCounts = missedCounts;
       this.pinCounts = pinCounts;
       this.highGame = highGame;
+
       const prevStats = localStorage.getItem('prevStats');
       if (prevStats) {
         this.prevStats = JSON.parse(prevStats);
-      }
+      } else this.prevStats = this.statsService.prevStats;
+
       this.calculateRates();
     } catch (error) {
       this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
     }
-  }
-  // TODO compare prevstats with current stats and apply icon accordingly
-
-  async ngOnInit(): Promise<void> {
-    try {
-      this.loadingService.setLoading(true);
-      await this.loadDataAndCalculateStats();
-      this.subscribeToDataEvents();
-      this.generateCharts();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.loadingService.setLoading(false);
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.newDataAddedSubscription.unsubscribe();
-    this.dataDeletedSubscription.unsubscribe();
-    this.loadingSubscription.unsubscribe();
   }
 
   handleRefresh(event: any): void {
@@ -306,7 +311,7 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   generateCharts() {
-    if (this.gameHistory.length) {
+    if (this.gameHistory.length > 0) {
       if (this.selectedSegment === 'default') {
         this.generateScoreChart();
       } else if (this.selectedSegment === 'spares') {
@@ -347,17 +352,17 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   getArrowIcon(currentValue: number, previousValue: number): string {
-    if (!previousValue) {
+    if (previousValue === 0 || currentValue === previousValue) {
       return '';
     }
-    return currentValue > previousValue ? 'arrow-up' : currentValue < previousValue ? 'arrow-down' : '';
+    return currentValue > previousValue ? 'arrow-up' : 'arrow-down';
   }
 
   getArrowColor(currentValue: number, previousValue: number): string {
-    if (!previousValue) {
+    if (previousValue === 0 || currentValue === previousValue) {
       return '';
     }
-    return currentValue > previousValue ? 'success' : currentValue < previousValue ? 'danger' : '';
+    return currentValue > previousValue ? 'success' : 'danger';
   }
 
   getLabel(i: number): string {

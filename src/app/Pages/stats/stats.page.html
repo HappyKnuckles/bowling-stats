@@ -36,25 +36,34 @@
         <div class="stats">
           <ion-text>Clean games: </ion-text>
           <ion-text class="value"
-            >{{ cleanGameCount }}<ion-icon
+            >{{ cleanGameCount }}
+            <ion-icon
+              *ngIf="getArrowIcon(cleanGameCount, prevStats.cleanGameCount)"
               [name]="getArrowIcon(cleanGameCount, prevStats.cleanGameCount)"
-              [color]="getArrowColor(cleanGameCount, prevStats.cleanGameCount)"></ion-icon>
+              [color]="getArrowColor(cleanGameCount, prevStats.cleanGameCount)">
+            </ion-icon>
           </ion-text>
         </div>
         <div class="stats">
           <ion-text>Perfect games: </ion-text>
           <ion-text class="value"
-            >{{ perfectGameCount }}<ion-icon
+            >{{ perfectGameCount }}
+            <ion-icon
+              *ngIf="getArrowIcon(perfectGameCount, prevStats.perfectGameCount)"
               [name]="getArrowIcon(perfectGameCount, prevStats.perfectGameCount)"
-              [color]="getArrowColor(perfectGameCount, prevStats.perfectGameCount)"></ion-icon>
+              [color]="getArrowColor(perfectGameCount, prevStats.perfectGameCount)">
+            </ion-icon>
           </ion-text>
         </div>
         <div class="stats">
           <ion-text>Average: </ion-text>
           <ion-text class="value"
-            >{{ averageScore | number:'1.2-2' }}<ion-icon
+            >{{ averageScore | number:'1.2-2' }}
+            <ion-icon
+              *ngIf="getArrowIcon(averageScore, prevStats.averageScore)"
               [name]="getArrowIcon(averageScore, prevStats.averageScore)"
-              [color]="getArrowColor(averageScore, prevStats.averageScore)"></ion-icon
+              [color]="getArrowColor(averageScore, prevStats.averageScore)">
+            </ion-icon
           ></ion-text>
         </div>
         <div class="stats">
@@ -68,9 +77,12 @@
         <div class="stats">
           <ion-text>First ball average: </ion-text>
           <ion-text class="value"
-            >{{ averageFirstCount | number:'1.2-2' }}<ion-icon
+            >{{ averageFirstCount | number:'1.2-2' }}
+            <ion-icon
+              *ngIf="getArrowIcon(averageFirstCount, prevStats.averageFirstThrowCount)"
               [name]="getArrowIcon(averageFirstCount, prevStats.averageFirstThrowCount)"
-              [color]="getArrowColor(averageFirstCount, prevStats.averageFirstThrowCount)"></ion-icon>
+              [color]="getArrowColor(averageFirstCount, prevStats.averageFirstThrowCount)">
+            </ion-icon>
           </ion-text>
         </div>
         <div class="stats">
@@ -80,17 +92,23 @@
         <div class="stats">
           <ion-text>Strikes per game: </ion-text>
           <ion-text class="value"
-            >{{ averageStrikesPerGame | number:'1.2-2' }}<ion-icon
+            >{{ averageStrikesPerGame | number:'1.2-2' }}
+            <ion-icon
+              *ngIf="getArrowIcon(averageStrikesPerGame, prevStats.averageStrikesPerGame)"
               [name]="getArrowIcon(averageStrikesPerGame, prevStats.averageStrikesPerGame)"
-              [color]="getArrowColor(averageStrikesPerGame, prevStats.averageStrikesPerGame)"></ion-icon>
+              [color]="getArrowColor(averageStrikesPerGame, prevStats.averageStrikesPerGame)">
+            </ion-icon>
           </ion-text>
         </div>
         <div class="stats">
           <ion-text>Strike-percentage: </ion-text>
           <ion-text class="value"
-            >{{ strikePercentage | number:'1.2-2' }}%<ion-icon
+            >{{ strikePercentage | number:'1.2-2' }}%
+            <ion-icon
+              *ngIf="getArrowIcon(strikePercentage, prevStats.strikePercentage)"
               [name]="getArrowIcon(strikePercentage, prevStats.strikePercentage)"
-              [color]="getArrowColor(strikePercentage, prevStats.strikePercentage)"></ion-icon>
+              [color]="getArrowColor(strikePercentage, prevStats.strikePercentage)">
+            </ion-icon>
           </ion-text>
         </div>
         <div class="stats">
@@ -100,17 +118,23 @@
         <div class="stats">
           <ion-text>Spares per game: </ion-text>
           <ion-text class="value"
-            >{{ averageSparesPerGame | number:'1.2-2' }}<ion-icon
+            >{{ averageSparesPerGame | number:'1.2-2' }}
+            <ion-icon
+              *ngIf="getArrowIcon(averageSparesPerGame, prevStats.averageSparesPerGame)"
               [name]="getArrowIcon(averageSparesPerGame, prevStats.averageSparesPerGame)"
-              [color]="getArrowColor(averageSparesPerGame, prevStats.averageSparesPerGame)"></ion-icon>
+              [color]="getArrowColor(averageSparesPerGame, prevStats.averageSparesPerGame)">
+            </ion-icon>
           </ion-text>
         </div>
         <div class="stats">
           <ion-text>Spare-percentage: </ion-text>
           <ion-text class="value"
-            >{{ sparePercentage | number:'1.2-2' }}%<ion-icon
+            >{{ sparePercentage | number:'1.2-2' }}%
+            <ion-icon
+              *ngIf="getArrowIcon(sparePercentage, prevStats.sparePercentage)"
               [name]="getArrowIcon(sparePercentage, prevStats.sparePercentage)"
-              [color]="getArrowColor(sparePercentage, prevStats.sparePercentage)"></ion-icon>
+              [color]="getArrowColor(sparePercentage, prevStats.sparePercentage)">
+            </ion-icon>
           </ion-text>
         </div>
         <div class="stats">
@@ -120,17 +144,23 @@
         <div class="stats">
           <ion-text>Opens per game: </ion-text>
           <ion-text class="value"
-            >{{ averageOpensPerGame | number:'1.2-2' }}<ion-icon
+            >{{ averageOpensPerGame | number:'1.2-2' }}
+            <ion-icon
+              *ngIf="getArrowIcon(averageOpensPerGame, prevStats.averageOpensPerGame)"
               [name]="getArrowIcon(averageOpensPerGame, prevStats.averageOpensPerGame)"
-              [color]="getArrowColor(averageOpensPerGame, prevStats.averageOpensPerGame)"></ion-icon>
+              [color]="getArrowColor(averageOpensPerGame, prevStats.averageOpensPerGame)">
+            </ion-icon>
           </ion-text>
         </div>
         <div class="stats">
           <ion-text>Open-percentage: </ion-text>
           <ion-text class="value"
-            >{{ openPercentage | number:'1.2-2' }}%<ion-icon
+            >{{ openPercentage | number:'1.2-2' }}%
+            <ion-icon
+              *ngIf="getArrowIcon(openPercentage, prevStats.openPercentage)"
               [name]="getArrowIcon(openPercentage, prevStats.openPercentage)"
-              [color]="getArrowColor(openPercentage, prevStats.openPercentage)"></ion-icon>
+              [color]="getArrowColor(openPercentage, prevStats.openPercentage)">
+            </ion-icon>
           </ion-text>
         </div>
 
@@ -168,6 +198,7 @@
             </ng-container>
           </ion-row>
         </ion-grid>
+
         <canvas #pinChart class="spares" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 

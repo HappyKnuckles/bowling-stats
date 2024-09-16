@@ -28,7 +28,7 @@
 
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <ion-button (click)="deleteAll()"> Alles löschen</ion-button>
+   <!-- <ion-button (click)="deleteAll()"> Alles löschen</ion-button>-->
     <div *ngIf="gameHistory.length > 0">
       <ion-item-sliding *ngFor="let game of gameHistory; let i = index" class="sliding" #slidingItem>
         <ion-item-options side="end" (ionSwipe)="deleteGame(game.gameId); slidingItem.closeOpened();">

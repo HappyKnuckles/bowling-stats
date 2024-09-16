@@ -152,7 +152,7 @@ export class StatsPage implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     try {
       this.loadingService.setLoading(true);
-      await this.loadDataAndCalculateStats(true);
+      await this.loadDataAndCalculateStats();
       this.subscribeToDataEvents();
       this.generateCharts();
     } catch (error) {
@@ -168,11 +168,11 @@ export class StatsPage implements OnInit, OnDestroy {
     this.loadingSubscription.unsubscribe();
   }
 
-  private async loadDataAndCalculateStats(isInit?: boolean) {
-    if (this.gameHistoryChanged) {
+  private async loadDataAndCalculateStats(isRefresh?: boolean): Promise<void> {
+    if (this.gameHistoryChanged || isRefresh) {
       try {
         await this.loadGameHistory();
-        this.loadStats(isInit);
+        this.loadStats();
         this.gameHistoryChanged = false; // Reset the flag
       } catch (error) {
         this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true);
@@ -188,14 +188,13 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  loadStats(isInit?: boolean) {
+  loadStats() {
     try {
-      // Recalculate only on changes, first calculated on app start so the prevStats are always
-      // accurate according to the date and dont rely on loading component
-      if (!isInit) {
-        this.statsService.calculateStats(this.gameHistory);
-      }
-
+      // TODO adjust so stats are not calculated twice (on startup and on init)
+      // currently this is needed to get previous stats before the first game
+      // and has to happen on init because wrong stats if you add games before opening stats page
+      this.statsService.calculateStats(this.gameHistory);
+      
       const {
         totalGames,
         perfectGameCount,
@@ -254,7 +253,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
       setTimeout(() => {
-        this.loadDataAndCalculateStats()
+        this.loadDataAndCalculateStats(true)
           .then(() => {
             event.target.complete();
           })

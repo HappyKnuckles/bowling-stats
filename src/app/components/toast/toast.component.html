@@ -6,5 +6,6 @@
   class="customToast"
   icon="{{ icon }}"
   [class.error]="isError"
-  swipeGesture="vertical">
+  swipeGesture="vertical"
+  (click)="isOpen = false">
 </ion-toast>

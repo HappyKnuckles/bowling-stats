@@ -17,6 +17,14 @@ export class SaveGameDataService {
     await this.storage.create();
   }
 
+  async saveGamesToLocalStorage(gameData: Game[]): Promise<void> {
+    for (const game of gameData) {
+      const key = 'game' + game.gameId; // Generate key using index
+      await this.storage.set(key, game);
+    }
+    this.newDataAdded.emit();
+  }
+
   async saveGameToLocalStorage(gameData: Game): Promise<void> {
     const key = 'game' + gameData.gameId; // Generate key using index
     await this.storage.set(key, gameData);

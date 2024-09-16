@@ -619,9 +619,9 @@ export class HistoryPage implements OnInit, OnDestroy {
         frameScores: data[i]['13'].split(', ').map((score: string) => parseInt(score)),
       };
 
-      await this.saveService.saveGameToLocalStorage(game);
       gameData.push(game);
     }
+    await this.saveService.saveGamesToLocalStorage(gameData);
   }
 
   async showPermissionDeniedAlert(): Promise<void> {

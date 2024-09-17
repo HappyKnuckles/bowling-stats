@@ -34,6 +34,11 @@ import { SaveGameDataService } from 'src/app/services/save-game/save-game.servic
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
 import { UserService } from 'src/app/services/user/user.service';
+import { defineCustomElements } from '@teamhive/lottie-player/loader';
+
+defineCustomElements(window);
+
+
 @Component({
   selector: 'app-add-game',
   templateUrl: 'add-game.page.html',
@@ -71,6 +76,7 @@ export class AddGamePage implements OnInit {
   isAlertOpen: boolean = false;
   alertButton = ['Dismiss'];
   isModalOpen: boolean = false;
+  is300: boolean = false;
   username = '';
   gameData!: Game;
 
@@ -404,6 +410,10 @@ export class AddGamePage implements OnInit {
           trackGrid.saveGameToLocalStorage();
         });
         if (perfectGame) {
+          this.is300 = true;
+          setTimeout(() => {
+            this.is300 = false;
+          }, 4000);
         }
         if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
           await this.adService.showIntertistalAd();

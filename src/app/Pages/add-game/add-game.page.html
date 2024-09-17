@@ -18,8 +18,16 @@
 <ion-alert [isOpen]="isAlertOpen" header="Error" message="You didn't fill all inputs" [buttons]="alertButton" (didDismiss)="setAlertOpen()">
 </ion-alert>
 
+<div *ngIf="is300" 
+     style="position: absolute; background-color: rgba(0, 0, 0, 0.5); 
+            width: 100%; height: 100%; top: 0; left: 0; display: flex; 
+            justify-content: center; align-items: center; z-index: 500;">    
+  <lottie-player slot="end" autoplay loop src="https://lottie.host/7b3bdd2a-221b-463e-9f59-d95964639389/duMcnXopMJ.json"></lottie-player>
+</div>
+
 <ng-container *ngFor="let mode of seriesMode; let i = index;">
   <ion-content [fullscreen]="true" *ngIf="mode">
+    
     <ng-container *ngFor="let trackIndex of trackIndexes[i]; let j = index">
       <h1 *ngIf="i !== 0">Game {{j + 1}}</h1>
       <app-track-grid
@@ -148,5 +156,6 @@
         </ion-content>
       </ng-template>
     </ion-modal>
+
   </ion-content>
 </ng-container>

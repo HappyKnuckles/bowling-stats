@@ -40,6 +40,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private gameHistoryService: GameHistoryService
   ) {
     this.initializeApp();
+    const currentTheme = this.themeService.getCurrentTheme();
+    this.themeService.applyTheme(currentTheme);
+
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
@@ -92,9 +95,6 @@ export class AppComponent implements OnInit, OnDestroy {
     // Load stats here initially so prevstats are loaded before the first game
     const gameHistory = await this.gameHistoryService.loadGameHistory();
     this.gameStatsService.calculateStats(gameHistory);
-
-    const currentTheme = this.themeService.getCurrentTheme();
-    this.themeService.applyTheme(currentTheme);
 
     this.greetUser();
   }

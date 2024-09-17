@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { getMaxListeners } from 'events';
 import { Game } from 'src/app/models/game-model';
 
 @Injectable({
@@ -43,12 +44,13 @@ export class GameStatsService {
   constructor() {}
 
   calculateStats(gameHistory: Game[]): void {
-    const lastGameDate = localStorage.getItem('lastComparisonDate') ?? '0';
+    const lastComparisonDate = localStorage.getItem('lastComparisonDate') ?? '0';
+    const lastGameDate = gameHistory[gameHistory.length -1].date;
     const today = Date.now();
 
-    if (lastGameDate !== '0') {
+    if (lastComparisonDate !== '0') {
       // If the previous game date is different, update the stats comparison
-      if (!this.isSameDay(parseInt(lastGameDate), today)) {
+      if (!this.isSameDay(parseInt(lastComparisonDate), today) && !this.isSameDay(parseInt(lastComparisonDate), lastGameDate)) {
         // Save previous stats
         this.prevStats = {
           strikePercentage: this.strikePercentage,
@@ -64,7 +66,7 @@ export class GameStatsService {
         };
 
         localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
-        localStorage.setItem('lastComparisonDate', today.toString());
+        localStorage.setItem('lastComparisonDate', lastGameDate.toString());
       }
     }
 
@@ -174,7 +176,7 @@ export class GameStatsService {
 
     this.averageFirstCount = firstThrowCount / totalFrames;
 
-    if (lastGameDate === '0') {
+    if (lastComparisonDate === '0') {
       if (this.totalGames > 0) {
         this.prevStats = {
           strikePercentage: this.strikePercentage,
@@ -203,7 +205,7 @@ export class GameStatsService {
         };
       }
       localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
-      localStorage.setItem('lastComparisonDate', Date.now().toString());
+      localStorage.setItem('lastComparisonDate', lastGameDate.toString());
     }
   }
 

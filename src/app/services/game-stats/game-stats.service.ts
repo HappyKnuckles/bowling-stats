@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { getMaxListeners } from 'events';
 import { Game } from 'src/app/models/game-model';
 
 @Injectable({
@@ -18,6 +17,8 @@ export class GameStatsService {
     cleanGameCount: 0,
     perfectGameCount: 0,
     averageScore: 0,
+    overallSpareRate: 0,
+    spareRates: [] as number[],
   };
 
   // Stats
@@ -41,6 +42,9 @@ export class GameStatsService {
   averageScore: number = 0;
   totalScoreSum: number = 0;
   highGame: number = 0;
+  spareRates: number[] = [];
+  overallSpareRate: number = 0;
+
   constructor() {}
 
   calculateStats(gameHistory: Game[]): void {
@@ -48,8 +52,8 @@ export class GameStatsService {
     const today = Date.now();
 
     let lastGameDate = 0;
-    if(gameHistory.length > 0){
-      lastGameDate = gameHistory[gameHistory.length -1].date;
+    if (gameHistory.length > 0) {
+      lastGameDate = gameHistory[gameHistory.length - 1].date;
     }
 
     if (lastComparisonDate !== '0') {
@@ -67,6 +71,8 @@ export class GameStatsService {
           cleanGameCount: this.cleanGameCount,
           perfectGameCount: this.perfectGameCount,
           averageScore: this.averageScore,
+          overallSpareRate: this.overallSpareRate,
+          spareRates: this.spareRates,
         };
 
         localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
@@ -180,6 +186,9 @@ export class GameStatsService {
 
     this.averageFirstCount = firstThrowCount / totalFrames;
 
+    this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
+    this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
+
     if (lastComparisonDate === '0') {
       if (this.totalGames > 0) {
         this.prevStats = {
@@ -193,6 +202,8 @@ export class GameStatsService {
           cleanGameCount: this.cleanGameCount,
           perfectGameCount: this.perfectGameCount,
           averageScore: this.averageScore,
+          overallSpareRate: this.overallSpareRate,
+          spareRates: this.spareRates,
         };
       } else {
         this.prevStats = {
@@ -206,11 +217,20 @@ export class GameStatsService {
           cleanGameCount: 0,
           perfectGameCount: 0,
           averageScore: 0,
+          overallSpareRate: 0,
+          spareRates: Array(11).fill(0),
         };
       }
       localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
       localStorage.setItem('lastComparisonDate', lastGameDate.toString());
     }
+  }
+
+  private getRate(converted: number, missed: number): number {
+    if (converted + missed === 0) {
+      return 0;
+    }
+    return (converted / (converted + missed)) * 100;
   }
 
   private isSameDay(timestamp1: number, timestamp2: number): boolean {

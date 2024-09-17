@@ -75,6 +75,8 @@ export class StatsPage implements OnInit, OnDestroy {
     cleanGameCount: 0,
     perfectGameCount: 0,
     averageScore: 0,
+    overallSpareRate: 0,
+    spareRates: [] as number[],
   };
   // Stats
   //TODO add interface for stats
@@ -194,7 +196,7 @@ export class StatsPage implements OnInit, OnDestroy {
       // currently this is needed to get previous stats before the first game
       // and has to happen on init because wrong stats if you add games before opening stats page
       this.statsService.calculateStats(this.gameHistory);
-      
+
       const {
         totalGames,
         perfectGameCount,
@@ -215,6 +217,8 @@ export class StatsPage implements OnInit, OnDestroy {
         missedCounts,
         pinCounts,
         highGame,
+        spareRates,
+        overallSpareRate,
       } = this.statsService;
 
       this.totalGames = totalGames;
@@ -236,13 +240,13 @@ export class StatsPage implements OnInit, OnDestroy {
       this.missedCounts = missedCounts;
       this.pinCounts = pinCounts;
       this.highGame = highGame;
+      this.spareRates = spareRates;
+      this.overallSpareRate = overallSpareRate;
 
       const prevStats = localStorage.getItem('prevStats');
       if (prevStats) {
         this.prevStats = JSON.parse(prevStats);
       } else this.prevStats = this.statsService.prevStats;
-
-      this.calculateRates();
     } catch (error) {
       this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
     }
@@ -346,9 +350,11 @@ export class StatsPage implements OnInit, OnDestroy {
     });
   }
 
-  calculateRates() {
-    this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
-    this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
+  private getRate(converted: number, missed: number): number {
+    if (converted + missed === 0) {
+      return 0;
+    }
+    return (converted / (converted + missed)) * 100;
   }
 
   getArrowIcon(currentValue: number, previousValue: number): string {
@@ -379,13 +385,6 @@ export class StatsPage implements OnInit, OnDestroy {
     if (i === 0) return 'Overall';
     if (i === 1) return `${i} Pin`;
     return `${i} Pins`;
-  }
-
-  getRate(converted: number, missed: number): number {
-    if (converted + missed === 0) {
-      return 0;
-    }
-    return (converted / (converted + missed)) * 100;
   }
 
   getRateColor(conversionRate: number): string {
@@ -459,7 +458,11 @@ export class StatsPage implements OnInit, OnDestroy {
   generatePinChart(): void {
     const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
 
-    const ctx = this.pinChart!.nativeElement;
+    if (!this.pinChart) {
+      return;
+    }
+
+    const ctx = this.pinChart.nativeElement;
     if (this.pinChartInstance) {
       this.pinChartInstance.data.datasets[0].data = filteredSpareRates;
       this.pinChartInstance.data.datasets[1].data = filteredMissedCounts;
@@ -580,7 +583,11 @@ export class StatsPage implements OnInit, OnDestroy {
   generateScoreChart(): void {
     const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
 
-    const ctx = this.scoreChart?.nativeElement;
+    if (!this.scoreChart) {
+      return;
+    }
+
+    const ctx = this.scoreChart.nativeElement;
     if (this.scoreChartInstance) {
       this.scoreChartInstance.data.labels = gameLabels;
       this.scoreChartInstance.data.datasets[0].data = overallAverages;
@@ -707,7 +714,11 @@ export class StatsPage implements OnInit, OnDestroy {
   generateThrowChart(): void {
     const { opens, spares, strikes } = this.calculateThrowChartData();
 
-    const ctx = this.throwChart?.nativeElement;
+    if (!this.throwChart) {
+      return;
+    }
+
+    const ctx = this.throwChart.nativeElement;
     if (this.throwChartInstance) {
       this.throwChartInstance.data.datasets[0].data = [spares, strikes, opens];
       this.throwChartInstance.update();

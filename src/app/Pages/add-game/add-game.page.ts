@@ -38,7 +38,6 @@ import { defineCustomElements } from '@teamhive/lottie-player/loader';
 
 defineCustomElements(window);
 
-
 @Component({
   selector: 'app-add-game',
   templateUrl: 'add-game.page.html',

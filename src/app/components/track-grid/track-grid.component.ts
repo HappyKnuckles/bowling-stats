@@ -129,7 +129,6 @@ export class TrackGridComponent implements OnInit {
   }
 
   async focusNextInput(frameIndex: number, inputIndex: number) {
-
     // Convert QueryList to an array
     const inputArray = this.inputs.toArray();
     // Calculate the current index in the linear array of inputs

@@ -45,8 +45,12 @@ export class GameStatsService {
 
   calculateStats(gameHistory: Game[]): void {
     const lastComparisonDate = localStorage.getItem('lastComparisonDate') ?? '0';
-    const lastGameDate = gameHistory[gameHistory.length -1].date;
     const today = Date.now();
+
+    let lastGameDate = 0;
+    if(gameHistory.length > 0){
+      lastGameDate = gameHistory[gameHistory.length -1].date;
+    }
 
     if (lastComparisonDate !== '0') {
       // If the previous game date is different, update the stats comparison

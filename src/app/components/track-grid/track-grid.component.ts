@@ -35,7 +35,7 @@ export class TrackGridComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.inputSubject.pipe(debounceTime(300)).subscribe(({ event, frameIndex, inputIndex }) => {
+    this.inputSubject.pipe(debounceTime(700)).subscribe(({ event, frameIndex, inputIndex }) => {
       this.simulateScore(event, frameIndex, inputIndex);
     });
     // Check if gameIndex exists in local storage
@@ -129,7 +129,6 @@ export class TrackGridComponent implements OnInit {
   }
 
   async focusNextInput(frameIndex: number, inputIndex: number) {
-    await new Promise((resolve) => setTimeout(resolve, 600)); // Delay to give time to user
 
     // Convert QueryList to an array
     const inputArray = this.inputs.toArray();

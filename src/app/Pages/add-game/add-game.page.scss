@@ -1,0 +1,99 @@
+.actionSheet {
+  ion-button {
+    background: none;
+
+    --background-activated: none;
+  }
+
+  .chevron {
+    margin-left: 5px;
+    font-size: 15px;
+  }
+}
+
+ion-modal {
+  .inputCol {
+    --ion-grid-column-padding: 0;
+
+    &:not(:nth-child(2)) {
+      margin: 0 3px !important;
+    }
+
+    .frameScores {
+      margin: 0 !important;
+      padding: 0;
+    }
+  }
+
+  ion-input {
+    min-height: 24px;
+  }
+
+  ion-row {
+    padding: 5px 0;
+
+    &:first-child {
+      padding: 0;
+    }
+
+    &:last-child {
+      padding: 2px;
+    }
+  }
+}
+
+.bowling-setup {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  height: 55%;
+
+  .pin-row {
+    display: flex;
+    justify-content: center;
+    margin: 5px 0;
+  }
+
+  .pin {
+    width: 20vmin;
+    height: 20vmin;
+    background-color: #f0f0f0;
+    border: 2px solid red;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+    color: black;
+  }
+}
+
+ion-input:not(.frameScores) {
+  text-align: center;
+  background-color: var(--ion-color-secondary);
+  border-radius: 3px;
+  min-height: 35px !important;
+  height: 35px;
+}
+
+ion-grid {
+  background-color: var(--ion-color-quartiary);
+
+  --ion-grid-padding: 0;
+
+  border-radius: 3px;
+  margin: 5px;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+
+  ion-button {
+    --background: var(--ion-color-dark);
+
+    color: white;
+  }
+}

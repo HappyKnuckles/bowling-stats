@@ -1,0 +1,32 @@
+# Ignore artifacts:
+build
+coverage
+dist
+node_modules
+tmp
+out-tsc
+bazel-out
+
+# Ignore system files:
+.DS_Store
+Thumbs.db
+
+# Ignore IDE and editor files:
+.idea
+.vscode
+.history
+
+# Ignore Ionic and Capacitor files:
+www
+platforms
+plugins
+
+# Ignore specific file types:
+*.log
+*.tmp
+*.min.css
+
+# Ignore specific directories:
+android
+ios
+.angular

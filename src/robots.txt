@@ -1,0 +1,6 @@
+# Allow all crawlers access to everything
+User-agent: *
+Disallow:
+
+# Optional: specify your sitemap (recommended)
+Sitemap: https://bowling-stats-brown.vercel.app/sitemap.xml

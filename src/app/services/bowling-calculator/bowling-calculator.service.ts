@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BowlingCalculatorService {
   frameScores: number[] = [];
@@ -28,13 +28,13 @@ export class BowlingCalculatorService {
     this.addFrame();
     // Recalculate the score and max score
     this.totalScore = 0;
-    this.maxScore = 300; 
+    this.maxScore = 300;
   }
 
   calculateScore(): number {
     let index = 0;
-    this.frames.forEach(frame => {
-      frame.forEach(value => {
+    this.frames.forEach((frame) => {
+      frame.forEach((value) => {
         this.rolls[index++] = value;
       });
     });
@@ -46,7 +46,11 @@ export class BowlingCalculatorService {
       if (this.isStrike(this.rolls[frameIndex]) && this.rolls[frameIndex] != null && this.rolls[frameIndex + 1] != null) {
         score += 10 + this.strikeBonus(frameIndex, this.rolls);
         frameIndex++;
-      } else if (this.isSpare(this.rolls[frameIndex], this.rolls[frameIndex + 1]) && this.rolls[frameIndex] != null && this.rolls[frameIndex + 1] != null) {
+      } else if (
+        this.isSpare(this.rolls[frameIndex], this.rolls[frameIndex + 1]) &&
+        this.rolls[frameIndex] != null &&
+        this.rolls[frameIndex + 1] != null
+      ) {
         score += 10 + this.spareBonus(frameIndex, this.rolls);
         frameIndex += 2;
       } else if (this.rolls[frameIndex] != null && this.rolls[frameIndex + 1] != null) {
@@ -59,83 +63,108 @@ export class BowlingCalculatorService {
     return this.totalScore;
   }
 
-  calculateMaxScore(frameIndex: number): number {
-    const firstThrow = this.frames[frameIndex][0];
-    const secondThrow = this.frames[frameIndex][1];
+  calculateMaxScore(): number {
+    this.maxScore = 300;
 
-    // Base case: First frame
-    if (frameIndex < 9) {
-      if (frameIndex === 0) {
-        if (secondThrow !== undefined) {
-          if (this.isStrike(firstThrow)) {
-            return this.maxScore = 300; // Maximum score if first throw is a strike
-          }
-          if (this.isSpare(firstThrow, secondThrow)) {
-            return this.maxScore -= 10;
-          }
-          return this.maxScore -= 30 - (firstThrow + secondThrow);
-        } else return this.maxScore;
+    for (let i = 0; i < this.frames.length; i++) {
+      // Fix loop condition to iterate correctly over frames
+      if (!this.frames[i] || this.frames[i].length === 0) {
+        break; // Exit if the frame is empty or undefined
       }
-      // Handling frames after the first frame
-      else {
-        if (secondThrow !== undefined) {
-          if (frameIndex >= 2) {
-            if (this.isPreviousStrike(frameIndex - 1) && this.isPreviousStrike(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
-              return this.maxScore -= 30 - (firstThrow)//50 - ((2 * firstThrow) + secondThrow);
+
+      const firstThrow = this.frames[i][0];
+      const secondThrow = this.frames[i][1];
+
+      // Handle frames before the last frame (0-8)
+      if (i < 9) {
+        // Case for first frame
+        if (i === 0) {
+          if (secondThrow !== undefined) {
+            if (this.isStrike(firstThrow)) {
+              // Only manipulation for a strike in the first frame
+              this.maxScore; // Example action, adjust as needed
+            } else if (this.isSpare(firstThrow, secondThrow)) {
+              this.maxScore -= 10;
+            } else {
+              this.maxScore -= 30 - (firstThrow + secondThrow);
             }
-            if (this.isPreviousStrike(frameIndex - 1) && this.isPreviousStrike(frameIndex) && !this.isSpare(firstThrow, secondThrow)) {
-              return this.maxScore -= 60 - (firstThrow + 2 * (firstThrow + secondThrow));
-            }
+            continue; // Exit to ensure no other manipulations occur
           }
-          if (frameIndex >= 1) {
-            if (firstThrow !== 10) {
-              if (this.isPreviousStrike(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore -= 20;
+        }
+        // Handle other frames (1-8)
+        else {
+          if (secondThrow !== undefined) {
+            if (i >= 2 && this.isPreviousStrike(i - 1) && this.isPreviousStrike(i)) {
+              if (this.isSpare(firstThrow, secondThrow)) {
+                this.maxScore -= 30 - firstThrow;
+              } else {
+                this.maxScore -= 60 - (firstThrow + 2 * (firstThrow + secondThrow));
               }
-              if (this.isPreviousStrike(frameIndex) && !this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore -= 50 - 2 * (firstThrow + secondThrow);
-              }
-              if (this.isPreviousSpare(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore -= 20 - (firstThrow);
-              }
-              if (this.isPreviousSpare(frameIndex) && !this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore -= 40 - (2 * firstThrow + secondThrow);
-              }
-              if (!this.isPreviousSpare(frameIndex) && this.isSpare(firstThrow, secondThrow)) {
-                return this.maxScore -= 10;
-              }
-            }
-            if (!this.isPreviousSpare(frameIndex) && this.isStrike(firstThrow)) {
-              return this.maxScore = this.maxScore;
+              continue;
             }
 
-            return this.maxScore -= 30 - (firstThrow + secondThrow);
+            if (i >= 1) {
+              if (firstThrow !== 10) {
+                if (this.isPreviousStrike(i) && this.isSpare(firstThrow, secondThrow)) {
+                  this.maxScore -= 20;
+                } else if (this.isPreviousStrike(i) && !this.isSpare(firstThrow, secondThrow)) {
+                  this.maxScore -= 50 - 2 * (firstThrow + secondThrow);
+                } else if (this.isPreviousSpare(i) && this.isSpare(firstThrow, secondThrow)) {
+                  this.maxScore -= 20 - firstThrow;
+                } else if (this.isPreviousSpare(i) && !this.isSpare(firstThrow, secondThrow)) {
+                  this.maxScore -= 40 - (2 * firstThrow + secondThrow);
+                } else if (!this.isPreviousSpare(i) && this.isSpare(firstThrow, secondThrow)) {
+                  this.maxScore -= 10;
+                } else if (!this.isPreviousSpare(i) && this.isStrike(firstThrow)) {
+                  this.maxScore; // Example action
+                } else {
+                  this.maxScore -= 30 - (firstThrow + secondThrow);
+                }
+                continue;
+              }
+            }
           }
         }
       }
-    }
-    // Last Frame
-    else {
-      const thirdThrow = this.frames[frameIndex][3];
-      if (!this.isStrike(firstThrow) && this.isStrike(secondThrow) && !this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
-        return this.maxScore = this.totalScore;
-      }
-      if (this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
-        return this.maxScore -= 10;
-      }
-      if (this.isStrike(firstThrow) && !this.isStrike(secondThrow) && secondThrow !== undefined) {
-        if (this.isPreviousStrike(frameIndex)) {
-          return this.maxScore -= 20 - 2 * secondThrow;
-        } else return this.maxScore -= 10;
-      }
-      if (this.isStrike(firstThrow)) {
-        return this.maxScore;
-      }
-      if (!this.isSpare(firstThrow, secondThrow) && secondThrow !== undefined) {
-        return this.maxScore = this.totalScore;
-      }
-      if (thirdThrow != undefined) {
-        return this.maxScore = this.totalScore;
+      // Handle the last frame (index 9)
+      else {
+        const thirdThrow = this.frames[i][2];
+        if (thirdThrow !== undefined) {
+          this.maxScore = this.totalScore;
+          continue;
+        }
+
+        if (secondThrow !== undefined) {
+          if (this.isStrike(firstThrow)) {
+            if (this.isPreviousStrike(i) && !this.isStrike(secondThrow)) {
+              this.maxScore -= 20 - secondThrow;
+            } else if (!this.isPreviousStrike(i) && !this.isStrike(secondThrow)) {
+              this.maxScore -= 10;
+            }
+          } else if (!this.isSpare(firstThrow, secondThrow)) {
+            this.maxScore = this.totalScore;
+          }
+          continue;
+        }
+
+        // Handle cases based on previous strikes or spares
+        if (this.isPreviousSpare(i) && !this.isPreviousStrike(i)) {
+          if (!this.isStrike(firstThrow)) {
+            this.maxScore -= 20 - firstThrow;
+          }
+        } else if (!this.isPreviousStrike(i) && !this.isPreviousSpare(i)) {
+          if (!this.isStrike(firstThrow)) {
+            this.maxScore -= 10;
+          }
+        } else if (this.isPreviousStrike(i - 1) && this.isPreviousStrike(i) && !this.isPreviousSpare(i)) {
+          if (!this.isStrike(firstThrow)) {
+            this.maxScore -= 30 - firstThrow;
+          }
+        } else if (this.isPreviousStrike(i) && !this.isPreviousSpare(i)) {
+          if (!this.isStrike(firstThrow)) {
+            this.maxScore -= 20;
+          }
+        }
       }
     }
 

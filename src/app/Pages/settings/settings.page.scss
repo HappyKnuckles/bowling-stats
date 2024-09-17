@@ -1,0 +1,29 @@
+.Red {
+  &::part(text) {
+    color: #a91d3a;
+  }
+}
+
+.Blue {
+  &::part(text) {
+    color: #427d9d;
+  }
+}
+
+.Green {
+  &::part(text) {
+    color: #789461;
+  }
+}
+
+.Lila {
+  &::part(text) {
+    color: #31304d;
+  }
+}
+
+.Gray {
+  &::part(text) {
+    color: #7d7c7c;
+  }
+}

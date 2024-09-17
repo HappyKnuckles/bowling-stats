@@ -2,15 +2,33 @@ import { Injectable } from '@angular/core';
 import { Game } from 'src/app/models/game-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GameStatsService {
+  // Previous Stats
+  prevStats = {
+    strikePercentage: 0,
+    sparePercentage: 0,
+    openPercentage: 0,
+    averageStrikesPerGame: 0,
+    averageSparesPerGame: 0,
+    averageOpensPerGame: 0,
+    averageFirstCount: 0,
+    cleanGameCount: 0,
+    perfectGameCount: 0,
+    averageScore: 0,
+    overallSpareRate: 0,
+    spareRates: [] as number[],
+  };
+
+  // Stats
   totalGames: number = 0;
+  perfectGameCount: number = 0;
+  cleanGameCount: number = 0;
   totalStrikes: number = 0;
   totalSpares: number = 0;
   totalSparesMissed: number = 0;
-  totalSparesConverted: number = 0; 
-  totalOpens: number = 0;
+  totalSparesConverted: number = 0;
   pinCounts: number[] = Array(11).fill(0);
   missedCounts: number[] = Array(11).fill(0);
   averageStrikesPerGame: number = 0;
@@ -18,72 +36,131 @@ export class GameStatsService {
   averageOpensPerGame: number = 0;
   strikePercentage: number = 0;
   sparePercentage: number = 0;
-  openPercentage: number = 0;  
+  openPercentage: number = 0;
   spareConversionPercentage: number = 0;
   averageFirstCount: number = 0;
   averageScore: number = 0;
   totalScoreSum: number = 0;
   highGame: number = 0;
-  constructor() { }
+  spareRates: number[] = [];
+  overallSpareRate: number = 0;
+
+  constructor() {}
 
   calculateStats(gameHistory: Game[]): void {
+    const lastComparisonDate = localStorage.getItem('lastComparisonDate') ?? '0';
+    const today = Date.now();
+
+    let lastGameDate = 0;
+    if (gameHistory.length > 0) {
+      lastGameDate = gameHistory[gameHistory.length - 1].date;
+    }
+
+    if (lastComparisonDate !== '0') {
+      // If the previous game date is different, update the stats comparison
+      if (!this.isSameDay(parseInt(lastComparisonDate), today) && !this.isSameDay(parseInt(lastComparisonDate), lastGameDate)) {
+        // Save previous stats
+        this.prevStats = {
+          strikePercentage: this.strikePercentage,
+          sparePercentage: this.sparePercentage,
+          openPercentage: this.openPercentage,
+          averageStrikesPerGame: this.averageStrikesPerGame,
+          averageSparesPerGame: this.averageSparesPerGame,
+          averageOpensPerGame: this.averageOpensPerGame,
+          averageFirstCount: this.averageFirstCount,
+          cleanGameCount: this.cleanGameCount,
+          perfectGameCount: this.perfectGameCount,
+          averageScore: this.averageScore,
+          overallSpareRate: this.overallSpareRate,
+          spareRates: this.spareRates,
+        };
+
+        localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
+        localStorage.setItem('lastComparisonDate', lastGameDate.toString());
+      }
+    }
+
     this.totalStrikes = 0;
     this.totalSpares = 0;
     this.totalSparesConverted = 0;
     this.totalSparesMissed = 0;
-    this.totalOpens = 0;
     this.pinCounts = Array(11).fill(0);
     this.missedCounts = Array(11).fill(0);
     let firstThrowCount = 0;
+    this.perfectGameCount = 0;
+    this.cleanGameCount = 0;
 
-    gameHistory.forEach((game: { frames: any[] }) => {
-      this.totalStrikes += this.countOccurrences(game.frames, frame => frame.throws[0].value === 10);
-      // this.totalSpares += this.countOccurrences(game.frames, frame => {
-      //   const throws = frame.throws;
-      //   return throws[0].value !== 10 && (throws[0].value + throws[1]?.value === 10 || (throws[0].value === 10 && throws[1]?.value !== 10 && throws[1]?.value + throws[2]?.value === 10));
-      // });
-      
-      this.totalOpens += this.countOccurrences(game.frames, frame => frame.throws.length === 2 && frame.throws[0].value + (frame.throws[1]?.value || 0) < 10);
-
-      game.frames.forEach(frame => {
-        const throws = frame.throws;
-        if (throws.length === 2 && throws[0].value + throws[1].value === 10) {
-          const pinsLeft = 10 - throws[0].value;
-          this.pinCounts[pinsLeft]++;
-        } else if (throws.length === 3) {
-          if (throws[1].value + throws[2].value === 10) {
-            const pinsLeft = 10 - throws[1].value;
-            this.pinCounts[pinsLeft]++;
-          } else if (throws[0].value + throws[1].value === 10) {
-            const pinsLeft = 10 - throws[0].value;
-            this.pinCounts[pinsLeft]++;
-          }
-        }
-      });
-
-      // Additional logic for counting strikes in the 10th frame
-      if (game.frames.length === 10) {
-        const tenthFrame = game.frames[9];
-        const throws = tenthFrame.throws;
-        if (throws.length === 3 && throws[0].value === 10 && throws[1]?.value === 10) {
-          this.totalStrikes += 2; // Increment by 2 if both throws are strikes
-        } else if (throws.length === 3 && throws[0].value === 10) {
-          this.totalStrikes++; // Increment by 1 if first throw is a strike
-        }
+    gameHistory.forEach((game: { frames: any[]; totalScore: number }) => {
+      if (game.totalScore === 300) {
+        this.perfectGameCount++;
       }
 
-      game.frames.forEach(frame => {
+      let isCleanGame = true;
+
+      game.frames.forEach((frame, index) => {
         const throws = frame.throws;
-        if (throws.length === 2 && throws[0].value + throws[1].value !== 10) {
-          const pinsLeft = 10 - throws[0].value;
-          this.missedCounts[pinsLeft]++;
+
+        // Count the first throw in each frame for firstThrowAverage
+        firstThrowCount += parseInt(throws[0].value);
+
+        // Count strikes
+        if (throws[0].value === 10) {
+          this.totalStrikes++;
+          // Additional logic for counting strikes in the 10th frame
+          if (index === 9) {
+            if (throws[1]?.value === 10) {
+              this.totalStrikes++; // Increment by 1 if second throw is also a strike
+              if (throws[2]?.value === 10) {
+                this.totalStrikes++; // Increment by 1 if third throw is also a strike
+              }
+            }
+          }
+        } else if (index === 9 && throws.length === 3) {
+          if (throws[2]?.value === 10) {
+            this.totalStrikes++; // Increment by 1 if third throw is a strike
+          }
+        }
+
+        // Handle pin counts for spares
+        if (throws.length === 2) {
+          if (throws[0].value + throws[1].value === 10) {
+            const pinsLeft = 10 - throws[0].value;
+            this.pinCounts[pinsLeft]++;
+          } else {
+            const pinsLeft = 10 - throws[0].value;
+            this.missedCounts[pinsLeft]++;
+          }
+        } else if (throws.length === 3) {
+          // Check for spares in the first two throws
+          if (throws[0].value !== 10 && throws[0].value + throws[1].value === 10) {
+            const pinsLeft = 10 - throws[0].value;
+            this.pinCounts[pinsLeft]++;
+          } else if (throws[1].value !== 10 && throws[1].value + throws[2].value === 10) {
+            const pinsLeft = 10 - throws[1].value;
+            this.pinCounts[pinsLeft]++;
+          }
+
+          // Check for missed pins
+          if (throws[0].value !== 10 && throws[0].value + throws[1].value !== 10) {
+            const pinsLeft = 10 - throws[0].value;
+            this.missedCounts[pinsLeft]++;
+          }
+          if (throws[1].value !== 10 && throws[0].value + throws[1].value !== 10 && throws[1].value + throws[2].value !== 10) {
+            const pinsLeft = 10 - throws[1].value;
+            this.missedCounts[pinsLeft]++;
+          }
+        }
+
+        // Check if the current frame has a score of less than 10
+        const frameScore = throws.reduce((acc: any, curr: { value: any }) => acc + curr.value, 0);
+        if (frameScore < 10) {
+          isCleanGame = false; // If any frame is less than 10, the game is not clean
         }
       });
 
-      game.frames.forEach(frame => {
-        const throws = frame.throws;
-        firstThrowCount += throws[0].value;
-      });
+      if (isCleanGame) {
+        this.cleanGameCount++;
+      }
     });
 
     for (let i = 1; i <= 10; i++) {
@@ -96,30 +173,84 @@ export class GameStatsService {
     this.averageScore = this.getAverage(gameHistory);
     this.highGame = this.getGameWithHighestScore(gameHistory);
 
-    const totalFrames = gameHistory.length * 10;
+    const totalFrames = this.totalGames * 10;
     const strikeChances = gameHistory.length * 12;
 
-    this.averageStrikesPerGame = this.totalStrikes / gameHistory.length;
-    this.averageSparesPerGame = this.totalSpares / gameHistory.length;
-    this.averageOpensPerGame = this.totalOpens / gameHistory.length;
+    this.averageStrikesPerGame = this.totalStrikes / this.totalGames;
+    this.averageSparesPerGame = this.totalSpares / this.totalGames;
+    this.averageOpensPerGame = this.totalSparesMissed / this.totalGames;
 
     this.strikePercentage = (this.totalStrikes / strikeChances) * 100;
     this.sparePercentage = (this.totalSpares / totalFrames) * 100;
-    this.openPercentage = (this.totalOpens / totalFrames) * 100;
-    
+    this.openPercentage = (this.totalSparesMissed / totalFrames) * 100;
+
     this.averageFirstCount = firstThrowCount / totalFrames;
+
+    this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
+    this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
+
+    if (lastComparisonDate === '0') {
+      if (this.totalGames > 0) {
+        this.prevStats = {
+          strikePercentage: this.strikePercentage,
+          sparePercentage: this.sparePercentage,
+          openPercentage: this.openPercentage,
+          averageStrikesPerGame: this.averageStrikesPerGame,
+          averageSparesPerGame: this.averageSparesPerGame,
+          averageOpensPerGame: this.averageOpensPerGame,
+          averageFirstCount: this.averageFirstCount,
+          cleanGameCount: this.cleanGameCount,
+          perfectGameCount: this.perfectGameCount,
+          averageScore: this.averageScore,
+          overallSpareRate: this.overallSpareRate,
+          spareRates: this.spareRates,
+        };
+      } else {
+        this.prevStats = {
+          strikePercentage: 0,
+          sparePercentage: 0,
+          openPercentage: 0,
+          averageStrikesPerGame: 0,
+          averageSparesPerGame: 0,
+          averageOpensPerGame: 0,
+          averageFirstCount: 0,
+          cleanGameCount: 0,
+          perfectGameCount: 0,
+          averageScore: 0,
+          overallSpareRate: 0,
+          spareRates: Array(11).fill(0),
+        };
+      }
+      localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
+      localStorage.setItem('lastComparisonDate', lastGameDate.toString());
+    }
   }
 
-  getAverage(gameHistory: Game[]): number {
+  private getRate(converted: number, missed: number): number {
+    if (converted + missed === 0) {
+      return 0;
+    }
+    return (converted / (converted + missed)) * 100;
+  }
+
+  private isSameDay(timestamp1: number, timestamp2: number): boolean {
+    const date1 = new Date(timestamp1);
+    const date2 = new Date(timestamp2);
+
+    // Compare day, month, and year
+    return (
+      date1.getDate() === date2.getDate() &&
+      date1.getMonth() === date2.getMonth() && // Months are 0-based, so no need to adjust here
+      date1.getFullYear() === date2.getFullYear()
+    );
+  }
+
+  private getAverage(gameHistory: Game[]): number {
     this.totalScoreSum = gameHistory.reduce((sum, game) => sum + game.totalScore, 0);
     return this.totalScoreSum / gameHistory.length;
   }
 
-  private countOccurrences(frames: any[], condition: (frame: any) => boolean): number {
-    return frames.reduce((acc, frame) => acc + (condition(frame) ? 1 : 0), 0);
-  }
-
-  getGameWithHighestScore(gameHistory: Game[]): number {
+  private getGameWithHighestScore(gameHistory: Game[]): number {
     let highestScore = -1;
 
     gameHistory.forEach((game: { totalScore: number }) => {

@@ -1,108 +1,49 @@
 import { Injectable } from '@angular/core';
-import { BlobServiceClient, ContainerClient } from "@azure/storage-blob";
 import { environment } from 'src/environments/environment';
-
-import { ComputerVisionClient } from '@azure/cognitiveservices-computervision';
-import { ApiKeyCredentials } from '@azure/ms-rest-js';
-import { ReadResult, ReadOperationResult } from '@azure/cognitiveservices-computervision/esm/models';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImageProcesserService {
-  subKey: string = environment.key;
-  endPointUrl: string = environment.endPoint;
-  computerVisionClient = new ComputerVisionClient(
-    new ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': this.subKey } }), this.endPointUrl);
-  sasUrl: string = environment.sasUrl
-  url: string = environment.imagesUrl;
-  containerClient: ContainerClient;
-  imageUrl: any;
-
-  constructor() {
-    const blobServiceClient = new BlobServiceClient(this.sasUrl);
-    this.containerClient = blobServiceClient.getContainerClient("images");
-  }
+  constructor() {}
 
   async performOCR(image: File): Promise<string> {
-    const imageUrl = await this.uploadImageToStorage(image);
-    try {
-      const printedResult = await this.readTextFromURL(imageUrl);
-      const extractedText = this.printRecognizedText(printedResult);
-      return extractedText;
-    } catch (error) {
-      throw error;
-    }
-    finally {
-      await this.deleteImageFromStorage(imageUrl);
-    }
-  }
+    // Convert image file to base64 string
+    const reader = new FileReader();
 
-  async readTextFromURL(url: string): Promise<ReadResult[]> {
-    let result = await this.computerVisionClient.read(url);
-    let operation = result.operationLocation.split('/').slice(-1)[0];
+    return new Promise((resolve, reject) => {
+      reader.onloadend = async () => {
+        const base64Image = reader.result?.toString().split(',')[1]; // Remove the data URL prefix
 
-    // Continuously check the status until it succeeds, sleep 1 sec against excessive API Calls
-    let readOperationResult: ReadOperationResult;
-    do {
-      await this.sleep(1000);
-      readOperationResult = await this.computerVisionClient.getReadResult(operation);
-    } while (readOperationResult.status !== "succeeded");
-
-    return readOperationResult.analyzeResult!.readResults;
-  }
-
-  sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  printRecognizedText(readResults: any[]): string {
-    let recognizedText = ''; 
-    try {
-      for (const page in readResults) {
-        if (readResults.length > 1) {
-          recognizedText += `==== Page: ${page}\n`;
+        if (!base64Image) {
+          reject(new Error('Failed to convert image to base64.'));
+          return;
         }
-        const result = readResults[page];
-        if (result.lines.length) {
-          for (const line of result.lines) {
-            const lineText = line.words.map((w: { text: any; }) => w.text).join(' ');
-            if (lineText.toLowerCase().includes('player')) {
-              return recognizedText; // Exit and return the recognized text
-            }
-            recognizedText += lineText + '\n'; // Append line text to recognized text
+
+        try {
+          const response = await fetch(environment.endPoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: base64Image }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
           }
-        } else {
-          throw new Error('No recognized text');
+
+          const extractedText = await response.text();
+          resolve(extractedText);
+        } catch (error) {
+          reject(error);
         }
-      }
-    } catch (error) {
-      throw new Error('Error while processing recognized text: ' + error);
-    }
-    return recognizedText; 
-  }
+      };
 
+      reader.onerror = () => {
+        reject(new Error('Failed to read the image file.'));
+      };
 
-  async uploadImageToStorage(imageFile: File): Promise<string> {
-    try {
-      const blobName = 'bowling' + Date.now().toString();
-      const blockBlobClient = this.containerClient.getBlockBlobClient(blobName);
-      await blockBlobClient.uploadData(imageFile);
-      this.imageUrl = this.url + blobName;
-      return this.imageUrl;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async deleteImageFromStorage(imageUrl: string): Promise<void> {
-    try {
-      const blobName = imageUrl.substring(this.url.length);
-      const blockBlobClient = this.containerClient.getBlockBlobClient(blobName);
-      await blockBlobClient.delete();
-    } catch (error) {
-      throw error;
-    }
+      reader.readAsDataURL(image);
+    });
   }
 }
-
-

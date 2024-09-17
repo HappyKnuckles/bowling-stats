@@ -3,7 +3,7 @@ import { Game } from 'src/app/models/game-model';
 import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GameHistoryService {
   constructor(private storage: Storage) {
@@ -25,10 +25,9 @@ export class GameHistoryService {
     return gameHistory;
   }
 
-  async sortGameHistoryByDate(gameHistory: Game[]): Promise<void> {
+  sortGameHistoryByDate(gameHistory: Game[]): void {
     gameHistory.sort((a: { date: number }, b: { date: number }) => {
       return a.date - b.date;
     });
   }
 }
-

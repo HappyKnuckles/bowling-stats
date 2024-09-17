@@ -3,7 +3,7 @@ import { Game } from 'src/app/models/game-model';
 import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SaveGameDataService {
   newDataAdded = new EventEmitter<void>();
@@ -15,6 +15,14 @@ export class SaveGameDataService {
 
   async init() {
     await this.storage.create();
+  }
+
+  async saveGamesToLocalStorage(gameData: Game[]): Promise<void> {
+    for (const game of gameData) {
+      const key = 'game' + game.gameId; // Generate key using index
+      await this.storage.set(key, game);
+    }
+    this.newDataAdded.emit();
   }
 
   async saveGameToLocalStorage(gameData: Game): Promise<void> {

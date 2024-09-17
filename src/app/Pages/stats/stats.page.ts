@@ -271,13 +271,14 @@ export class StatsPage implements OnInit, OnDestroy {
 
   onSegmentChanged(event: any) {
     this.selectedSegment = event.detail.value;
+    // Maybe disable loopPreventsSliding (slide bug when sliding only with segment)
     this.swiperInstance?.slideTo(this.getSlideIndex(this.selectedSegment));
     this.generateCharts();
   }
 
   onSlideChanged() {
     if (this.swiperInstance) {
-      const activeIndex = this.swiperInstance.activeIndex;
+      const activeIndex = this.swiperInstance.realIndex;
       this.selectedSegment = this.getSegmentValue(activeIndex);
       this.generateCharts();
     }

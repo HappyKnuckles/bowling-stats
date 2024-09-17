@@ -26,7 +26,7 @@
 
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechangetransitionstart)="onSlideChanged()">
+    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechangetransitionstart)="onSlideChanged()" loop="true" centeredSlides="true">
       <!-- Overall Segment -->
       <swiper-slide class="tab">
         <div class="stats">

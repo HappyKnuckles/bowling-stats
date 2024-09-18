@@ -76,6 +76,7 @@ export class StatsPage implements OnInit, OnDestroy {
     perfectGameCount: 0,
     averageScore: 0,
     overallSpareRate: 0,
+    overallMissedRate: 0,
     spareRates: [] as number[],
   };
   // Stats
@@ -103,6 +104,7 @@ export class StatsPage implements OnInit, OnDestroy {
   missedCounts: number[] = Array(11).fill(0);
   spareRates: number[] = [];
   overallSpareRate: number = 0;
+  overallMissedRate: number = 0;
   totalMissed: number = 0;
   totalConverted: number = 0;
 
@@ -219,6 +221,7 @@ export class StatsPage implements OnInit, OnDestroy {
         highGame,
         spareRates,
         overallSpareRate,
+        overallMissedRate
       } = this.statsService;
 
       this.totalGames = totalGames;
@@ -242,6 +245,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.highGame = highGame;
       this.spareRates = spareRates;
       this.overallSpareRate = overallSpareRate;
+      this.overallMissedRate = overallMissedRate;
 
       const prevStats = localStorage.getItem('prevStats');
       if (prevStats) {

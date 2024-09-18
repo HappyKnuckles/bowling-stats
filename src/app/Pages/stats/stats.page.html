@@ -191,16 +191,16 @@
         <div class="stats">
           <ion-text>Spare-percentage: </ion-text>
           <ion-text class="value" id="sparePercentage">
-            {{ sparePercentage | number:'1.2-2' }}%
+            {{ overallSpareRate | number:'1.2-2' }}%
             <ion-icon
-              *ngIf="getArrowIcon(sparePercentage, prevStats.sparePercentage)"
-              [name]="getArrowIcon(sparePercentage, prevStats.sparePercentage)"
-              [color]="getDiffColor(sparePercentage, prevStats.sparePercentage)">
+              *ngIf="getArrowIcon(overallSpareRate, prevStats.overallSpareRate)"
+              [name]="getArrowIcon(overallSpareRate, prevStats.overallSpareRate)"
+              [color]="getDiffColor(overallSpareRate, prevStats.overallSpareRate)">
             </ion-icon>
           </ion-text>
-          <ion-popover class="diffPopover" trigger="sparePercentage" *ngIf="getStatDifference(sparePercentage, prevStats.sparePercentage) !== '0'">
-            <ion-text [color]="getDiffColor(sparePercentage, prevStats.sparePercentage)">
-              {{getStatDifference(sparePercentage, prevStats.sparePercentage)}}
+          <ion-popover class="diffPopover" trigger="sparePercentage" *ngIf="getStatDifference(overallSpareRate, prevStats.overallSpareRate) !== '0'">
+            <ion-text [color]="getDiffColor(overallSpareRate, prevStats.overallSpareRate)">
+              {{getStatDifference(overallSpareRate, prevStats.overallSpareRate)}}
             </ion-text>
           </ion-popover>
         </div>
@@ -232,16 +232,16 @@
         <div class="stats">
           <ion-text>Open-percentage: </ion-text>
           <ion-text class="value" id="openPercentage">
-            {{ openPercentage | number:'1.2-2' }}%
+            {{ overallMissedRate | number:'1.2-2' }}%
             <ion-icon
-              *ngIf="getArrowIcon(openPercentage, prevStats.openPercentage)"
-              [name]="getArrowIcon(openPercentage, prevStats.openPercentage)"
-              [color]="getDiffColor(openPercentage, prevStats.openPercentage)">
+              *ngIf="getArrowIcon(overallMissedRate, prevStats.overallMissedRate)"
+              [name]="getArrowIcon(overallMissedRate, prevStats.overallMissedRate)"
+              [color]="getDiffColor(overallMissedRate, prevStats.overallMissedRate)">
             </ion-icon>
           </ion-text>
-          <ion-popover class="diffPopover" trigger="openPercentage" *ngIf="getStatDifference(openPercentage, prevStats.openPercentage) !== '0'">
-            <ion-text [color]="getDiffColor(openPercentage, prevStats.openPercentage)">
-              {{getStatDifference(openPercentage, prevStats.openPercentage)}}
+          <ion-popover class="diffPopover" trigger="openPercentage" *ngIf="getStatDifference(overallMissedRate, prevStats.overallMissedRate) !== '0'">
+            <ion-text [color]="getDiffColor(overallMissedRate, prevStats.overallMissedRate)">
+              {{getStatDifference(overallMissedRate, prevStats.overallMissedRate)}}
             </ion-text>
           </ion-popover>
         </div>

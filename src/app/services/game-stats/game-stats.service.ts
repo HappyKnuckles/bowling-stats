@@ -18,6 +18,7 @@ export class GameStatsService {
     perfectGameCount: 0,
     averageScore: 0,
     overallSpareRate: 0,
+    overallMissedRate: 0,
     spareRates: [] as number[],
   };
 
@@ -44,6 +45,7 @@ export class GameStatsService {
   highGame: number = 0;
   spareRates: number[] = [];
   overallSpareRate: number = 0;
+  overallMissedRate: number = 0;
 
   constructor() {}
 
@@ -73,6 +75,7 @@ export class GameStatsService {
           averageScore: this.averageScore,
           overallSpareRate: this.overallSpareRate,
           spareRates: this.spareRates,
+          overallMissedRate: this.overallMissedRate,
         };
 
         localStorage.setItem('prevStats', JSON.stringify(this.prevStats));
@@ -188,6 +191,7 @@ export class GameStatsService {
 
     this.spareRates = this.pinCounts.map((pinCount, i) => this.getRate(pinCount, this.missedCounts[i]));
     this.overallSpareRate = this.getRate(this.totalSparesConverted, this.totalSparesMissed);
+    this.overallMissedRate = this.totalSparesMissed > 0 ? 100 - this.overallSpareRate : 0;
 
     if (lastComparisonDate === '0') {
       if (this.totalGames > 0) {
@@ -204,6 +208,7 @@ export class GameStatsService {
           averageScore: this.averageScore,
           overallSpareRate: this.overallSpareRate,
           spareRates: this.spareRates,
+          overallMissedRate: this.overallMissedRate,
         };
       } else {
         this.prevStats = {
@@ -219,6 +224,7 @@ export class GameStatsService {
           averageScore: 0,
           overallSpareRate: 0,
           spareRates: Array(11).fill(0),
+          overallMissedRate: 0,
         };
       }
       localStorage.setItem('prevStats', JSON.stringify(this.prevStats));

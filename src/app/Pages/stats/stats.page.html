@@ -30,9 +30,8 @@
       [modules]="swiperModules"
       #swiper
       [slidesPerView]="1"
-      (swiperslidechangetransitionstart)="onSlideChanged()"
-      loop="true"
-      centeredSlides="true">
+      (swiperslidechange)="onSlideChanged()"
+      loop="true">
       <!-- Overall Segment -->
       <swiper-slide class="tab">
         <div class="stats">

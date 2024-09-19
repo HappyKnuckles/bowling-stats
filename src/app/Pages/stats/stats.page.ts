@@ -63,6 +63,10 @@ import { arrowDown, arrowUp } from 'ionicons/icons';
 })
 export class StatsPage implements OnInit, OnDestroy {
   swiperModules = [IonicSlides];
+
+  // used to only generate charts when value is changed
+  statsValueChanged: boolean[] = [true, true, true];
+
   // Previous Stats
   prevStats = {
     strikePercentage: 0,
@@ -221,7 +225,7 @@ export class StatsPage implements OnInit, OnDestroy {
         highGame,
         spareRates,
         overallSpareRate,
-        overallMissedRate
+        overallMissedRate,
       } = this.statsService;
 
       this.totalGames = totalGames;
@@ -278,17 +282,20 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   onSegmentChanged(event: any) {
-    this.selectedSegment = event.detail.value;
-    // Maybe disable loopPreventsSliding (slide bug when sliding only with segment)
-    this.swiperInstance?.slideTo(this.getSlideIndex(this.selectedSegment));
-    this.generateCharts();
+    if (this.swiperInstance) {
+      this.selectedSegment = event.detail.value;
+      const activeIndex = this.getSlideIndex(this.selectedSegment);
+      // Maybe disable loopPreventsSliding (slide bug when sliding only with segment)
+      this.swiperInstance.slideToLoop(activeIndex);
+      this.generateCharts(activeIndex);
+    }
   }
 
   onSlideChanged() {
     if (this.swiperInstance) {
       const activeIndex = this.swiperInstance.realIndex;
       this.selectedSegment = this.getSegmentValue(activeIndex);
-      this.generateCharts();
+      this.generateCharts(activeIndex);
     }
   }
 
@@ -318,14 +325,18 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  generateCharts() {
-    if (this.gameHistory.length > 0) {
+  generateCharts(index?: number) {
+    if (this.gameHistory.length > 0 && (index === undefined || this.statsValueChanged[index])) {
       if (this.selectedSegment === 'default') {
         this.generateScoreChart();
       } else if (this.selectedSegment === 'spares') {
         this.generatePinChart();
       } else if (this.selectedSegment === 'throws') {
         this.generateThrowChart();
+      }
+
+      if (index !== undefined) {
+        this.statsValueChanged[index] = false;
       }
     }
   }
@@ -336,6 +347,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.loadDataAndCalculateStats()
         .then(() => {
           this.generateCharts();
+          this.statsValueChanged = [true, true, true];
         })
         .catch((error) => {
           console.error('Error loading data and calculating stats:', error);
@@ -347,6 +359,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.loadDataAndCalculateStats()
         .then(() => {
           this.generateCharts();
+          this.statsValueChanged = [true, true, true];
         })
         .catch((error) => {
           console.error('Error loading data and calculating stats:', error);
@@ -460,11 +473,11 @@ export class StatsPage implements OnInit, OnDestroy {
 
   //TODO adjust look of this
   generatePinChart(): void {
-    const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
-
     if (!this.pinChart) {
       return;
     }
+
+    const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
 
     const ctx = this.pinChart.nativeElement;
     if (this.pinChartInstance) {
@@ -585,11 +598,11 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   generateScoreChart(): void {
-    const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
-
     if (!this.scoreChart) {
       return;
     }
+
+    const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
 
     const ctx = this.scoreChart.nativeElement;
     if (this.scoreChartInstance) {
@@ -716,11 +729,11 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   generateThrowChart(): void {
-    const { opens, spares, strikes } = this.calculateThrowChartData();
-
     if (!this.throwChart) {
       return;
     }
+
+    const { opens, spares, strikes } = this.calculateThrowChartData();
 
     const ctx = this.throwChart.nativeElement;
     if (this.throwChartInstance) {

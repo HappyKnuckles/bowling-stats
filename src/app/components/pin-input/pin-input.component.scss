@@ -1,14 +1,42 @@
-.actionSheet {
-  ion-button {
-    background: none;
+.bowling-setup {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  margin: 1em 0 1em;
 
-    --background-activated: none;
+  .pin-row {
+    display: flex;
+    justify-content: center;
+    margin: 5px 0;
   }
 
-  .chevron {
-    margin-left: 5px;
-    font-size: 15px;
+  .pin {
+    width: 20vmin;
+    height: 20vmin;
+    background-color: #f0f0f0;
+    border: 2px solid red;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+    color: black;
   }
+
+  .pressed {
+    background-color: gray;
+  }
+}
+
+.pin.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.active-input {
+  border: 2px solid var(--ion-color-primary);
+  box-shadow: 0 0 3px var(--ion-color-primary);
 }
 
 .inputCol {

@@ -36,6 +36,7 @@ import { GameDataTransformerService } from 'src/app/services/transform-game/tran
 import { UserService } from 'src/app/services/user/user.service';
 import { defineCustomElements } from '@teamhive/lottie-player/loader';
 import { InputMode } from './mode-enum';
+import { PinInputComponent } from "../../components/pin-input/pin-input.component";
 
 defineCustomElements(window);
 
@@ -62,7 +63,8 @@ defineCustomElements(window);
     IonButtons,
     IonInput,
     CommonModule,
-  ],
+    PinInputComponent
+],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AddGamePage implements OnInit {
@@ -80,18 +82,9 @@ export class AddGamePage implements OnInit {
   username = '';
   gameData!: Game;
   inputMode: InputMode = InputMode.Pins;
-  currentFrame = 0;
-  currentThrow = 0;
-  maxFrames = 10;
-  maxThrows = 2; // Two throws per frame (except for frame 10)
-  pinsKnockedDown = 0;
-  gameDatas: { throws: (number | null)[] }[] = Array(10).fill(null).map(() => ({ throws: [null, null, null] }));
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
   @ViewChild(IonModal) modal!: IonModal;
-  pressedPins: Set<number> = new Set();
-  firstThrowPins = new Set<number>();
-  activeFrame = 0;
-  activeThrow = 0;
+
   constructor(
     private actionSheetCtrl: ActionSheetController,
     private imageProcessingService: ImageProcesserService,
@@ -125,73 +118,6 @@ export class AddGamePage implements OnInit {
       });
       fileInput.click();
     });
-  }
-
-  pressPin(pinNumber: number) {
-    if (this.pressedPins.has(pinNumber)) {
-      this.pressedPins.delete(pinNumber);
-    } else {
-      // Only allow pressing pins that weren't knocked down in the first throw
-      if (this.currentThrow === 1 && this.firstThrowPins.has(pinNumber)) {
-        return; // Do not allow pressing already knocked down pins in the second throw
-      }
-      this.pressedPins.add(pinNumber);
-    }
-
-    this.pinsKnockedDown = this.pressedPins.size;
-  }
-
-  // Save current throw and advance
-  confirmThrow() {
-    const throws = this.gameDatas[this.currentFrame].throws;
-    throws[this.currentThrow] = this.pinsKnockedDown;  // Save the number of knocked-down pins
-
-    // Move to next throw/frame
-    if (this.isTenthFrame()) {
-      if (this.currentThrow < 2) {
-        this.currentThrow++;
-      }
-    } else if (this.currentThrow === 0) {
-      this.firstThrowPins = new Set(this.pressedPins); // Save the pins pressed in the first throw
-      this.currentThrow++;
-      this.pressedPins.clear(); // Clear pressed pins for the second throw
-      this.pinsKnockedDown = 0; // Reset pins knocked down for the second throw
-    } else {
-      this.currentThrow = 0;
-      this.currentFrame++;
-      this.resetPins(); // Move to the next frame and reset pins
-    }
-
-    // Set the next active frame and throw
-    this.setActiveFrameThrow(this.currentFrame, this.currentThrow);
-  }
-
-  setActiveFrameThrow(frameIndex: number, throwIndex: number) {
-    this.activeFrame = frameIndex;
-    this.activeThrow = throwIndex;
-  }
-
-  // Method to determine if an input is active
-  isActiveInput(frameIndex: number, throwIndex: number): boolean {
-    return this.activeFrame === frameIndex && this.activeThrow === throwIndex;
-  }
-
-  resetPins() {
-    this.pressedPins.clear();
-    this.firstThrowPins.clear();
-    this.pinsKnockedDown = 0;
-  }
-
-  isTenthFrame() {
-    return this.currentFrame === 9;
-  }
-
-  clearFrames2() {
-    this.gameDatas = Array.from({ length: 10 }, () => ({ throws: [null, null, null] }));
-    this.currentThrow = 0;
-    this.currentFrame = 0;
-    this.setActiveFrameThrow(this.currentFrame, this.currentThrow);
-    this.resetPins();
   }
 
   async takeOrChoosePicture(): Promise<File | Blob | undefined> {

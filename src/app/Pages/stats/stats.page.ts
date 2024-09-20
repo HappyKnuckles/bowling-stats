@@ -31,7 +31,7 @@ import { FormsModule } from '@angular/forms';
 import { Swiper } from 'swiper';
 import { IonicSlides } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowDown, arrowUp } from 'ionicons/icons';
+import { arrowDown, arrowUp, calendarNumber, calendarNumberOutline } from 'ionicons/icons';
 import { StatDisplayComponent } from 'src/app/components/stat-display/stat-display.component';
 
 @Component({
@@ -121,8 +121,8 @@ export class StatsPage implements OnInit, OnDestroy {
   gameHistory: Game[] = [];
   gameHistoryChanged: boolean = true;
   isLoading: boolean = false;
-  selectedSegment: string = 'default';
-  segments: string[] = ['Overall', 'Spares', 'Throws', 'Session'];
+  selectedSegment: string = 'Overall';
+  segments: string[] = ['Overall', 'Spares', 'Throws', 'Sessions'];
 
   sessionStats: GameStats = {
     totalGames: 0,
@@ -198,7 +198,7 @@ export class StatsPage implements OnInit, OnDestroy {
     this.sessionStatSubscription = this.statsService.sessionStats$.subscribe((stats) => {
       this.sessionStats = stats;
     });
-    addIcons({ arrowUp, arrowDown });
+    addIcons({ arrowUp, arrowDown, calendarNumberOutline, calendarNumber });
   }
 
   async ngOnInit(): Promise<void> {
@@ -246,7 +246,6 @@ export class StatsPage implements OnInit, OnDestroy {
   onDateChange(event: any): void {
     const selectedDate = event.target.value;
     this.statsService.calculateStatsBasedOnDate(this.gameHistory, selectedDate);
-    // this.sessionStats = this.statsService.sessionStats;
   }
 
   onSegmentChanged(event: any) {
@@ -254,7 +253,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.selectedSegment = event.detail.value;
       const activeIndex = this.getSlideIndex(this.selectedSegment);
       // Maybe disable loopPreventsSliding (slide bug when sliding only with segment)
-      this.swiperInstance.slideToLoop(activeIndex);
+      this.swiperInstance.slideTo(activeIndex);
       this.generateCharts(activeIndex);
     }
   }
@@ -328,7 +327,6 @@ export class StatsPage implements OnInit, OnDestroy {
 
         if (this.selectedDate) {
           this.statsService.calculateStatsBasedOnDate(this.gameHistory, this.selectedDate);
-          this.sessionStats = this.statsService.sessionStats;
         }
 
         this.gameHistoryChanged = false; // Reset the flag

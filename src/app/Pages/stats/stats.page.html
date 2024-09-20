@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title> Stats </ion-title>
   </ion-toolbar>
-  <ion-segment [(ngModel)]="selectedSegment" value="Overall" (ionChange)="onSegmentChanged($event)">
+  <ion-segment [(ngModel)]="selectedSegment" (ionChange)="onSegmentChanged($event)">
     <ion-segment-button *ngFor="let segment of segments" [value]="segment">
       <ion-label class="segmentLabel">{{segment}}</ion-label>
     </ion-segment-button>
@@ -20,7 +20,7 @@
 
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechange)="onSlideChanged()" loop="true">
+    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechange)="onSlideChanged()" [autoheight]="true">
       <!-- Overall Segment -->
       <swiper-slide class="tab">
         <app-stat-display label="Games" [currentStat]="stats.totalGames" id="totalGames"></app-stat-display>
@@ -56,7 +56,8 @@
           label="Strike-percentage"
           [currentStat]="stats.strikePercentage"
           [prevStat]="prevStats.strikePercentage"
-          [id]="'strikePercentage'"></app-stat-display>
+          [id]="'strikePercentage'"
+          [isPercentage]="true"></app-stat-display>
         <app-stat-display label="Total spares" [currentStat]="stats.totalSpares" id="totalSpares"></app-stat-display>
         <app-stat-display
           label="Spares per game"
@@ -67,7 +68,8 @@
           label="Spare-percentage"
           [currentStat]="stats.overallSpareRate"
           [prevStat]="prevStats.overallSpareRate"
-          [id]="'sparePercentage'"></app-stat-display>
+          [id]="'sparePercentage'"
+          [isPercentage]="true"></app-stat-display>
         <app-stat-display label="Total opens" [currentStat]="stats.totalSparesMissed" id="totalSparesMissed"></app-stat-display>
         <app-stat-display
           label="Opens per game"
@@ -78,7 +80,8 @@
           label="Open-percentage"
           [currentStat]="stats.overallMissedRate"
           [prevStat]="prevStats.overallMissedRate"
-          [id]="'openPercentage'"></app-stat-display>
+          [id]="'openPercentage'"
+          [isPercentage]="true"></app-stat-display>
         <canvas #scoreChart class="score" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 
@@ -160,28 +163,77 @@
         <canvas #throwChart class="throws" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 
-      <swiper-slide class="tab">
-        <ion-item style="font-size: 20px;">
-          <ion-select label="Session date" [(ngModel)]="selectedDate" (ionChange)="onDateChange($event)">
-            <ion-select-option *ngFor="let unixDate of uniqueSortedDates" [value]="unixDate"> {{ (unixDate | date: 'dd.MM.yy') }} </ion-select-option>
+      <swiper-slide>
+        <div style="font-size: 20px; padding: 5px 15px 0 20px; box-shadow: 0px 0px 3px 0px; border-radius: 0 0 3px 3px">
+          <ion-select
+            label="Session date"
+            toggleIcon="calendar-number-outline"
+            expandedIcon="calendar-number"
+            [(ngModel)]="selectedDate"
+            (ionChange)="onDateChange($event)">
+            <ion-select-option *ngFor="let unixDate of uniqueSortedDates" [value]="unixDate">
+              {{ (unixDate | date:'dd.MM.yyyy') }}
+            </ion-select-option>
           </ion-select>
-        </ion-item>
-        <app-stat-display label="Games" [currentStat]="sessionStats.totalGames"></app-stat-display>
-        <app-stat-display label="Clean games" [currentStat]="sessionStats.cleanGameCount"></app-stat-display>
-        <app-stat-display label="Perfect games" [currentStat]="sessionStats.perfectGameCount"></app-stat-display>
-        <app-stat-display label="Average" [currentStat]="sessionStats.averageScore"></app-stat-display>
-        <app-stat-display label="High game" [currentStat]="sessionStats.highGame"></app-stat-display>
-        <app-stat-display label="Total pins" [currentStat]="sessionStats.totalPins"></app-stat-display>
-        <app-stat-display label="First ball average" [currentStat]="sessionStats.averageFirstCount"></app-stat-display>
-        <app-stat-display label="Total strikes" [currentStat]="sessionStats.totalStrikes"></app-stat-display>
-        <app-stat-display label="Strikes per game" [currentStat]="sessionStats.averageStrikesPerGame"></app-stat-display>
-        <app-stat-display label="Strike-percentage" [currentStat]="sessionStats.strikePercentage"></app-stat-display>
-        <app-stat-display label="Total spares" [currentStat]="sessionStats.totalSpares"></app-stat-display>
-        <app-stat-display label="Spares per game" [currentStat]="sessionStats.averageSparesPerGame"></app-stat-display>
-        <app-stat-display label="Spare-percentage" [currentStat]="sessionStats.overallSpareRate"></app-stat-display>
-        <app-stat-display label="Total opens" [currentStat]="sessionStats.totalSparesMissed"></app-stat-display>
-        <app-stat-display label="Opens per game" [currentStat]="sessionStats.averageOpensPerGame"></app-stat-display>
-        <app-stat-display label="Open-percentage" [currentStat]="sessionStats.overallMissedRate"></app-stat-display>
+        </div>
+        <swiper-container [nested]="true" [modules]="swiperModules" #swipernest>
+          <swiper-slide class="tab">
+            <app-stat-display label="Games" [currentStat]="sessionStats.totalGames"></app-stat-display>
+            <app-stat-display label="Clean games" [currentStat]="sessionStats.cleanGameCount"></app-stat-display>
+            <app-stat-display label="Perfect games" [currentStat]="sessionStats.perfectGameCount"></app-stat-display>
+            <app-stat-display label="Average" [currentStat]="sessionStats.averageScore"></app-stat-display>
+            <app-stat-display label="High game" [currentStat]="sessionStats.highGame"></app-stat-display>
+            <app-stat-display label="Total pins" [currentStat]="sessionStats.totalPins"></app-stat-display>
+            <app-stat-display label="First ball average" [currentStat]="sessionStats.averageFirstCount"></app-stat-display>
+            <app-stat-display label="Total strikes" [currentStat]="sessionStats.totalStrikes"></app-stat-display>
+            <app-stat-display label="Strikes per game" [currentStat]="sessionStats.averageStrikesPerGame"></app-stat-display>
+            <app-stat-display label="Strike-percentage" [currentStat]="sessionStats.strikePercentage" [isPercentage]="true"></app-stat-display>
+            <app-stat-display label="Total spares" [currentStat]="sessionStats.totalSpares"></app-stat-display>
+            <app-stat-display label="Spares per game" [currentStat]="sessionStats.averageSparesPerGame"></app-stat-display>
+            <app-stat-display label="Spare-percentage" [currentStat]="sessionStats.overallSpareRate" [isPercentage]="true"></app-stat-display>
+            <app-stat-display label="Total opens" [currentStat]="sessionStats.totalSparesMissed"></app-stat-display>
+            <app-stat-display label="Opens per game" [currentStat]="sessionStats.averageOpensPerGame"></app-stat-display>
+            <app-stat-display label="Open-percentage" [currentStat]="sessionStats.overallMissedRate" [isPercentage]="true"></app-stat-display>
+          </swiper-slide>
+
+          <swiper-slide class="tab">
+            <ion-grid class="statGrid">
+              <ion-row style="font-weight: bold">
+                <ion-col><ion-text>Count</ion-text></ion-col>
+                <ion-col><ion-text>Missed</ion-text></ion-col>
+                <ion-col><ion-text>Converted</ion-text></ion-col>
+                <ion-col><ion-text>Rate</ion-text></ion-col>
+              </ion-row>
+              <ion-row *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+                <ion-col><ion-text>{{ getLabel(i) }}</ion-text></ion-col>
+                <!-- Display each pin count -->
+                <ng-container *ngIf="i > 0">
+                  <ion-col><ion-text>{{ sessionStats.missedCounts[i] }}</ion-text></ion-col>
+                  <ion-col><ion-text>{{ sessionStats.pinCounts[i] }}</ion-text></ion-col>
+                  <ion-col *ngIf="sessionStats.pinCounts[i] === 0 && sessionStats.missedCounts[i] === 0"></ion-col>
+                  <ion-col
+                    id="spareRates{{i}}"
+                    *ngIf="sessionStats.pinCounts[i] !== 0 || sessionStats.missedCounts[i] !== 0"
+                    [ngStyle]="{'color': getRateColor(sessionStats.spareRates[i])}">
+                    <ion-text>{{ sessionStats.spareRates[i] | number:'1.2-2' }}% </ion-text>
+                  </ion-col>
+                </ng-container>
+                <!-- Display total spares and conversion rate -->
+                <ng-container *ngIf="i === 0">
+                  <ion-col><ion-text>{{ sessionStats.totalSparesMissed }}</ion-text></ion-col>
+                  <ion-col><ion-text>{{ sessionStats.totalSparesConverted }}</ion-text></ion-col>
+                  <ion-col
+                    id="overallSpareRate"
+                    *ngIf="sessionStats.totalSparesMissed + sessionStats.totalSparesConverted !== 0"
+                    [ngStyle]="{'color': getRateColor(sessionStats.overallSpareRate)}">
+                    <ion-text>{{ sessionStats.overallSpareRate | number:'1.2-2' }}% </ion-text>
+                  </ion-col>
+                  <ion-col *ngIf="sessionStats.totalSparesMissed + sessionStats.totalSparesConverted === 0"></ion-col>
+                </ng-container>
+              </ion-row>
+            </ion-grid>
+          </swiper-slide>
+        </swiper-container>
       </swiper-slide>
     </swiper-container>
   </ng-template>

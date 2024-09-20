@@ -38,3 +38,7 @@ ion-segment {
   // --background: var(--ion-color-dark);
   --background: #252525;
 }
+
+ion-select::part(text) {
+  font-weight: 500;
+}

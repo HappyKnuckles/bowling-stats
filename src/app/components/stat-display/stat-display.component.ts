@@ -12,10 +12,11 @@ import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-numbe
   imports: [NgIf, IonText, NgStyle, IonIcon, ConditionalNumberPipe],
 })
 export class StatDisplayComponent implements OnChanges {
-  @Input() label!: string;
-  @Input() currentStat!: number;
+  @Input({ required: true }) label!: string;
+  @Input({ required: true }) currentStat!: number;
   @Input() prevStat?: number;
   @Input() id?: string;
+  @Input() isPercentage?: boolean;
 
   statDifference: string = '0';
 

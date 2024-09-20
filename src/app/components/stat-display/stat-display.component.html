@@ -1,7 +1,7 @@
 <div class="stats">
   <ion-text>{{ label }}: </ion-text>
   <ion-text class="value" [id]="id">
-    {{ currentStat | conditionalNumber }}
+    {{ currentStat | conditionalNumber }}<span *ngIf="isPercentage">%</span>
     <ion-icon *ngIf="getArrowIcon(currentStat, prevStat)" [name]="getArrowIcon(currentStat, prevStat)" [color]="getDiffColor(currentStat, prevStat)">
     </ion-icon>
   </ion-text>

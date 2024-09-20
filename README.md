@@ -17,6 +17,7 @@ The "Stats" page provides a comprehensive overview of your performance. Track ke
 
 ### Game History
 In the "History" section, you’ll find a detailed log of all your past games. Swipe right to share, swipe even further to edit, or swipe left to delete, . You can also export your game history to a readable Excel file or import games using the same format.
+
 <img src="src/assets/screenshots/history.png" alt="App Screenshot" width="300"/>
 
 

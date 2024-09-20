@@ -13,217 +13,72 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"></ion-refresher>
   <!-- Show this message if there are no game history items and it's not loading -->
   <ng-container *ngIf="gameHistory.length <= 0 && !isLoading; else content">
-    <ion-text
-      style="width: 60%; display: flex; justify-content: center; height: 100%; align-items: center; margin: 0 auto">
+    <ion-text style="width: 60%; display: flex; justify-content: center; height: 100%; align-items: center; margin: 0 auto">
       Start playing a few games to see your stats here!
     </ion-text>
   </ng-container>
 
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechange)="onSlideChanged()"
-      loop="true">
+    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechange)="onSlideChanged()" loop="true">
       <!-- Overall Segment -->
       <swiper-slide class="tab">
-        <div class="stats">
-          <ion-text>Games: </ion-text>
-          <ion-text class="value">{{ stats.totalGames }}</ion-text>
-        </div>
-
-        <div class="stats">
-          <ion-text>Clean games: </ion-text>
-          <ion-text class="value" id="cleanGameCount">
-            {{ stats.cleanGameCount }}
-            <ion-icon *ngIf="getArrowIcon(stats.cleanGameCount, prevStats.cleanGameCount)"
-              [name]="getArrowIcon(stats.cleanGameCount, prevStats.cleanGameCount)"
-              [color]="getDiffColor(stats.cleanGameCount, prevStats.cleanGameCount)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="cleanGameCount"
-            *ngIf="getStatDifference(stats.cleanGameCount, prevStats.cleanGameCount) !== '0'">
-            <ion-text [color]="getDiffColor(stats.cleanGameCount, prevStats.cleanGameCount)">
-              {{getStatDifference(stats.cleanGameCount, prevStats.cleanGameCount)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>Perfect games: </ion-text>
-          <ion-text class="value" id="perfectGameCount">
-            {{ stats.perfectGameCount }}
-            <ion-icon *ngIf="getArrowIcon(stats.perfectGameCount, prevStats.perfectGameCount)"
-              [name]="getArrowIcon(stats.perfectGameCount, prevStats.perfectGameCount)"
-              [color]="getDiffColor(stats.perfectGameCount, prevStats.perfectGameCount)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="perfectGameCount"
-            *ngIf="getStatDifference(stats.perfectGameCount, prevStats.perfectGameCount) !== '0'">
-            <ion-text [color]="getDiffColor(stats.perfectGameCount, prevStats.perfectGameCount)">
-              {{getStatDifference(stats.perfectGameCount, prevStats.perfectGameCount)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>Average: </ion-text>
-          <ion-text class="value" id="averageScore">
-            {{ stats.averageScore | number:'1.2-2' }}
-            <ion-icon *ngIf="getArrowIcon(stats.averageScore, prevStats.averageScore)"
-              [name]="getArrowIcon(stats.averageScore, prevStats.averageScore)"
-              [color]="getDiffColor(stats.averageScore, prevStats.averageScore)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="averageScore"
-            *ngIf="getStatDifference(stats.averageScore, prevStats.averageScore) !== '0'">
-            <ion-text [color]="getDiffColor(stats.averageScore, prevStats.averageScore)">
-              {{getStatDifference(stats.averageScore, prevStats.averageScore)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>High game: </ion-text>
-          <ion-text class="value">{{ stats.highGame }}</ion-text>
-        </div>
-
-        <div class="stats">
-          <ion-text>Total pins: </ion-text>
-          <ion-text class="value">{{ stats.totalPins }}</ion-text>
-        </div>
-
-        <div class="stats">
-          <ion-text>First ball average: </ion-text>
-          <ion-text class="value" id="averageFirstCount">
-            {{ stats.averageFirstCount | number:'1.2-2' }}
-            <ion-icon *ngIf="getArrowIcon(stats.averageFirstCount, prevStats.averageFirstCount)"
-              [name]="getArrowIcon(stats.averageFirstCount, prevStats.averageFirstCount)"
-              [color]="getDiffColor(stats.averageFirstCount, prevStats.averageFirstCount)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="averageFirstCount"
-            *ngIf="getStatDifference(stats.averageFirstCount, prevStats.averageFirstCount) !== '0'">
-            <ion-text [color]="getDiffColor(stats.averageFirstCount, prevStats.averageFirstCount)">
-              {{getStatDifference(stats.averageFirstCount, prevStats.averageFirstCount)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>Total strikes: </ion-text>
-          <ion-text class="value">{{ stats.totalStrikes }}</ion-text>
-        </div>
-
-        <div class="stats">
-          <ion-text>Strikes per game: </ion-text>
-          <ion-text class="value" id="averageStrikesPerGame">
-            {{ stats.averageStrikesPerGame | number:'1.2-2' }}
-            <ion-icon *ngIf="getArrowIcon(stats.averageStrikesPerGame, prevStats.averageStrikesPerGame)"
-              [name]="getArrowIcon(stats.averageStrikesPerGame, prevStats.averageStrikesPerGame)"
-              [color]="getDiffColor(stats.averageStrikesPerGame, prevStats.averageStrikesPerGame)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="averageStrikesPerGame"
-            *ngIf="getStatDifference(stats.averageStrikesPerGame, prevStats.averageStrikesPerGame) !== '0'">
-            <ion-text [color]="getDiffColor(stats.averageStrikesPerGame, prevStats.averageStrikesPerGame)">
-              {{getStatDifference(stats.averageStrikesPerGame, prevStats.averageStrikesPerGame)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>Strike-percentage: </ion-text>
-          <ion-text class="value" id="strikePercentage">
-            {{ stats.strikePercentage | number:'1.2-2' }}%
-            <ion-icon *ngIf="getArrowIcon(stats.strikePercentage, prevStats.strikePercentage)"
-              [name]="getArrowIcon(stats.strikePercentage, prevStats.strikePercentage)"
-              [color]="getDiffColor(stats.strikePercentage, prevStats.strikePercentage)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="strikePercentage"
-            *ngIf="getStatDifference(stats.strikePercentage, prevStats.strikePercentage) !== '0'">
-            <ion-text [color]="getDiffColor(stats.strikePercentage, prevStats.strikePercentage)">
-              {{getStatDifference(stats.strikePercentage, prevStats.strikePercentage)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>Total spares: </ion-text>
-          <ion-text class="value">{{ stats.totalSpares }}</ion-text>
-        </div>
-
-        <div class="stats">
-          <ion-text>Spares per game: </ion-text>
-          <ion-text class="value" id="averageSparesPerGame">
-            {{ stats.averageSparesPerGame | number:'1.2-2' }}
-            <ion-icon *ngIf="getArrowIcon(stats.averageSparesPerGame, prevStats.averageSparesPerGame)"
-              [name]="getArrowIcon(stats.averageSparesPerGame, prevStats.averageSparesPerGame)"
-              [color]="getDiffColor(stats.averageSparesPerGame, prevStats.averageSparesPerGame)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="averageSparesPerGame"
-            *ngIf="getStatDifference(stats.averageSparesPerGame, prevStats.averageSparesPerGame) !== '0'">
-            <ion-text [color]="getDiffColor(stats.averageSparesPerGame, prevStats.averageSparesPerGame)">
-              {{getStatDifference(stats.averageSparesPerGame, prevStats.averageSparesPerGame)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>Spare-percentage: </ion-text>
-          <ion-text class="value" id="sparePercentage">
-            {{ stats.overallSpareRate | number:'1.2-2' }}%
-            <ion-icon *ngIf="getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)"
-              [name]="getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)"
-              [color]="getDiffColor(stats.overallSpareRate, prevStats.overallSpareRate)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="sparePercentage"
-            *ngIf="getStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) !== '0'">
-            <ion-text [color]="getDiffColor(stats.overallSpareRate, prevStats.overallSpareRate)">
-              {{getStatDifference(stats.overallSpareRate, prevStats.overallSpareRate)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>Total opens: </ion-text>
-          <ion-text class="value">{{ stats.totalSparesMissed }}</ion-text>
-        </div>
-        <div class="stats">
-          <ion-text>Opens per game: </ion-text>
-          <ion-text class="value" id="averageOpensPerGame">
-            {{ stats.averageOpensPerGame | number:'1.2-2' }}
-            <ion-icon *ngIf="getArrowIcon(stats.averageOpensPerGame, prevStats.averageOpensPerGame)"
-              [name]="getArrowIcon(stats.averageOpensPerGame, prevStats.averageOpensPerGame)"
-              [color]="getDiffColor(stats.averageOpensPerGame, prevStats.averageOpensPerGame)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="averageOpensPerGame"
-            *ngIf="getStatDifference(stats.averageOpensPerGame, prevStats.averageOpensPerGame) !== '0'">
-            <ion-text [color]="getDiffColor(stats.averageOpensPerGame, prevStats.averageOpensPerGame)">
-              {{getStatDifference(stats.averageOpensPerGame, prevStats.averageOpensPerGame)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
-        <div class="stats">
-          <ion-text>Open-percentage: </ion-text>
-          <ion-text class="value" id="openPercentage">
-            {{ stats.overallMissedRate | number:'1.2-2' }}%
-            <ion-icon *ngIf="getArrowIcon(stats.overallMissedRate, prevStats.overallMissedRate)"
-              [name]="getArrowIcon(stats.overallMissedRate, prevStats.overallMissedRate)"
-              [color]="getDiffColor(stats.overallMissedRate, prevStats.overallMissedRate)">
-            </ion-icon>
-          </ion-text>
-          <ion-popover class="diffPopover" trigger="openPercentage"
-            *ngIf="getStatDifference(stats.overallMissedRate, prevStats.overallMissedRate) !== '0'">
-            <ion-text [color]="getDiffColor(stats.overallMissedRate, prevStats.overallMissedRate)">
-              {{getStatDifference(stats.overallMissedRate, prevStats.overallMissedRate)}}
-            </ion-text>
-          </ion-popover>
-        </div>
-
+        <app-stat-display label="Games" [currentStat]="stats.totalGames" id="totalGames"></app-stat-display>
+        <app-stat-display
+          label="Clean games"
+          [currentStat]="stats.cleanGameCount"
+          [prevStat]="prevStats.cleanGameCount"
+          [id]="'cleanGameCount'"></app-stat-display>
+        <app-stat-display
+          label="Perfect games"
+          [currentStat]="stats.perfectGameCount"
+          [prevStat]="prevStats.perfectGameCount"
+          [id]="'perfectGameCount'"></app-stat-display>
+        <app-stat-display
+          label="Average"
+          [currentStat]="stats.averageScore"
+          [prevStat]="prevStats.averageScore"
+          [id]="'averageScore'"></app-stat-display>
+        <app-stat-display label="High game" [currentStat]="stats.highGame" id="highGame"></app-stat-display>
+        <app-stat-display label="Total pins" [currentStat]="stats.totalPins" id="totalPins"></app-stat-display>
+        <app-stat-display
+          label="First ball average"
+          [currentStat]="stats.averageFirstCount"
+          [prevStat]="prevStats.averageFirstCount"
+          [id]="'averageFirstCount'"></app-stat-display>
+        <app-stat-display label="Total strikes" [currentStat]="stats.totalStrikes" id="totalStrikes"></app-stat-display>
+        <app-stat-display
+          label="Strikes per game"
+          [currentStat]="stats.averageStrikesPerGame"
+          [prevStat]="prevStats.averageStrikesPerGame"
+          [id]="'averageStrikesPerGame'"></app-stat-display>
+        <app-stat-display
+          label="Strike-percentage"
+          [currentStat]="stats.strikePercentage"
+          [prevStat]="prevStats.strikePercentage"
+          [id]="'strikePercentage'"></app-stat-display>
+        <app-stat-display label="Total spares" [currentStat]="stats.totalSpares" id="totalSpares"></app-stat-display>
+        <app-stat-display
+          label="Spares per game"
+          [currentStat]="stats.averageSparesPerGame"
+          [prevStat]="prevStats.averageSparesPerGame"
+          [id]="'averageSparesPerGame'"></app-stat-display>
+        <app-stat-display
+          label="Spare-percentage"
+          [currentStat]="stats.overallSpareRate"
+          [prevStat]="prevStats.overallSpareRate"
+          [id]="'sparePercentage'"></app-stat-display>
+        <app-stat-display label="Total opens" [currentStat]="stats.totalSparesMissed" id="totalSparesMissed"></app-stat-display>
+        <app-stat-display
+          label="Opens per game"
+          [currentStat]="stats.averageOpensPerGame"
+          [prevStat]="prevStats.averageOpensPerGame"
+          [id]="'averageOpensPerGame'"></app-stat-display>
+        <app-stat-display
+          label="Open-percentage"
+          [currentStat]="stats.overallMissedRate"
+          [prevStat]="prevStats.overallMissedRate"
+          [id]="'openPercentage'"></app-stat-display>
         <canvas #scoreChart class="score" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 
@@ -243,16 +98,22 @@
               <ion-col><ion-text>{{ stats.missedCounts[i] }}</ion-text></ion-col>
               <ion-col><ion-text>{{ stats.pinCounts[i] }}</ion-text></ion-col>
               <ion-col *ngIf="stats.pinCounts[i] === 0 && stats.missedCounts[i] === 0"></ion-col>
-              <ion-col id="spareRates{{i}}" *ngIf="stats.pinCounts[i] !== 0 || stats.missedCounts[i] !== 0"
+              <ion-col
+                id="spareRates{{i}}"
+                *ngIf="stats.pinCounts[i] !== 0 || stats.missedCounts[i] !== 0"
                 [ngStyle]="{'color': getRateColor(stats.spareRates[i])}">
-                <ion-text>{{ stats.spareRates[i] | number:'1.2-2' }}%
-                  <ion-icon *ngIf="getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])"
+                <ion-text
+                  >{{ stats.spareRates[i] | number:'1.2-2' }}%
+                  <ion-icon
+                    *ngIf="getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])"
                     [name]="getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])"
                     [color]="getDiffColor(stats.spareRates[i], prevStats.spareRates[i])">
                   </ion-icon>
                 </ion-text>
 
-                <ion-popover class="diffPopover" trigger="spareRates{{i}}"
+                <ion-popover
+                  class="diffPopover"
+                  trigger="spareRates{{i}}"
                   *ngIf="getStatDifference(stats.spareRates[i], prevStats.spareRates[i]) !== '0'">
                   <ion-text [color]="getDiffColor(stats.spareRates[i], prevStats.spareRates[i])">
                     {{getStatDifference(stats.spareRates[i], prevStats.spareRates[i])}}
@@ -264,16 +125,22 @@
             <ng-container *ngIf="i === 0">
               <ion-col><ion-text>{{ stats.totalSparesMissed }}</ion-text></ion-col>
               <ion-col><ion-text>{{ stats.totalSparesConverted }}</ion-text></ion-col>
-              <ion-col id="overallSpareRate" *ngIf="stats.totalSparesMissed + stats.totalSparesConverted !== 0"
+              <ion-col
+                id="overallSpareRate"
+                *ngIf="stats.totalSparesMissed + stats.totalSparesConverted !== 0"
                 [ngStyle]="{'color': getRateColor(stats.overallSpareRate)}">
-                <ion-text>{{ stats.overallSpareRate | number:'1.2-2' }}%
-                  <ion-icon *ngIf="getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)"
+                <ion-text
+                  >{{ stats.overallSpareRate | number:'1.2-2' }}%
+                  <ion-icon
+                    *ngIf="getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)"
                     [name]="getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)"
                     [color]="getDiffColor(stats.overallSpareRate, prevStats.overallSpareRate)">
                   </ion-icon>
                 </ion-text>
 
-                <ion-popover class="diffPopover" trigger="overallSpareRate"
+                <ion-popover
+                  class="diffPopover"
+                  trigger="overallSpareRate"
                   *ngIf="getStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) !== '0'">
                   <ion-text [color]="getDiffColor(stats.overallSpareRate, prevStats.overallSpareRate)">
                     {{getStatDifference(stats.overallSpareRate, prevStats.overallSpareRate)}}
@@ -294,10 +161,27 @@
       </swiper-slide>
 
       <swiper-slide class="tab">
-        <div class="stats">
-          <ion-text>Games: </ion-text>
-          <ion-text class="value"></ion-text>
-        </div>
+        <ion-item style="font-size: 20px;">
+          <ion-select label="Session date" [(ngModel)]="selectedDate" (ionChange)="onDateChange($event)">
+            <ion-select-option *ngFor="let unixDate of uniqueSortedDates" [value]="unixDate"> {{ (unixDate | date: 'dd.MM.yy') }} </ion-select-option>
+          </ion-select>
+        </ion-item>
+        <app-stat-display label="Games" [currentStat]="sessionStats.totalGames"></app-stat-display>
+        <app-stat-display label="Clean games" [currentStat]="sessionStats.cleanGameCount"></app-stat-display>
+        <app-stat-display label="Perfect games" [currentStat]="sessionStats.perfectGameCount"></app-stat-display>
+        <app-stat-display label="Average" [currentStat]="sessionStats.averageScore"></app-stat-display>
+        <app-stat-display label="High game" [currentStat]="sessionStats.highGame"></app-stat-display>
+        <app-stat-display label="Total pins" [currentStat]="sessionStats.totalPins"></app-stat-display>
+        <app-stat-display label="First ball average" [currentStat]="sessionStats.averageFirstCount"></app-stat-display>
+        <app-stat-display label="Total strikes" [currentStat]="sessionStats.totalStrikes"></app-stat-display>
+        <app-stat-display label="Strikes per game" [currentStat]="sessionStats.averageStrikesPerGame"></app-stat-display>
+        <app-stat-display label="Strike-percentage" [currentStat]="sessionStats.strikePercentage"></app-stat-display>
+        <app-stat-display label="Total spares" [currentStat]="sessionStats.totalSpares"></app-stat-display>
+        <app-stat-display label="Spares per game" [currentStat]="sessionStats.averageSparesPerGame"></app-stat-display>
+        <app-stat-display label="Spare-percentage" [currentStat]="sessionStats.overallSpareRate"></app-stat-display>
+        <app-stat-display label="Total opens" [currentStat]="sessionStats.totalSparesMissed"></app-stat-display>
+        <app-stat-display label="Opens per game" [currentStat]="sessionStats.averageOpensPerGame"></app-stat-display>
+        <app-stat-display label="Open-percentage" [currentStat]="sessionStats.overallMissedRate"></app-stat-display>
       </swiper-slide>
     </swiper-container>
   </ng-template>

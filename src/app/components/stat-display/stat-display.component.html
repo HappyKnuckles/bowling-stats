@@ -1,0 +1,13 @@
+<div class="stats">
+  <ion-text>{{ label }}: </ion-text>
+  <ion-text class="value" [id]="id">
+    {{ currentStat | conditionalNumber }}
+    <ion-icon *ngIf="getArrowIcon(currentStat, prevStat)" [name]="getArrowIcon(currentStat, prevStat)" [color]="getDiffColor(currentStat, prevStat)">
+    </ion-icon>
+  </ion-text>
+  <ion-popover class="diffPopover" [trigger]="id" *ngIf="statDifference !== '0'">
+    <ion-text [color]="getDiffColor(currentStat, prevStat)">
+      {{ statDifference }}
+    </ion-text>
+  </ion-popover>
+</div>

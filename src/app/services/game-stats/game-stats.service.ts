@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Game } from 'src/app/models/game-model';
 export interface GameStats {
   totalGames: number;
@@ -73,7 +74,7 @@ export class GameStatsService {
     highGame: 0,
     spareRates: [],
     overallSpareRate: 0,
-    overallMissedRate: 0
+    overallMissedRate: 0,
   };
 
   // Session Stats
@@ -100,11 +101,16 @@ export class GameStatsService {
     highGame: 0,
     spareRates: [],
     overallSpareRate: 0,
-    overallMissedRate: 0
+    overallMissedRate: 0,
   };
 
-  constructor() { }
+  private currentStatsSubject = new BehaviorSubject<GameStats>(this.currentStats);
+  private sessionStatsSubject = new BehaviorSubject<GameStats>(this.sessionStats);
 
+  currentStats$ = this.currentStatsSubject.asObservable();
+  sessionStats$ = this.sessionStatsSubject.asObservable();
+
+  constructor() {}
 
   calculateStats(gameHistory: Game[]): void {
     const lastComparisonDate = localStorage.getItem('lastComparisonDate') ?? '0';
@@ -141,6 +147,7 @@ export class GameStatsService {
     }
 
     this.currentStats = this.calculateBowlingStats(gameHistory);
+    this.updateCurrentStats(this.currentStats);
 
     if (lastComparisonDate === '0') {
       if (this.currentStats.totalGames > 0) {
@@ -184,6 +191,7 @@ export class GameStatsService {
   calculateStatsBasedOnDate(gameHistory: Game[], date: number): void {
     const filteredGames = gameHistory.filter((game) => this.isSameDay(game.date, date));
     this.sessionStats = this.calculateBowlingStats(filteredGames);
+    this.updateSessionStats(this.sessionStats);
   }
 
   private calculateBowlingStats(gameHistory: Game[]): GameStats {
@@ -297,9 +305,8 @@ export class GameStatsService {
 
     const spareRates = pinCounts.map((pinCount, i) => this.getRate(pinCount, missedCounts[i]));
     const overallSpareRate = this.getRate(totalSparesConverted, totalSparesMissed);
-    const spareConversionPercentage = totalSparesConverted / (totalSparesConverted + totalSparesMissed) * 100;
+    const spareConversionPercentage = (totalSparesConverted / (totalSparesConverted + totalSparesMissed)) * 100;
     const overallMissedRate = totalSparesMissed > 0 ? 100 - overallSpareRate : 0;
-
 
     return {
       totalStrikes,
@@ -324,8 +331,16 @@ export class GameStatsService {
       overallSpareRate,
       totalPins,
       overallMissedRate,
-      spareConversionPercentage
+      spareConversionPercentage,
     };
+  }
+
+  private updateCurrentStats(newStats: GameStats): void {
+    this.currentStatsSubject.next(newStats);
+  }
+
+  private updateSessionStats(newStats: GameStats): void {
+    this.sessionStatsSubject.next(newStats);
   }
 
   private getRate(converted: number, missed: number): number {
@@ -351,11 +366,7 @@ export class GameStatsService {
     const date1 = new Date(timestamp1);
     const date2 = new Date(timestamp2);
 
-    return (
-      date1.getDate() === date2.getDate() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getFullYear() === date2.getFullYear()
-    );
+    return date1.getDate() === date2.getDate() && date1.getMonth() === date2.getMonth() && date1.getFullYear() === date2.getFullYear();
   }
 
   private isDayBefore(timestamp1: number, timestamp2: number): boolean {
@@ -374,6 +385,4 @@ export class GameStatsService {
 
     return false;
   }
-
-
 }

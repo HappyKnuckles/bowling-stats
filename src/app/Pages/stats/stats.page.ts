@@ -14,8 +14,10 @@ import {
   IonSegment,
   IonSegmentButton,
   IonLabel,
+  IonSelect,
+  IonSelectOption,
 } from '@ionic/angular/standalone';
-import { NgIf, NgFor, NgStyle, DecimalPipe } from '@angular/common';
+import { NgIf, NgFor, NgStyle, DecimalPipe, DatePipe } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { ImpactStyle } from '@capacitor/haptics';
 import { Game } from 'src/app/models/game-model';
@@ -30,13 +32,14 @@ import { Swiper } from 'swiper';
 import { IonicSlides } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowDown, arrowUp } from 'ionicons/icons';
+import { StatDisplayComponent } from 'src/app/components/stat-display/stat-display.component';
 
 @Component({
   selector: 'app-stats',
   templateUrl: 'stats.page.html',
   styleUrls: ['stats.page.scss'],
   standalone: true,
-  providers: [DecimalPipe],
+  providers: [DecimalPipe, DatePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     IonLabel,
@@ -47,6 +50,8 @@ import { arrowDown, arrowUp } from 'ionicons/icons';
     IonTitle,
     IonContent,
     IonRefresher,
+    IonSelectOption,
+    IonSelect,
     NgIf,
     IonText,
     MatExpansionPanel,
@@ -59,6 +64,8 @@ import { arrowDown, arrowUp } from 'ionicons/icons';
     NgStyle,
     DecimalPipe,
     FormsModule,
+    StatDisplayComponent,
+    DatePipe,
   ],
 })
 export class StatsPage implements OnInit, OnDestroy {
@@ -85,7 +92,7 @@ export class StatsPage implements OnInit, OnDestroy {
   };
   // Stats
   //TODO add interface for stats
-  stats: GameStats ={
+  stats: GameStats = {
     totalGames: 0,
     totalPins: 0,
     perfectGameCount: 0,
@@ -108,8 +115,8 @@ export class StatsPage implements OnInit, OnDestroy {
     highGame: 0,
     spareRates: [],
     overallSpareRate: 0,
-    overallMissedRate: 0
-}
+    overallMissedRate: 0,
+  };
   // Game Data
   gameHistory: Game[] = [];
   gameHistoryChanged: boolean = true;
@@ -117,11 +124,40 @@ export class StatsPage implements OnInit, OnDestroy {
   selectedSegment: string = 'default';
   segments: string[] = ['Overall', 'Spares', 'Throws', 'Session'];
 
+  sessionStats: GameStats = {
+    totalGames: 0,
+    totalPins: 0,
+    perfectGameCount: 0,
+    cleanGameCount: 0,
+    totalStrikes: 0,
+    totalSpares: 0,
+    totalSparesMissed: 0,
+    totalSparesConverted: 0,
+    pinCounts: Array(11).fill(0),
+    missedCounts: Array(11).fill(0),
+    averageStrikesPerGame: 0,
+    averageSparesPerGame: 0,
+    averageOpensPerGame: 0,
+    strikePercentage: 0,
+    sparePercentage: 0,
+    openPercentage: 0,
+    spareConversionPercentage: 0,
+    averageFirstCount: 0,
+    averageScore: 0,
+    highGame: 0,
+    spareRates: [],
+    overallSpareRate: 0,
+    overallMissedRate: 0,
+  };
+  selectedDate: number = 0;
+  uniqueSortedDates: number[] = [];
 
   // Subscriptions
-  newDataAddedSubscription!: Subscription;
-  dataDeletedSubscription!: Subscription;
+  private newDataAddedSubscription!: Subscription;
+  private dataDeletedSubscription!: Subscription;
   private loadingSubscription: Subscription;
+  private currentStatSubscription: Subscription;
+  private sessionStatSubscription: Subscription;
 
   // Viewchilds and Instances
   @ViewChild('scoreChart', { static: false }) scoreChart?: ElementRef;
@@ -154,6 +190,14 @@ export class StatsPage implements OnInit, OnDestroy {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
+
+    this.currentStatSubscription = this.statsService.currentStats$.subscribe((stats) => {
+      this.stats = stats;
+    });
+
+    this.sessionStatSubscription = this.statsService.sessionStats$.subscribe((stats) => {
+      this.sessionStats = stats;
+    });
     addIcons({ arrowUp, arrowDown });
   }
 
@@ -174,44 +218,8 @@ export class StatsPage implements OnInit, OnDestroy {
     this.newDataAddedSubscription.unsubscribe();
     this.dataDeletedSubscription.unsubscribe();
     this.loadingSubscription.unsubscribe();
-  }
-
-  private async loadDataAndCalculateStats(isRefresh?: boolean): Promise<void> {
-    if (this.gameHistoryChanged || isRefresh) {
-      try {
-        await this.loadGameHistory();
-        this.loadStats();
-        this.gameHistoryChanged = false; // Reset the flag
-      } catch (error) {
-        this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true);
-      }
-    }
-  }
-
-  async loadGameHistory() {
-    try {
-      this.gameHistory = await this.gameHistoryService.loadGameHistory();
-    } catch (error) {
-      this.toastService.showToast(`Error loading history: ${error}`, 'bug', true);
-    }
-  }
-
-  loadStats() {
-    try {
-      // TODO adjust so stats are not calculated twice (on startup and on init)
-      // currently this is needed to get previous stats before the first game
-      // and has to happen on init because wrong stats if you add games before opening stats page
-      this.statsService.calculateStats(this.gameHistory);
-
-      this.stats = this.statsService.currentStats;
-     
-      const prevStats = localStorage.getItem('prevStats');
-      if (prevStats) {
-        this.prevStats = JSON.parse(prevStats);
-      } else this.prevStats = this.statsService.prevStats;
-    } catch (error) {
-      this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
-    }
+    this.currentStatSubscription.unsubscribe();
+    this.sessionStatSubscription.unsubscribe();
   }
 
   handleRefresh(event: any): void {
@@ -233,6 +241,12 @@ export class StatsPage implements OnInit, OnDestroy {
     } finally {
       this.loadingService.setLoading(false);
     }
+  }
+
+  onDateChange(event: any): void {
+    const selectedDate = event.target.value;
+    this.statsService.calculateStatsBasedOnDate(this.gameHistory, selectedDate);
+    // this.sessionStats = this.statsService.sessionStats;
   }
 
   onSegmentChanged(event: any) {
@@ -258,58 +272,8 @@ export class StatsPage implements OnInit, OnDestroy {
     return index !== -1 ? index : 0;
   }
 
-  // Get the segment name from the index
   getSegmentValue(index: number): string {
     return this.segments[index] || 'Overall';
-  }
-
-  generateCharts(index?: number) {
-    if (this.gameHistory.length > 0 && (index === undefined || this.statsValueChanged[index])) {
-      if (this.selectedSegment === 'Overall') {
-        this.generateScoreChart();
-      } else if (this.selectedSegment === 'Spares') {
-        this.generatePinChart();
-      } else if (this.selectedSegment === 'Throws') {
-        this.generateThrowChart();
-      }
-
-      if (index !== undefined) {
-        this.statsValueChanged[index] = false;
-      }
-    }
-  }
-
-  private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
-      this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats()
-        .then(() => {
-          this.generateCharts();
-          this.statsValueChanged = [true, true, true];
-        })
-        .catch((error) => {
-          console.error('Error loading data and calculating stats:', error);
-        });
-    });
-
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
-      this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats()
-        .then(() => {
-          this.generateCharts();
-          this.statsValueChanged = [true, true, true];
-        })
-        .catch((error) => {
-          console.error('Error loading data and calculating stats:', error);
-        });
-    });
-  }
-
-  private getRate(converted: number, missed: number): number {
-    if (converted + missed === 0) {
-      return 0;
-    }
-    return (converted / (converted + missed)) * 100;
   }
 
   getArrowIcon(currentValue: number, previousValue: number): string {
@@ -356,7 +320,67 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  calculatePinChartData() {
+  private async loadDataAndCalculateStats(isRefresh?: boolean): Promise<void> {
+    if (this.gameHistoryChanged || isRefresh) {
+      try {
+        await this.loadGameHistory();
+        this.loadStats();
+
+        if (this.selectedDate) {
+          this.statsService.calculateStatsBasedOnDate(this.gameHistory, this.selectedDate);
+          this.sessionStats = this.statsService.sessionStats;
+        }
+
+        this.gameHistoryChanged = false; // Reset the flag
+      } catch (error) {
+        this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true);
+      }
+    }
+  }
+
+  private async loadGameHistory() {
+    try {
+      this.gameHistory = await this.gameHistoryService.loadGameHistory();
+    } catch (error) {
+      this.toastService.showToast(`Error loading history: ${error}`, 'bug', true);
+    }
+  }
+
+  private loadStats() {
+    try {
+      // TODO adjust so stats are not calculated twice (on startup and on init)
+      // currently this is needed to get previous stats before the first game
+      // and has to happen on init because wrong stats if you add games before opening stats page
+      this.statsService.calculateStats(this.gameHistory);
+
+      // this.stats = this.statsService.currentStats;
+
+      const prevStats = localStorage.getItem('prevStats');
+      this.prevStats = prevStats ? JSON.parse(prevStats) : this.statsService.prevStats;
+
+      this.processDates();
+    } catch (error) {
+      this.toastService.showToast(`Error loading stats: ${error}`, 'bug', true);
+    }
+  }
+
+  private generateCharts(index?: number) {
+    if (this.gameHistory.length > 0 && (index === undefined || this.statsValueChanged[index])) {
+      if (this.selectedSegment === 'Overall') {
+        this.generateScoreChart();
+      } else if (this.selectedSegment === 'Spares') {
+        this.generatePinChart();
+      } else if (this.selectedSegment === 'Throws') {
+        this.generateThrowChart();
+      }
+
+      if (index !== undefined) {
+        this.statsValueChanged[index] = false;
+      }
+    }
+  }
+
+  private calculatePinChartData() {
     const filteredSpareRates: number[] = this.stats.spareRates.slice(1).map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
     const filteredMissedCounts: number[] = this.stats.missedCounts.slice(1).map((count, i) => {
       const rate = this.getRate(count, this.stats.pinCounts[i + 1]);
@@ -366,7 +390,7 @@ export class StatsPage implements OnInit, OnDestroy {
     return { filteredSpareRates, filteredMissedCounts };
   }
 
-  calculateScoreChartData() {
+  private calculateScoreChartData() {
     const scoresByDate: { [date: string]: number[] } = {};
     this.gameHistory.forEach((game: any) => {
       const date = new Date(game.date).toLocaleDateString('de-DE', {
@@ -402,15 +426,64 @@ export class StatsPage implements OnInit, OnDestroy {
     return { gameLabels, overallAverages, differences, gamesPlayedDaily };
   }
 
-  calculateThrowChartData() {
+  private calculateThrowChartData() {
     const opens = parseFloat(this.decimalPipe.transform(this.stats.openPercentage, '1.2-2')!);
     const spares = parseFloat(this.decimalPipe.transform(this.stats.sparePercentage, '1.2-2')!);
     const strikes = parseFloat(this.decimalPipe.transform(this.stats.strikePercentage, '1.2-2')!);
     return { opens, spares, strikes };
   }
 
+  private processDates() {
+    const dateSet = new Set<number>();
+
+    this.gameHistory.forEach((game) => {
+      // Add only the date part (ignoring time) to the Set
+      const date = new Date(game.date);
+      // Set the time to midnight to ensure we only consider the date
+      date.setHours(0, 0, 0, 0);
+      dateSet.add(date.getTime()); // Store the Unix timestamp
+    });
+
+    // Convert the Set to an Array and sort it
+    this.uniqueSortedDates = Array.from(dateSet).sort((a, b) => b - a);
+    this.selectedDate = this.uniqueSortedDates[0];
+  }
+
+  private subscribeToDataEvents(): void {
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
+      this.gameHistoryChanged = true;
+      this.loadDataAndCalculateStats()
+        .then(() => {
+          this.generateCharts();
+          this.statsValueChanged = [true, true, true];
+        })
+        .catch((error) => {
+          console.error('Error loading data and calculating stats:', error);
+        });
+    });
+
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
+      this.gameHistoryChanged = true;
+      this.loadDataAndCalculateStats()
+        .then(() => {
+          this.generateCharts();
+          this.statsValueChanged = [true, true, true];
+        })
+        .catch((error) => {
+          console.error('Error loading data and calculating stats:', error);
+        });
+    });
+  }
+
+  private getRate(converted: number, missed: number): number {
+    if (converted + missed === 0) {
+      return 0;
+    }
+    return (converted / (converted + missed)) * 100;
+  }
+
   //TODO adjust look of this
-  generatePinChart(): void {
+  private generatePinChart(): void {
     if (!this.pinChart) {
       return;
     }
@@ -535,7 +608,7 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  generateScoreChart(): void {
+  private generateScoreChart(): void {
     if (!this.scoreChart) {
       return;
     }
@@ -666,7 +739,7 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  generateThrowChart(): void {
+  private generateThrowChart(): void {
     if (!this.throwChart) {
       return;
     }

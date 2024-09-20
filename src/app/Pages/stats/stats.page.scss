@@ -1,32 +1,3 @@
-.stats {
-  display: flex;
-  justify-content: space-between;
-  margin: 5px 15px 0 20px;
-
-  ion-text {
-    padding: 5px;
-    color: white;
-  }
-
-  .value {
-    border: 1px solid var(--ion-color-dark);
-    border-radius: 5px;
-    background-color: var(--ion-color-secondary);
-    color: var(--ion-input-color);
-    text-align: center;
-    min-width: fit-content;
-    width: clamp(50px, 100%, 85px);
-    position: relative;
-
-    // TODO fix change anzeige zu bessere position
-    ion-icon {
-      position: absolute;
-      left: -20px;
-      top: 20%;
-    }
-  }
-}
-
 .tab {
   margin-top: 10px;
 }
@@ -60,18 +31,6 @@ canvas {
       top: 5%;
     }
   }
-}
-
-.green {
-  color: green;
-}
-
-.orange {
-  color: orange;
-}
-
-.red {
-  color: red;
 }
 
 ion-segment {

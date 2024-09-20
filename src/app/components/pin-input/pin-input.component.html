@@ -22,7 +22,8 @@
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
         <ion-input type="number" clearOnEdit="true" inputmode="numeric" readonly
-          [value]="gameData[frameIndex].throws[2]" [ngClass]="{'active-input': isActiveInput(frameIndex, 2)}">
+          [value]="gameData[frameIndex].throws[2]" [ngClass]="{'active-input': isActiveInput(frameIndex, 2)}"        
+          [disabled]="((gameData[frameIndex].throws[0] ?? 0) + (gameData[frameIndex].throws[1] ?? 0)) < 10">
         </ion-input>
       </ion-col>
     </ion-row>

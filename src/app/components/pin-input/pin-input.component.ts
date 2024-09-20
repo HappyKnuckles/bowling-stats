@@ -47,7 +47,8 @@ export class PinInputComponent {
       if (this.currentThrow < 2) {
         this.currentThrow++;
       }
-    } else if (this.currentThrow === 0) {
+    } else if (this.currentThrow === 0 && throws[0] !== 10) {
+
       this.firstThrowPins = new Set(this.pressedPins); // Save the pins pressed in the first throw
       this.currentThrow++;
       this.pressedPins.clear(); // Clear pressed pins for the second throw

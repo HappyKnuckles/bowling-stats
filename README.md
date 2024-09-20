@@ -32,7 +32,7 @@ Currently i don't want anybody to contribute  yet. But i am free for suggestions
 
 ## Feedback
 
-If you have any feedback, please reach out to us at fake@fake.com
+If you have any feedback, please reach out to us at lightningbowlapp@gmail.com
 
 
 ## Run Locally

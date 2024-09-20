@@ -32,4 +32,30 @@
       </ion-select-option>
     </ion-select>
   </ion-item>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Contact Us</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-input label="Your email" labelPlacement="floating" type="email" placeholder="email@domain.com" [(ngModel)]="userEmail" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-textarea
+          maxlength="500"
+          counter="true"
+          label="Feedback"
+          labelPlacement="floating"
+          placeholder="Enter your feedback"
+          [(ngModel)]="feedbackMessage"
+          required>
+        </ion-textarea>
+      </ion-item>
+
+      <ion-button expand="full" color="primary" (click)="submitFeedback()"> Submit Feedback </ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

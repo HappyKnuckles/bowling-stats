@@ -20,7 +20,7 @@ import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } fr
 import { ImpactStyle } from '@capacitor/haptics';
 import { Game } from 'src/app/models/game-model';
 import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
-import { GameStatsService } from 'src/app/services/game-stats/game-stats.service';
+import { GameStats, GameStatsService } from 'src/app/services/game-stats/game-stats.service';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { LoadingService } from 'src/app/services/loader/loading.service';
 import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
@@ -85,38 +85,38 @@ export class StatsPage implements OnInit, OnDestroy {
   };
   // Stats
   //TODO add interface for stats
-  totalGames: number = 0;
-  perfectGameCount: number = 0;
-  cleanGameCount: number = 0;
-  averageScore: number = 0;
-  totalPins: number = 0;
-  totalStrikes: number = 0;
-  totalSpares: number = 0;
-  totalSparesMissed: number = 0;
-  totalSparesConverted: number = 0;
-  firstThrowCount: number = 0;
-  averageFirstCount: number = 0;
-  averageStrikesPerGame: number = 0;
-  averageSparesPerGame: number = 0;
-  averageOpensPerGame: number = 0;
-  strikePercentage: number = 0;
-  sparePercentage: number = 0;
-  openPercentage: number = 0;
-  spareConversionPercentage: number = 0;
-  highGame: number = 0;
-  pinCounts: number[] = Array(11).fill(0);
-  missedCounts: number[] = Array(11).fill(0);
-  spareRates: number[] = [];
-  overallSpareRate: number = 0;
-  overallMissedRate: number = 0;
-  totalMissed: number = 0;
-  totalConverted: number = 0;
-
+  stats: GameStats ={
+    totalGames: 0,
+    totalPins: 0,
+    perfectGameCount: 0,
+    cleanGameCount: 0,
+    totalStrikes: 0,
+    totalSpares: 0,
+    totalSparesMissed: 0,
+    totalSparesConverted: 0,
+    pinCounts: Array(11).fill(0),
+    missedCounts: Array(11).fill(0),
+    averageStrikesPerGame: 0,
+    averageSparesPerGame: 0,
+    averageOpensPerGame: 0,
+    strikePercentage: 0,
+    sparePercentage: 0,
+    openPercentage: 0,
+    spareConversionPercentage: 0,
+    averageFirstCount: 0,
+    averageScore: 0,
+    highGame: 0,
+    spareRates: [],
+    overallSpareRate: 0,
+    overallMissedRate: 0
+}
   // Game Data
   gameHistory: Game[] = [];
   gameHistoryChanged: boolean = true;
   isLoading: boolean = false;
   selectedSegment: string = 'default';
+  segments: string[] = ['Overall', 'Spares', 'Throws', 'Session'];
+
 
   // Subscriptions
   newDataAddedSubscription!: Subscription;
@@ -203,54 +203,8 @@ export class StatsPage implements OnInit, OnDestroy {
       // and has to happen on init because wrong stats if you add games before opening stats page
       this.statsService.calculateStats(this.gameHistory);
 
-      const {
-        totalGames,
-        perfectGameCount,
-        cleanGameCount,
-        averageScore,
-        averageFirstCount,
-        totalScoreSum: totalPins,
-        totalStrikes,
-        averageStrikesPerGame,
-        strikePercentage,
-        totalSpares,
-        totalSparesConverted,
-        totalSparesMissed,
-        averageSparesPerGame,
-        sparePercentage,
-        averageOpensPerGame,
-        openPercentage,
-        missedCounts,
-        pinCounts,
-        highGame,
-        spareRates,
-        overallSpareRate,
-        overallMissedRate,
-      } = this.statsService;
-
-      this.totalGames = totalGames;
-      this.cleanGameCount = cleanGameCount;
-      this.perfectGameCount = perfectGameCount;
-      this.averageScore = averageScore;
-      this.averageFirstCount = averageFirstCount;
-      this.totalPins = totalPins;
-      this.totalStrikes = totalStrikes;
-      this.averageStrikesPerGame = averageStrikesPerGame;
-      this.strikePercentage = strikePercentage;
-      this.totalSpares = totalSpares;
-      this.totalSparesConverted = totalSparesConverted;
-      this.totalSparesMissed = totalSparesMissed;
-      this.averageSparesPerGame = averageSparesPerGame;
-      this.sparePercentage = sparePercentage;
-      this.averageOpensPerGame = averageOpensPerGame;
-      this.openPercentage = openPercentage;
-      this.missedCounts = missedCounts;
-      this.pinCounts = pinCounts;
-      this.highGame = highGame;
-      this.spareRates = spareRates;
-      this.overallSpareRate = overallSpareRate;
-      this.overallMissedRate = overallMissedRate;
-
+      this.stats = this.statsService.currentStats;
+     
       const prevStats = localStorage.getItem('prevStats');
       if (prevStats) {
         this.prevStats = JSON.parse(prevStats);
@@ -300,38 +254,22 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   getSlideIndex(segment: string): number {
-    switch (segment) {
-      case 'default':
-        return 0;
-      case 'spares':
-        return 1;
-      case 'throws':
-        return 2;
-      default:
-        return 0;
-    }
+    const index = this.segments.indexOf(segment);
+    return index !== -1 ? index : 0;
   }
 
+  // Get the segment name from the index
   getSegmentValue(index: number): string {
-    switch (index) {
-      case 0:
-        return 'default';
-      case 1:
-        return 'spares';
-      case 2:
-        return 'throws';
-      default:
-        return 'default';
-    }
+    return this.segments[index] || 'Overall';
   }
 
   generateCharts(index?: number) {
     if (this.gameHistory.length > 0 && (index === undefined || this.statsValueChanged[index])) {
-      if (this.selectedSegment === 'default') {
+      if (this.selectedSegment === 'Overall') {
         this.generateScoreChart();
-      } else if (this.selectedSegment === 'spares') {
+      } else if (this.selectedSegment === 'Spares') {
         this.generatePinChart();
-      } else if (this.selectedSegment === 'throws') {
+      } else if (this.selectedSegment === 'Throws') {
         this.generateThrowChart();
       }
 
@@ -419,9 +357,9 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   calculatePinChartData() {
-    const filteredSpareRates: number[] = this.spareRates.slice(1).map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
-    const filteredMissedCounts: number[] = this.missedCounts.slice(1).map((count, i) => {
-      const rate = this.getRate(count, this.pinCounts[i + 1]);
+    const filteredSpareRates: number[] = this.stats.spareRates.slice(1).map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
+    const filteredMissedCounts: number[] = this.stats.missedCounts.slice(1).map((count, i) => {
+      const rate = this.getRate(count, this.stats.pinCounts[i + 1]);
       const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
       return parseFloat(transformedRate ?? '0');
     });
@@ -465,9 +403,9 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   calculateThrowChartData() {
-    const opens = parseFloat(this.decimalPipe.transform(this.openPercentage, '1.2-2')!);
-    const spares = parseFloat(this.decimalPipe.transform(this.sparePercentage, '1.2-2')!);
-    const strikes = parseFloat(this.decimalPipe.transform(this.strikePercentage, '1.2-2')!);
+    const opens = parseFloat(this.decimalPipe.transform(this.stats.openPercentage, '1.2-2')!);
+    const spares = parseFloat(this.decimalPipe.transform(this.stats.sparePercentage, '1.2-2')!);
+    const strikes = parseFloat(this.decimalPipe.transform(this.stats.strikePercentage, '1.2-2')!);
     return { opens, spares, strikes };
   }
 

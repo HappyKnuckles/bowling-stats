@@ -5,17 +5,19 @@ Bowling Stats Tracker is a free app designed for bowlers of all skill levels, fr
 
 ### Add Games
 On the "Add" page, you can effortlessly log your games. There’s even an option to upload images of your scoresheet, allowing automatic entry of your scores (currently compatible with West-Bowl’s scoring system).
-![Add Screenshot](src/assets/screenshots/start.png)
+
+<img src="src/assets/screenshots/start.png" alt="App Screenshot" width="300"/>
 
 
 ### View Statistics
 The "Stats" page provides a comprehensive overview of your performance. Track key metrics like your average score, total strikes, spares, clean games, and more. You can also see which pin counts you miss most often. Additionally, a special section shows stats for the currently selected session.
-![Stats Screenshot](src/assets/screenshots/stats.png)
+
+<img src="src/assets/screenshots/stats.png" alt="App Screenshot" width="300"/> <img src="src/assets/screenshots/stats2.png" alt="App Screenshot" width="300"/>
 
 
 ### Game History
 In the "History" section, you’ll find a detailed log of all your past games. Swipe right to share, swipe even further to edit, or swipe left to delete, . You can also export your game history to a readable Excel file or import games using the same format.
-![History Screenshot](src/assets/screenshots/history.png)
+<img src="src/assets/screenshots/history.png" alt="App Screenshot" width="300"/>
 
 
 ### Settings

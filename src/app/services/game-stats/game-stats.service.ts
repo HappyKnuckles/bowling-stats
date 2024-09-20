@@ -47,7 +47,7 @@ export class GameStatsService {
   overallSpareRate: number = 0;
   overallMissedRate: number = 0;
 
-  constructor() {}
+  constructor() { }
 
   calculateStats(gameHistory: Game[]): void {
     const lastComparisonDate = localStorage.getItem('lastComparisonDate') ?? '0';
@@ -60,7 +60,7 @@ export class GameStatsService {
 
     if (lastComparisonDate !== '0') {
       // If the previous game date is different, update the stats comparison
-      if (!this.isSameDay(parseInt(lastComparisonDate), today) && !this.isSameDay(parseInt(lastComparisonDate), lastGameDate)) {
+      if (!this.isSameDay(parseInt(lastComparisonDate), today) && this.isDayBefore(parseInt(lastComparisonDate), lastGameDate)) {
         // Save previous stats
         this.prevStats = {
           strikePercentage: this.strikePercentage,
@@ -243,13 +243,30 @@ export class GameStatsService {
     const date1 = new Date(timestamp1);
     const date2 = new Date(timestamp2);
 
-    // Compare day, month, and year
     return (
       date1.getDate() === date2.getDate() &&
-      date1.getMonth() === date2.getMonth() && // Months are 0-based, so no need to adjust here
+      date1.getMonth() === date2.getMonth() &&
       date1.getFullYear() === date2.getFullYear()
     );
   }
+
+  private isDayBefore(timestamp1: number, timestamp2: number): boolean {
+    const date1 = new Date(timestamp1);
+    const date2 = new Date(timestamp2);
+
+    if (date1.getFullYear() < date2.getFullYear()) {
+      return true;
+    } else if (date1.getFullYear() === date2.getFullYear()) {
+      if (date1.getMonth() < date2.getMonth()) {
+        return true;
+      } else if (date1.getMonth() === date2.getMonth()) {
+        return date1.getDate() < date2.getDate();
+      }
+    }
+
+    return false;
+  }
+
 
   private getAverage(gameHistory: Game[]): number {
     this.totalScoreSum = gameHistory.reduce((sum, game) => sum + game.totalScore, 0);

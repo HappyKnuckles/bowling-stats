@@ -43,6 +43,7 @@ export class AdService {
     const options: AdOptions = {
       // adId: 'ca-app-pub-5244538287702059/5612009313',
       adId: 'ca-app-pub-3940256099942544/1033173712',
+      isTesting: true, // Remove this line when you are ready to go live
     };
 
     await AdMob.prepareInterstitial(options);

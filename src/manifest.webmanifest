@@ -1,8 +1,8 @@
 {
-  "name": "Bowling Stats",
-  "short_name": "Bowling Stats",
+  "name": "Lightning Bowl",
+  "short_name": "Lightning Bowl",
   "theme_color": "#020a06",
-  "description": "Bowling Tracker is a comprehensive app designed to help bowlers track scores, analyze performance, and improve their game. Record your strikes, spares, and splits effortlessly and get detailed stats to take your bowling skills to the next level.",
+  "description": "Lightning Bowl is a comprehensive app designed to help bowlers track scores, analyze performance, and improve their game. Record your strikes, spares, and splits effortlessly and get detailed stats to take your bowling skills to the next level.",
   "background_color": "#020a06",
   "display": "standalone",
   "scope": "./",

@@ -1,9 +1,8 @@
-import { Camera } from '@capacitor/camera';
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.bowling',
-  appName: 'BowlingStats',
+  appName: 'Lightning Bowl',
   webDir: 'www/browser',
   bundledWebRuntime: false,
   server: {

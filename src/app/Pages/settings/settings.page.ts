@@ -15,7 +15,7 @@ import {
   IonCardContent,
   IonLabel,
   IonButton,
-  IonTextarea,
+  IonTextarea, IonText
 } from '@ionic/angular/standalone';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -34,7 +34,7 @@ import { LoadingService } from 'src/app/services/loader/loading.service';
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonText,
     IonTextarea,
     ReactiveFormsModule,
     IonButton,
@@ -100,7 +100,7 @@ export class SettingsPage implements OnInit {
       const templateParams = {
         from_name: this.userEmail,
         message: this.feedbackMessage,
-        to_name: 'LightningBowling',
+        to_name: 'Lightning Bowl',
       };
       this.loadingService.setLoading(true);
       try {

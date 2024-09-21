@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">BowlingStats</string>
-    <string name="title_activity_main">BowlingStats</string>
+    <string name="app_name">Lightning Bowl</string>
+    <string name="title_activity_main">Lightning Bowl</string>
     <string name="package_name">io.ionic.bowling</string>
     <string name="custom_url_scheme">io.ionic.bowling</string>
     <string name="admob_app_id">ca-app-pub-5244538287702059~2003936792</string>

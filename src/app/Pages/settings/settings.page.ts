@@ -17,7 +17,7 @@ import {
   IonButton,
   IonTextarea, IonText
 } from '@ionic/angular/standalone';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { colorPaletteOutline, personCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
@@ -95,8 +95,8 @@ export class SettingsPage implements OnInit {
     this.toastService.showToast(`Changed theme to ${this.currentColor}.`, 'checkmark-outline');
   }
 
-  async submitFeedback() {
-    if (this.userEmail && this.feedbackMessage) {
+  async submitFeedback(form: NgForm) {
+    if (form.valid) {
       const templateParams = {
         from_name: this.userEmail,
         message: this.feedbackMessage,
@@ -108,6 +108,7 @@ export class SettingsPage implements OnInit {
         alert('Thank you for your feedback!');
         this.userEmail = '';
         this.feedbackMessage = '';
+        form.resetForm();
       } catch (error) {
         console.error('ERROR...', error);
         alert('Unexpected error occurred, please try again later.');
@@ -115,7 +116,7 @@ export class SettingsPage implements OnInit {
         this.loadingService.setLoading(false);
       }
     } else {
-      alert('Please fill out all fields.');
+      alert('Please fill out all fields correctly.');
     }
   }
 }

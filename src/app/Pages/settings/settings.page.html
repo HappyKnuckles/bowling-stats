@@ -27,19 +27,23 @@
       <ion-card-title>Contact Us</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-item>
-        <ion-input label="Your email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
-          labelPlacement="floating" type="email" placeholder="email@domain.com" errorText="Invalid email adress."
-          [(ngModel)]="userEmail" required>
-        </ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-textarea maxlength="500" counter="true" label="Feedback" labelPlacement="floating"
-          placeholder="Enter your feedback" [(ngModel)]="feedbackMessage" [autoGrow]="true" required>
-        </ion-textarea>
-      </ion-item>
+      <form #feedbackForm="ngForm" (ngSubmit)="submitFeedback(feedbackForm)">
+        <ion-item>
+          <ion-input label="Your email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}$"
+            labelPlacement="floating" type="email" placeholder="email@domain.com" errorText="Invalid email address."
+            [(ngModel)]="userEmail" name="userEmail" required></ion-input>
+        </ion-item>
 
-      <ion-button expand="full" color="primary" (click)="submitFeedback()"> Submit Feedback </ion-button>
+        <ion-item>
+          <ion-textarea maxlength="500" counter="true" label="Feedback" labelPlacement="floating"
+            placeholder="Enter your feedback" [(ngModel)]="feedbackMessage" name="feedbackMessage" [autoGrow]="true"
+            required #feedbackInput="ngModel" errorText="Feedback is required."></ion-textarea>
+        </ion-item>
+
+        <ion-button expand="full" color="primary" type="submit" [disabled]="feedbackForm.invalid">
+          Submit Feedback
+        </ion-button>
+      </form>
     </ion-card-content>
   </ion-card>
 </ion-content>

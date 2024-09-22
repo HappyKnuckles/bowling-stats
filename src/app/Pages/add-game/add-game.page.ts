@@ -35,6 +35,7 @@ import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
 import { UserService } from 'src/app/services/user/user.service';
 import { defineCustomElements } from '@teamhive/lottie-player/loader';
+import { Device } from '@capacitor/device';
 
 defineCustomElements(window);
 
@@ -93,16 +94,19 @@ export class AddGamePage implements OnInit {
     private loadingService: LoadingService,
     private userService: UserService,
     private adService: AdService,
-    private hapticService: HapticService
+    private hapticService: HapticService,
   ) {
     addIcons({ add, chevronDown, chevronUp });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.userService.getUsername().subscribe((username: string) => {
       this.username = username;
     });
-  }
+      const deviceId = (await Device.getId()).identifier; // Get the UUID
+      console.log('Device UUID: ', deviceId); // Log it to the console
+      alert('Your Device UUID is: ' + deviceId); // Display it as an alert (for quick reference)
+     }
 
   async openFileInput(): Promise<File | undefined> {
     return new Promise((resolve) => {

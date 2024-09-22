@@ -79,6 +79,12 @@ export class AddGamePage implements OnInit {
   is300: boolean = false;
   username = '';
   gameData!: Game;
+  deviceId: string = '';
+  private allowedDeviceIds = [
+    '820fabe8-d29b-45c2-89b3-6bcc0e1492fb',
+    '21330a3a-9cff-41ce-981a-00208c21d883',
+    'b376db84-c3a4-4c65-8c59-9710b7d05791'
+  ];
 
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
   @ViewChild(IonModal) modal!: IonModal;
@@ -103,10 +109,8 @@ export class AddGamePage implements OnInit {
     this.userService.getUsername().subscribe((username: string) => {
       this.username = username;
     });
-      const deviceId = (await Device.getId()).identifier; // Get the UUID
-      console.log('Device UUID: ', deviceId); // Log it to the console
-      alert('Your Device UUID is: ' + deviceId); // Display it as an alert (for quick reference)
-     }
+    this.deviceId = (await Device.getId()).identifier;
+  }
 
   async openFileInput(): Promise<File | undefined> {
     return new Promise((resolve) => {
@@ -176,6 +180,10 @@ export class AddGamePage implements OnInit {
   }
 
   async handleImageUpload(): Promise<void> {
+    if (!this.allowedDeviceIds.includes(this.deviceId)) {
+      this.toastService.showToast('You are not allowed to use this feature yet.', 'bug', true);
+      return;
+    }
     try {
       if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
         const adWatched = await this.showAdAlert();

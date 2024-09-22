@@ -68,3 +68,6 @@ testem.log
 Thumbs.db
 
 .vercel
+
+resources/ios/**/*
+resources/android/**/*

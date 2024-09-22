@@ -117,6 +117,10 @@ export class AddGamePage implements OnInit {
     });
   }
 
+  isNative() {
+    return (isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb');
+  }
+
   async takeOrChoosePicture(): Promise<File | Blob | undefined> {
     if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
       const permissionRequestResult = await Camera.checkPermissions();
@@ -388,7 +392,7 @@ export class AddGamePage implements OnInit {
     this.toastService.showToast('Game reset successfully.', 'refresh-outline');
   }
 
-  async calculateScore(): Promise<void> {
+  calculateScore(): void {
     let allGamesValid = true;
 
     this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
@@ -414,9 +418,9 @@ export class AddGamePage implements OnInit {
             this.is300 = false;
           }, 4000);
         }
-        if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
-          await this.adService.showIntertistalAd();
-        }
+        // if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
+        //   await this.adService.showIntertistalAd();
+        // }
         this.hapticService.vibrate(ImpactStyle.Medium, 200);
         this.toastService.showToast('Game saved successfully.', 'add');
       } catch (error) {

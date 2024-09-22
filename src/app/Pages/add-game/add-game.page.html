@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-button type="button" class="actionSheet" slot="start" fill="clear" (click)="handleImageUpload()">
+    <ion-button *ngIf="!isNative()" type="button" class="actionSheet" slot="start" fill="clear" (click)="handleImageUpload()">
       <ion-icon slot="icon-only" name="add"></ion-icon>
     </ion-button>
     <input type="file" id="upload" style="display: none" accept="image/*" />

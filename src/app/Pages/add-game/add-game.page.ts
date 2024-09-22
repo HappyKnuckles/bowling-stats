@@ -81,9 +81,10 @@ export class AddGamePage implements OnInit {
   gameData!: Game;
   deviceId: string = '';
   private allowedDeviceIds = [
-    '820fabe8-d29b-45c2-89b3-6bcc0e1492fb',
+    '820fabe8-d29b-45c2-89b3-6bcc0e149f2b',
     '21330a3a-9cff-41ce-981a-00208c21d883',
-    'b376db84-c3a4-4c65-8c59-9710b7d05791'
+    'b376db84-c3a4-4c65-8c59-9710b7d05791',
+    '01c1e0d1-3469-4091-96a0-76beb68a6f97'
   ];
 
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
@@ -110,8 +111,6 @@ export class AddGamePage implements OnInit {
       this.username = username;
     });
     this.deviceId = (await Device.getId()).identifier;
-    localStorage.setItem('deviceId', this.deviceId);
-    alert(this.deviceId);
   }
 
   async openFileInput(): Promise<File | undefined> {

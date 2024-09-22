@@ -110,6 +110,8 @@ export class AddGamePage implements OnInit {
       this.username = username;
     });
     this.deviceId = (await Device.getId()).identifier;
+    localStorage.setItem('deviceId', this.deviceId);
+    alert(this.deviceId);
   }
 
   async openFileInput(): Promise<File | undefined> {
@@ -123,10 +125,6 @@ export class AddGamePage implements OnInit {
       });
       fileInput.click();
     });
-  }
-
-  isNative() {
-    return (isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb');
   }
 
   async takeOrChoosePicture(): Promise<File | Blob | undefined> {

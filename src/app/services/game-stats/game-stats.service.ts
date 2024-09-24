@@ -193,10 +193,8 @@ export class GameStatsService {
       gameHistory.forEach((game: { totalScore: number }) => {
         if (game.totalScore > highestScore) {
           highestScore = game.totalScore;
-        } else {
-          lowestScore = game.totalScore;
         }
-        if (lowestScore === -1) {
+        if (lowestScore === -1 || game.totalScore < lowestScore) {
           lowestScore = game.totalScore;
         }
       });

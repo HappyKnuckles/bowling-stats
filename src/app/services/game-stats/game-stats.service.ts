@@ -1,31 +1,8 @@
 import { Injectable } from '@angular/core';
+import { SessionStats, Stats } from 'src/app/models/stats-model';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Game } from 'src/app/models/game-model';
-export interface GameStats {
-  totalGames: number;
-  totalPins: number;
-  perfectGameCount: number;
-  cleanGameCount: number;
-  totalStrikes: number;
-  totalSpares: number;
-  totalSparesMissed: number;
-  totalSparesConverted: number;
-  pinCounts: number[];
-  missedCounts: number[];
-  averageStrikesPerGame: number;
-  averageSparesPerGame: number;
-  averageOpensPerGame: number;
-  strikePercentage: number;
-  sparePercentage: number;
-  openPercentage: number;
-  spareConversionPercentage: number;
-  averageFirstCount: number;
-  averageScore: number;
-  highGame: number;
-  spareRates: number[];
-  overallSpareRate: number;
-  overallMissedRate: number;
-}
+import { PrevStats } from 'src/app/models/stats-model';
 
 const PERFECT_SCORE = 300;
 const MAX_FRAMES = 10;
@@ -34,7 +11,7 @@ const MAX_FRAMES = 10;
 })
 export class GameStatsService {
   // Previous Stats
-  prevStats = {
+  prevStats: PrevStats = {
     strikePercentage: 0,
     sparePercentage: 0,
     openPercentage: 0,
@@ -51,7 +28,7 @@ export class GameStatsService {
   };
 
   // Stats
-  currentStats: GameStats = {
+  currentStats: Stats = {
     totalGames: 0,
     totalPins: 0,
     perfectGameCount: 0,
@@ -78,7 +55,7 @@ export class GameStatsService {
   };
 
   // Session Stats
-  sessionStats: GameStats = {
+  sessionStats: SessionStats = {
     totalGames: 0,
     totalPins: 0,
     perfectGameCount: 0,
@@ -99,18 +76,19 @@ export class GameStatsService {
     averageFirstCount: 0,
     averageScore: 0,
     highGame: 0,
+    lowGame: 0,
     spareRates: [],
     overallSpareRate: 0,
     overallMissedRate: 0,
   };
 
-  private currentStatsSubject = new BehaviorSubject<GameStats>(this.currentStats);
-  private sessionStatsSubject = new BehaviorSubject<GameStats>(this.sessionStats);
+  private currentStatsSubject = new BehaviorSubject<Stats>(this.currentStats);
+  private sessionStatsSubject = new BehaviorSubject<SessionStats>(this.sessionStats);
 
   currentStats$ = this.currentStatsSubject.asObservable();
   sessionStats$ = this.sessionStatsSubject.asObservable();
 
-  constructor() {}
+  constructor() { }
 
   calculateStats(gameHistory: Game[]): void {
     const lastComparisonDate = localStorage.getItem('lastComparisonDate') ?? '0';
@@ -190,11 +168,11 @@ export class GameStatsService {
 
   calculateStatsBasedOnDate(gameHistory: Game[], date: number): void {
     const filteredGames = gameHistory.filter((game) => this.isSameDay(game.date, date));
-    this.sessionStats = this.calculateBowlingStats(filteredGames);
+    this.sessionStats = this.calculateBowlingStats(filteredGames) as SessionStats;
     this.updateSessionStats(this.sessionStats);
   }
 
-  private calculateBowlingStats(gameHistory: Game[]): GameStats {
+  private calculateBowlingStats(gameHistory: Game[]): Stats | SessionStats {
     let totalStrikes = 0;
     let totalSpares = 0;
     let totalSparesConverted = 0;
@@ -204,11 +182,24 @@ export class GameStatsService {
     let firstThrowCount = 0;
     let perfectGameCount = 0;
     let cleanGameCount = 0;
+    let lowestScore = -1;
+    let highestScore = -1;
 
     gameHistory.forEach((game: { frames: any[]; totalScore: number }) => {
       if (game.totalScore === PERFECT_SCORE) {
         perfectGameCount++;
       }
+
+      gameHistory.forEach((game: { totalScore: number }) => {
+        if (game.totalScore > highestScore) {
+          highestScore = game.totalScore;
+        } else {
+          lowestScore = game.totalScore;
+        }
+        if (lowestScore === -1) {
+          lowestScore = game.totalScore;
+        }
+      });
 
       let isCleanGame = true;
 
@@ -288,7 +279,8 @@ export class GameStatsService {
 
     const totalGames = gameHistory.length;
     const averageScore = totalPins / gameHistory.length;
-    const highGame = this.getGameWithHighestScore(gameHistory);
+    const highGame = highestScore;
+    const lowGame = lowestScore;
 
     const totalFrames = totalGames * 10;
     const strikeChances = gameHistory.length * 12;
@@ -332,14 +324,15 @@ export class GameStatsService {
       totalPins,
       overallMissedRate,
       spareConversionPercentage,
+      lowGame
     };
   }
 
-  private updateCurrentStats(newStats: GameStats): void {
+  private updateCurrentStats(newStats: Stats | SessionStats): void {
     this.currentStatsSubject.next(newStats);
   }
 
-  private updateSessionStats(newStats: GameStats): void {
+  private updateSessionStats(newStats: SessionStats): void {
     this.sessionStatsSubject.next(newStats);
   }
 
@@ -348,18 +341,6 @@ export class GameStatsService {
       return 0;
     }
     return (converted / (converted + missed)) * 100;
-  }
-
-  private getGameWithHighestScore(gameHistory: Game[]): number {
-    let highestScore = -1;
-
-    gameHistory.forEach((game: { totalScore: number }) => {
-      if (game.totalScore > highestScore) {
-        highestScore = game.totalScore;
-      }
-    });
-
-    return highestScore;
   }
 
   private isSameDay(timestamp1: number, timestamp2: number): boolean {

@@ -22,7 +22,7 @@ import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } fr
 import { ImpactStyle } from '@capacitor/haptics';
 import { Game } from 'src/app/models/game-model';
 import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
-import { GameStats, GameStatsService } from 'src/app/services/game-stats/game-stats.service';
+import { GameStatsService } from 'src/app/services/game-stats/game-stats.service';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { LoadingService } from 'src/app/services/loader/loading.service';
 import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
@@ -33,6 +33,7 @@ import { IonicSlides } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowDown, arrowUp, calendarNumber, calendarNumberOutline } from 'ionicons/icons';
 import { StatDisplayComponent } from 'src/app/components/stat-display/stat-display.component';
+import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
 
 @Component({
   selector: 'app-stats',
@@ -75,7 +76,7 @@ export class StatsPage implements OnInit, OnDestroy {
   statsValueChanged: boolean[] = [true, true, true];
 
   // Previous Stats
-  prevStats = {
+  prevStats: PrevStats = {
     strikePercentage: 0,
     sparePercentage: 0,
     openPercentage: 0,
@@ -92,7 +93,7 @@ export class StatsPage implements OnInit, OnDestroy {
   };
   // Stats
   //TODO add interface for stats
-  stats: GameStats = {
+  stats: Stats = {
     totalGames: 0,
     totalPins: 0,
     perfectGameCount: 0,
@@ -124,7 +125,7 @@ export class StatsPage implements OnInit, OnDestroy {
   selectedSegment: string = 'Overall';
   segments: string[] = ['Overall', 'Spares', 'Throws', 'Sessions'];
 
-  sessionStats: GameStats = {
+  sessionStats: SessionStats = {
     totalGames: 0,
     totalPins: 0,
     perfectGameCount: 0,
@@ -145,6 +146,7 @@ export class StatsPage implements OnInit, OnDestroy {
     averageFirstCount: 0,
     averageScore: 0,
     highGame: 0,
+    lowGame: 0,
     spareRates: [],
     overallSpareRate: 0,
     overallMissedRate: 0,

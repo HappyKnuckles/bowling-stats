@@ -7,7 +7,8 @@
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
-  "icons": [{
+  "icons": [
+    {
       "src": "assets/icons/android/android-launchericon-72-72.png",
       "sizes": "72x72",
       "type": "image/png"
@@ -38,7 +39,8 @@
       "type": "image/png"
     }
   ],
-  "screenshots": [{
+  "screenshots": [
+    {
       "src": "assets/screenshots/start_wide.png",
       "sizes": "2777x1932",
       "type": "image/png",

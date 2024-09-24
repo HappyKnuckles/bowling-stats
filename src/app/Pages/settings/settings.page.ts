@@ -15,7 +15,8 @@ import {
   IonCardContent,
   IonLabel,
   IonButton,
-  IonTextarea, IonText
+  IonTextarea,
+  IonText,
 } from '@ionic/angular/standalone';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -34,7 +35,8 @@ import { LoadingService } from 'src/app/services/loader/loading.service';
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
   standalone: true,
-  imports: [IonText,
+  imports: [
+    IonText,
     IonTextarea,
     ReactiveFormsModule,
     IonButton,

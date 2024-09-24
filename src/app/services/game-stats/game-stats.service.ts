@@ -88,7 +88,7 @@ export class GameStatsService {
   currentStats$ = this.currentStatsSubject.asObservable();
   sessionStats$ = this.sessionStatsSubject.asObservable();
 
-  constructor() { }
+  constructor() {}
 
   calculateStats(gameHistory: Game[]): void {
     const lastComparisonDate = localStorage.getItem('lastComparisonDate') ?? '0';
@@ -324,7 +324,7 @@ export class GameStatsService {
       totalPins,
       overallMissedRate,
       spareConversionPercentage,
-      lowGame
+      lowGame,
     };
   }
 

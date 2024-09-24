@@ -34,6 +34,7 @@ import { addIcons } from 'ionicons';
 import { arrowDown, arrowUp, calendarNumber, calendarNumberOutline } from 'ionicons/icons';
 import { StatDisplayComponent } from 'src/app/components/stat-display/stat-display.component';
 import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
+import { SpareDisplayComponent } from '../../components/spare-display/spare-display.component';
 
 @Component({
   selector: 'app-stats',
@@ -67,6 +68,7 @@ import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
     FormsModule,
     StatDisplayComponent,
     DatePipe,
+    SpareDisplayComponent,
   ],
 })
 export class StatsPage implements OnInit, OnDestroy {
@@ -275,50 +277,6 @@ export class StatsPage implements OnInit, OnDestroy {
 
   getSegmentValue(index: number): string {
     return this.segments[index] || 'Overall';
-  }
-
-  getArrowIcon(currentValue: number, previousValue: number): string {
-    if (currentValue === previousValue) {
-      return '';
-    }
-    return currentValue > previousValue ? 'arrow-up' : 'arrow-down';
-  }
-
-  getDiffColor(currentValue: number, previousValue: number): string {
-    if (currentValue === previousValue) {
-      return '';
-    }
-    return currentValue > previousValue ? 'success' : 'danger';
-  }
-
-  getStatDifference(currentValue: number, previousValue: number): string {
-    const difference = (currentValue - previousValue).toFixed(2);
-    if (Number(difference) === 0) {
-      return '0';
-    }
-    const percentageChange = previousValue === 0 ? '' : ((Number(difference) / previousValue) * 100).toFixed(2);
-    const differenceWithSign = Number(difference) > 0 ? `+${difference}` : difference;
-    return previousValue === 0 ? `${differenceWithSign}` : `${differenceWithSign} (${percentageChange}%)`;
-  }
-
-  getLabel(i: number): string {
-    if (i === 0) return 'Overall';
-    if (i === 1) return `${i} Pin`;
-    return `${i} Pins`;
-  }
-
-  getRateColor(conversionRate: number): string {
-    if (conversionRate > 95) {
-      return '#4faeff';
-    } else if (conversionRate > 75) {
-      return '#008000';
-    } else if (conversionRate > 50) {
-      return '#809300';
-    } else if (conversionRate > 33) {
-      return '#FFA500';
-    } else {
-      return '#FF0000';
-    }
   }
 
   private async loadDataAndCalculateStats(isRefresh?: boolean): Promise<void> {

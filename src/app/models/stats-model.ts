@@ -25,19 +25,19 @@ export interface Stats {
 }
 export interface SessionStats extends Stats {
   lowGame: number;
- }
+}
 export interface PrevStats {
-  strikePercentage: number,
-  sparePercentage: number,
-  openPercentage: number,
-  averageStrikesPerGame: number,
-  averageSparesPerGame: number,
-  averageOpensPerGame: number,
-  averageFirstCount: number,
-  cleanGameCount: number,
-  perfectGameCount: number,
-  averageScore: number,
-  overallSpareRate: number,
-  overallMissedRate: number,
-  spareRates: number[],
+  strikePercentage: number;
+  sparePercentage: number;
+  openPercentage: number;
+  averageStrikesPerGame: number;
+  averageSparesPerGame: number;
+  averageOpensPerGame: number;
+  averageFirstCount: number;
+  cleanGameCount: number;
+  perfectGameCount: number;
+  averageScore: number;
+  overallSpareRate: number;
+  overallMissedRate: number;
+  spareRates: number[];
 }

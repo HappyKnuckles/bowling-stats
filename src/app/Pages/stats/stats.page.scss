@@ -18,21 +18,6 @@ canvas {
   padding: 10px 20px 0 0 !important;
 }
 
-.statGrid {
-  text-align: center;
-  padding: 5px 10px 0 5px;
-
-  ion-text {
-    position: relative;
-
-    ion-icon {
-      position: absolute;
-      right: -20px;
-      top: 5%;
-    }
-  }
-}
-
 ion-segment {
   // --background: var(--ion-tab-bar-background, var(--ion-color-step-50, #f7f7f7))
   // --background: var(--ion-color-dark);

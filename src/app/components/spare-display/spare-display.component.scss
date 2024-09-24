@@ -1,0 +1,14 @@
+.statGrid {
+  text-align: center;
+  padding: 5px 10px 0 5px;
+
+  ion-text {
+    position: relative;
+
+    ion-icon {
+      position: absolute;
+      right: -20px;
+      top: 5%;
+    }
+  }
+}

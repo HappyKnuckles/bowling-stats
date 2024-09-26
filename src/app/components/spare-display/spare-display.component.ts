@@ -17,7 +17,7 @@ import { informationCircleOutline } from 'ionicons/icons';
 export class SpareDisplayComponent {
   @Input({ required: true }) stats!: Stats | SessionStats;
   @Input() prevStats?: PrevStats;
-
+  @Input() id?: string;
   constructor() {
     addIcons({ informationCircleOutline });
   }

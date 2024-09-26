@@ -92,7 +92,7 @@
 
       <!-- Spares Segment -->
       <swiper-slide class="tab">
-        <app-spare-display [stats]="stats" [prevStats]="prevStats"></app-spare-display>
+        <app-spare-display [stats]="stats" [prevStats]="prevStats" [id]="'1'"></app-spare-display>
         <canvas #pinChart class="spares" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 
@@ -160,7 +160,7 @@
           </swiper-slide>
 
           <swiper-slide class="tab">
-            <app-spare-display [stats]="sessionStats"></app-spare-display>
+            <app-spare-display [stats]="sessionStats" [id]="'2'"></app-spare-display>
           </swiper-slide>
         </swiper-container>
       </swiper-slide>

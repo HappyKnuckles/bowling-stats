@@ -1,9 +1,9 @@
 <ion-grid class="statGrid">
   <ion-row style="font-weight: bold">
-    <ion-col [id]="'tooltip'"
+    <ion-col [id]="'tooltip' + id"
       ><ion-text>Count <ion-icon name="information-circle-outline"></ion-icon></ion-text
     ></ion-col>
-    <ion-popover [trigger]="'tooltip'" size="cover">
+    <ion-popover [trigger]="'tooltip' + id" size="cover">
       <ion-text class="tooltip">This is the pin count you left standing after your first throw.</ion-text>
     </ion-popover>
     <ion-col><ion-text>Missed</ion-text></ion-col>

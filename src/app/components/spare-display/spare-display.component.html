@@ -1,7 +1,11 @@
 <ion-grid class="statGrid">
   <ion-row style="font-weight: bold">
-    <ion-col><ion-text>Count</ion-text></ion-col>
+    <ion-col [id]="'tooltip'"><ion-text>Count <ion-icon name="information-circle-outline"></ion-icon></ion-text></ion-col> 
+    <ion-popover [trigger]="'tooltip'" size="cover">
+      <ion-text style="padding: 8px; color: black;">This is the pin count you left standing after your first throw.</ion-text>
+    </ion-popover>
     <ion-col><ion-text>Missed</ion-text></ion-col>
+   
     <ion-col><ion-text>Converted</ion-text></ion-col>
     <ion-col><ion-text>Rate</ion-text></ion-col>
   </ion-row>

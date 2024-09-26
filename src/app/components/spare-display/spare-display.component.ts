@@ -3,6 +3,8 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
 import { IonText, IonCol, IonRow, IonIcon, IonGrid } from '@ionic/angular/standalone';
 import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
 import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-number.pipe';
+import { addIcons } from 'ionicons';
+import { informationCircleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-spare-display',
@@ -15,8 +17,11 @@ import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-numbe
 export class SpareDisplayComponent {
   @Input({ required: true }) stats!: Stats | SessionStats;
   @Input() prevStats?: PrevStats;
+  
 
-  constructor() {}
+  constructor() {
+    addIcons({informationCircleOutline});
+  }
 
   getStatDifference(currentValue: number, previousValue: number): string {
     const difference = (currentValue - previousValue).toFixed(2);

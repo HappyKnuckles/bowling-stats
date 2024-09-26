@@ -2,6 +2,8 @@ import { NgIf, NgStyle } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { IonText, IonIcon } from '@ionic/angular/standalone';
 import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-number.pipe';
+import { addIcons } from 'ionicons';
+import { information, informationCircleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-stat-display',
@@ -14,13 +16,16 @@ import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-numbe
 export class StatDisplayComponent implements OnChanges {
   @Input({ required: true }) label!: string;
   @Input({ required: true }) currentStat!: number;
+  @Input() toolTip?: string;
   @Input() prevStat?: number;
   @Input() id?: string;
   @Input() isPercentage?: boolean;
 
   statDifference: string = '0';
 
-  constructor() {}
+  constructor(
+    
+  ) {addIcons({informationCircleOutline})}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentStat'] || changes['prevStat']) {

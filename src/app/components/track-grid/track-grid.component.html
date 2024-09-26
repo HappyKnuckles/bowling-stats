@@ -6,13 +6,7 @@
     <ion-row>
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
-        <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          (ionInput)="onInput($event, frameIndex, 0)">
-        </ion-input>
+        <ion-input type="text" clearOnEdit="true" inputmode="numeric" autocapitalize="on" (ionInput)="onInput($event, frameIndex, 0)"> </ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
         <ion-input

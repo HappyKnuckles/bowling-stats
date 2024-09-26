@@ -23,9 +23,9 @@ export class StatDisplayComponent implements OnChanges {
 
   statDifference: string = '0';
 
-  constructor(
-    
-  ) {addIcons({informationCircleOutline})}
+  constructor() {
+    addIcons({ informationCircleOutline });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentStat'] || changes['prevStat']) {

@@ -47,6 +47,21 @@ ion-header {
   }
 }
 
+.tooltip {
+  padding: 8px;
+}
+.blue .tooltip {
+  padding: 8px;
+  color: black;
+}
+.green,
+.red,
+.gray,
+.lila {
+  .tooltip {
+    color: white;
+  }
+}
 .invalid-input {
   border: 1px solid red !important;
 }

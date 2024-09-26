@@ -117,10 +117,17 @@
         <swiper-container [nested]="true" [modules]="swiperModules" #swipernest>
           <swiper-slide class="tab">
             <app-stat-display label="Games" [currentStat]="sessionStats.totalGames"></app-stat-display>
-            <app-stat-display label="Clean games" [id]="'clean'" [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'" [currentStat]="sessionStats.cleanGameCount" [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"
-            ></app-stat-display>
-            <app-stat-display label="Perfect games"   [id]="'perfect'"        [toolTip]="'A perfect game means every frame is filled with strikes.'"
-            [currentStat]="sessionStats.perfectGameCount" ></app-stat-display>
+            <app-stat-display
+              label="Clean games"
+              [id]="'clean'"
+              [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"
+              [currentStat]="sessionStats.cleanGameCount"
+              [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"></app-stat-display>
+            <app-stat-display
+              label="Perfect games"
+              [id]="'perfect'"
+              [toolTip]="'A perfect game means every frame is filled with strikes.'"
+              [currentStat]="sessionStats.perfectGameCount"></app-stat-display>
             <app-stat-display label="Average" [currentStat]="sessionStats.averageScore"></app-stat-display>
             <app-stat-display label="High game" [currentStat]="sessionStats.highGame"></app-stat-display>
             <app-stat-display label="Low game" [currentStat]="sessionStats.lowGame"></app-stat-display>

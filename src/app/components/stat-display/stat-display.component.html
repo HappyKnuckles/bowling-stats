@@ -1,7 +1,7 @@
 <div class="stats">
   <ion-text [id]="id + '-tooltip'">{{ label }}: <ion-icon *ngIf="toolTip" name="information-circle-outline"></ion-icon></ion-text>
   <ion-popover *ngIf="toolTip" [trigger]="id + '-tooltip'" size="cover">
-    <ion-text style="padding: 8px; color: black;">{{toolTip}}</ion-text>
+    <ion-text class="tooltip">{{ toolTip }}</ion-text>
   </ion-popover>
   <ion-text class="value" [id]="id">
     {{ currentStat | conditionalNumber }}<span *ngIf="isPercentage">%</span>

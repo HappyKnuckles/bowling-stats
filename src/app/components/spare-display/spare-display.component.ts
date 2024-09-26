@@ -17,10 +17,9 @@ import { informationCircleOutline } from 'ionicons/icons';
 export class SpareDisplayComponent {
   @Input({ required: true }) stats!: Stats | SessionStats;
   @Input() prevStats?: PrevStats;
-  
 
   constructor() {
-    addIcons({informationCircleOutline});
+    addIcons({ informationCircleOutline });
   }
 
   getStatDifference(currentValue: number, previousValue: number): string {

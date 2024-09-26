@@ -101,67 +101,85 @@
         <ion-content>
           <h2 class="ion-text-center">Passe hier falsche Spieldaten an</h2>
           <div class="grid-container">
-            <ion-grid fixed="true" *ngFor="let frame of gameData.frames; let frameIndex = index;">
-              <ion-row>
-                <ion-col class="middle frame">{{frameIndex + 1}}</ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col class="inputCol" *ngIf="frameIndex !== 9"></ion-col>
-                <ion-col class="inputCol">
-                  <ion-input
-                    type="text"
-                    clearOnEdit="true"
-                    [value]="frame.throws[0]?.value"
-                    inputmode="numeric"
-                    debounce="300"
-                    [ngClass]="{'invalid-input': frame.isInvalid}"
-                    (ionChange)="frame.throws[0] = frame.throws[0] || {}; frame.throws[0].value = $event.target.value; isGameValid(gameData)"></ion-input>
-                </ion-col>
-                <ion-col class="inputCol" *ngIf="frameIndex !== 9">
-                  <ion-input
-                    type="text"
-                    clearOnEdit="true"
-                    [value]="frame.throws[1]?.value"
-                    inputmode="numeric"
-                    debounce="300"
-                    [ngClass]="{'invalid-input': frame.isInvalid}"
-                    (ionChange)="frame.throws[1] = frame.throws[1] || {}; frame.throws[1].value = $event.target.value; isGameValid(gameData)"></ion-input>
-                </ion-col>
-                <ion-col class="inputCol" *ngIf="frameIndex === 9">
-                  <ion-input
-                    type="text"
-                    clearOnEdit="true"
-                    [value]="frame.throws[1]?.value"
-                    inputmode="numeric"
-                    debounce="300"
-                    [ngClass]="{'invalid-input': frame.isInvalid}"
-                    (ionChange)="frame.throws[1] = frame.throws[1] || {}; frame.throws[1].value = $event.target.value; isGameValid(gameData)"></ion-input>
-                </ion-col>
-                <ion-col class="inputCol" *ngIf="frameIndex === 9">
-                  <ion-input
-                    type="text"
-                    clearOnEdit="true"
-                    [value]="frame.throws[2]?.value"
-                    inputmode="numeric"
-                    debounce="300"
-                    [ngClass]="{'invalid-input': frame.isInvalid}"
-                    (ionChange)="frame.throws[2] = frame.throws[2] || {}; frame.throws[2].value = $event.target.value; isGameValid(gameData)"></ion-input>
-                </ion-col>
-              </ion-row>
-              <ion-row>
-                <ion-col class="middle count">
-                  <ion-input
-                    type="text"
-                    class="frameScores"
-                    [value]="gameData.frameScores[frameIndex]"
-                    inputmode="numeric"
-                    clearOnEdit="true"
-                    (ionChange)="updateFrameScore($event.target.value, frameIndex)">
-                  </ion-input>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </div>
+              <ion-grid fixed="true" *ngFor="let frame of gameData.frames; let frameIndex = index;">
+                <!-- Frame Number -->
+                <ion-row>
+                  <ion-col class="middle frame">{{ frameIndex + 1 }}</ion-col>
+                </ion-row>
+                
+                <!-- Frame Inputs for Throws -->
+                <ion-row>
+                  <ion-col class="inputCol" *ngIf="frameIndex !== 9"></ion-col>
+                  
+                  <!-- First Throw -->
+                  <ion-col class="inputCol">
+                    <ion-input
+                      type="text"
+                      clearOnEdit="true"
+                      [value]="frame.throws[0]?.value"
+                      inputmode="numeric"
+                      debounce="300"
+                      [ngClass]="{'invalid-input': frame.isInvalid}"
+                      (ionInput)="onInputChange($event, frameIndex, 0)">
+                    </ion-input>
+                  </ion-col>
+                  
+                  <!-- Second Throw for Frames 1-9 -->
+                  <ion-col class="inputCol" *ngIf="frameIndex !== 9">
+                    <ion-input
+                      type="text"
+                      clearOnEdit="true"
+                      [value]="frame.throws[1]?.value"
+                      inputmode="numeric"
+                      debounce="300"
+                      [ngClass]="{'invalid-input': frame.isInvalid}"
+                      (ionInput)="onInputChange($event, frameIndex, 1)">
+                    </ion-input>
+                  </ion-col>
+                  
+                  <!-- Second and Third Throws for 10th Frame -->
+                  <ion-col class="inputCol" *ngIf="frameIndex === 9">
+                    <ion-input
+                      type="text"
+                      clearOnEdit="true"
+                      [value]="frame.throws[1]?.value"
+                      inputmode="numeric"
+                      debounce="300"
+                      [ngClass]="{'invalid-input': frame.isInvalid}"
+                      (ionInput)="onInputChange($event, frameIndex, 1)">
+                    </ion-input>
+                  </ion-col>
+                  
+                  <ion-col class="inputCol" *ngIf="frameIndex === 9">
+                    <ion-input
+                      type="text"
+                      clearOnEdit="true"
+                      [value]="frame.throws[2]?.value"
+                      inputmode="numeric"
+                      debounce="300"
+                      [ngClass]="{'invalid-input': frame.isInvalid}"
+                      (ionInput)="onInputChange($event, frameIndex, 2)">
+                    </ion-input>
+                  </ion-col>
+                </ion-row>
+                
+                <!-- Frame Scores -->
+                <ion-row>
+                  <ion-col class="middle count">
+                    <ion-input
+                      type="text"
+                      class="frameScores"
+                      [value]="gameData.frameScores[frameIndex]"
+                      inputmode="numeric"
+                      debounce="300"
+                      clearOnEdit="true"
+                      (ionInput)="updateFrameScore($event, frameIndex)">
+                    </ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </div>
+            
         </ion-content>
       </ng-template>
     </ion-modal>

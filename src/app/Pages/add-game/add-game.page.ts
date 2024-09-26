@@ -177,10 +177,10 @@ export class AddGamePage implements OnInit {
   }
 
   async handleImageUpload(): Promise<void> {
-    if (!this.allowedDeviceIds.includes(this.deviceId)) {
-      this.toastService.showToast('You are not allowed to use this feature yet.', 'bug', true);
-      return;
-    }
+    // if (!this.allowedDeviceIds.includes(this.deviceId)) {
+    //   this.toastService.showToast('You are not allowed to use this feature yet.', 'bug', true);
+    //   return;
+    // }
     try {
       if ((isPlatform('android') || isPlatform('ios')) && !isPlatform('mobileweb')) {
         const adWatched = await this.showAdAlert();
@@ -203,7 +203,82 @@ export class AddGamePage implements OnInit {
       this.loadingService.setLoading(false);
     }
   }
-
+  onInputChange(event: any, frameIndex: number, throwIndex: number): void {
+    let inputValue = event.target.value;
+    let parsedValue: number = 0;
+    // Handle notation for frames 1-9
+    if (frameIndex < 9) {
+      if (inputValue === 'X' || inputValue === 'x') {
+        parsedValue = 10; // Strike notation
+      } else if (inputValue === '/') {
+        const firstThrow = this.gameData.frames[frameIndex].throws[0]?.value || 0;
+        parsedValue = 10 - firstThrow; // Spare notation
+      } else {
+        parsedValue = parseInt(inputValue, 10); // Regular number input
+      }
+    } else {
+      // Handle notation for 10th frame
+      const firstThrow = this.gameData.frames[frameIndex].throws[0]?.value || 0;
+      const secondThrow = this.gameData.frames[frameIndex].throws[1]?.value || 0;
+  
+      switch (throwIndex) {
+        case 0: // First throw in 10th frame
+          if (inputValue === 'X' || inputValue === 'x') {
+            parsedValue = 10;
+          } else {
+            parsedValue = parseInt(inputValue, 10); // Regular number input
+          }
+          break;
+  
+        case 1: // Second throw in 10th frame
+          if (firstThrow === 10) {
+            // First throw was a strike, any value (0-10) is valid
+            if (inputValue === 'X' || inputValue === 'x') {
+              parsedValue = 10;
+            } else {
+              parsedValue = parseInt(inputValue, 10);
+            }
+          } else if (inputValue === '/') {
+            parsedValue = 10 - firstThrow; // Spare notation
+          } else {
+            parsedValue = parseInt(inputValue, 10); // Regular number input
+          }
+          break;
+  
+        case 2: // Third throw in 10th frame
+          if (firstThrow === 10) {
+            // If first throw is a strike, handle second throw conditions
+            if (secondThrow === 10 && (inputValue === 'X' || inputValue === 'x')) {
+              parsedValue = 10; // Double strike
+            } else if (secondThrow !== 10 && inputValue === '/') {
+              parsedValue = 10 - secondThrow; // Spare notation after a non-strike second throw
+            } else {
+              parsedValue = parseInt(inputValue, 10); // Regular number input
+            }
+          } else if (firstThrow + secondThrow === 10) {
+            // First two throws were a spare, any value (0-10) is valid
+            if (inputValue === 'X' || inputValue === 'x') {
+              parsedValue = 10; // Strike
+            } else {
+              parsedValue = parseInt(inputValue, 10); // Regular number input
+            }
+          }
+          break;
+      }
+    }
+    if(this.gameData.frames[frameIndex].throws[throwIndex]){
+    // Update the frame data with parsed value
+    if (parsedValue !== undefined && !isNaN(parsedValue)) {
+      this.gameData.frames[frameIndex].throws[throwIndex].value = parsedValue;
+    } else {
+      // Handle invalid input (e.g., letters other than X or /)
+      this.gameData.frames[frameIndex].throws[throwIndex].value = 0;
+    }} else this.gameData.frames[frameIndex].isInvalid = true;
+  
+    // Validate game state after input change
+    this.isGameValid(this.gameData);
+  }
+  
   showAdAlert(): Promise<boolean> {
     return new Promise((resolve) => {
       this.alertController
@@ -349,11 +424,16 @@ export class AddGamePage implements OnInit {
     let isValid = true;
 
     game.frames.forEach((frame: any, index: number) => {
-      const throws = frame.throws.map((t: { value: any }) => t.value);
+      let throws = frame.throws.map((t: { value: any }) => t.value);
       if (index < 9) {
         // For frames 1 to 9
+        if(throws[0] === 10 && !isNaN(parseInt(throws[1]))){
+         throws.splice(1,1)
+         frame.throws.splice(1,1)
+        }        console.log(throws)
+
         const frameValid =
-          (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
+          (throws[0] === 10 && (isNaN(parseInt(throws[1]))||  throws[1] === 0 )) ||
           (throws[0] !== 10 &&
             throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 &&
             throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));

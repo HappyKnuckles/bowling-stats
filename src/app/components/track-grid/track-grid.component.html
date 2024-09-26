@@ -10,7 +10,7 @@
           type="text"
           clearOnEdit="true"
           inputmode="numeric"
-          [(ngModel)]="bowlingService.frames[frameIndex][0]"
+          autocapitalize="on"
           (ionInput)="onInput($event, frameIndex, 0)">
         </ion-input>
       </ion-col>
@@ -19,7 +19,7 @@
           type="text"
           clearOnEdit="true"
           inputmode="numeric"
-          [(ngModel)]="bowlingService.frames[frameIndex][1]"
+          autocapitalize="on"
           [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10"
           (ionInput)="onInput($event, frameIndex, 1)">
         </ion-input>
@@ -29,7 +29,7 @@
           type="text"
           clearOnEdit="true"
           inputmode="numeric"
-          [(ngModel)]="bowlingService.frames[frameIndex][1]"
+          autocapitalize="on"
           [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10"
           (ionInput)="onInput($event, frameIndex, 1)">
         </ion-input>
@@ -39,7 +39,7 @@
           type="text"
           clearOnEdit="true"
           inputmode="numeric"
-          [(ngModel)]="bowlingService.frames[frameIndex][2]"
+          autocapitalize="on"
           [disabled]="
             bowlingService.frames[frameIndex][0] !== 10 && bowlingService.frames[frameIndex][0] + (bowlingService.frames[frameIndex][1] || 0) !== 10
           "

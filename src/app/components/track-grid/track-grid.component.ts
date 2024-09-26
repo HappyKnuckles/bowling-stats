@@ -47,74 +47,12 @@ export class TrackGridComponent implements OnInit {
 
   simulateScore(event: any, frameIndex: number, inputIndex: number): void {
     const inputValue = event.target.value;
-    let parsedValue: number = 0;
-    if (frameIndex < 9) {
-      // Frames 1-9
-      if (inputValue === 'X' || inputValue === 'x') {
-        parsedValue = 10; // Strike
-      } else if (inputValue === '/') {
-        const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
-        parsedValue = 10 - firstThrow; // Spare
-      } else {
-        parsedValue = parseInt(inputValue, 10); // Regular number input
-      }
-    } else {
-      // 10th Frame
-      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
-      const secondThrow = this.bowlingService.frames[frameIndex][1] || 0;
-    
-      switch (inputIndex) {
-        case 0: // First throw of 10th frame
-          if (inputValue === 'X' || inputValue === 'x') {
-            parsedValue = 10; // Strike
-          } else {
-            parsedValue = parseInt(inputValue, 10); // Regular number input
-          }
-          break;
-    
-        case 1: // Second throw of 10th frame
-          if (firstThrow === 10) {
-            // First throw was a strike, any value (0-10) is valid
-            if (inputValue === 'X' || inputValue === 'x') {
-              parsedValue = 10; // Strike
-            } else {
-              parsedValue = parseInt(inputValue, 10); // Regular number input
-            }
-          } else if (inputValue === '/') {
-            // First throw was not a strike, use spare notation
-            parsedValue = 10 - firstThrow;
-          } else {
-            parsedValue = parseInt(inputValue, 10); // Regular number input
-          }
-          break;
-    
-        case 2: // Third throw of 10th frame
-          if (firstThrow === 10) {
-            // If first throw is a strike, handle second throw conditions
-            if (secondThrow === 10 && (inputValue === 'X' || inputValue === 'x')) {
-              parsedValue = 10; // Double strike
-            } else if (secondThrow !== 10 && inputValue === '/') {
-              parsedValue = 10 - secondThrow; // Spare after a non-strike second throw
-            } else {
-              parsedValue = parseInt(inputValue, 10); // Regular number input
-            }
-          } else if (firstThrow + secondThrow === 10) {
-            // First two throws were a spare, any value (0-10) is valid
-            if (inputValue === 'X' || inputValue === 'x') {
-              parsedValue = 10; // Strike
-            } else {
-              parsedValue = parseInt(inputValue, 10); // Regular number input
-            }
-          }
-          break;
-      }
-    }
+    const parsedValue = this.parseInputValue(inputValue, frameIndex, inputIndex);
 
     if (!this.isValidNumber0to10(parsedValue)) {
       this.handleInvalidInput(event);
       return;
     }
-
     if (!this.isValidFrameScore(parsedValue, frameIndex, inputIndex)) {
       this.handleInvalidInput(event);
       return;
@@ -123,6 +61,58 @@ export class TrackGridComponent implements OnInit {
     this.bowlingService.frames[frameIndex][inputIndex] = parsedValue;
     this.updateScores();
     this.focusNextInput(frameIndex, inputIndex);
+  }
+
+  private parseInputValue(inputValue: string, frameIndex: number, inputIndex: number): number {
+    if (frameIndex < 9) {
+      // Frames 1-9
+      if (inputValue === 'X' || inputValue === 'x') {
+        return 10; // Strike
+      } else if (inputValue === '/') {
+        const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+        return 10 - firstThrow; // Spare
+      }
+    } else {
+      // 10th Frame
+      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+      const secondThrow = this.bowlingService.frames[frameIndex][1] || 0;
+
+      switch (inputIndex) {
+        case 0: // First throw of 10th frame
+          if (inputValue === 'X' || inputValue === 'x') {
+            return 10; // Strike
+          }
+          break;
+        case 1: // Second throw of 10th frame
+          if (firstThrow === 10) {
+            // First throw was a strike, any value (0-10) is valid
+            if (inputValue === 'X' || inputValue === 'x') {
+              return 10; // Strike
+            }
+          } else if (inputValue === '/') {
+            // First throw was not a strike, use spare notation
+            return 10 - firstThrow;
+          }
+          break;
+
+        case 2: // Third throw of 10th frame
+          if (firstThrow === 10) {
+            // If first throw is a strike, handle second throw conditions
+            if (secondThrow === 10 && (inputValue === 'X' || inputValue === 'x')) {
+              return 10; // Double strike
+            } else if (secondThrow !== 10 && inputValue === '/') {
+              return 10 - secondThrow; // Spare after a non-strike second throw
+            }
+          } else if (firstThrow + secondThrow === 10) {
+            // First two throws were a spare, any value (0-10) is valid
+            if (inputValue === 'X' || inputValue === 'x') {
+              return 10; // Strike
+            }
+          }
+          break;
+      }
+    }
+    return parseInt(inputValue, 10);
   }
 
   private isValidNumber0to10(value: number): boolean {
@@ -137,12 +127,12 @@ export class TrackGridComponent implements OnInit {
     }
     if (frameIndex < 9) {
       // Regular frames (1-9)
-      const firstThrow = parseInt(this.bowlingService.frames[frameIndex][0].toString()) || 0;
+      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
       const secondThrow = inputIndex === 1 ? inputValue : this.bowlingService.frames[frameIndex][1] || 0;
       return firstThrow + secondThrow <= 10;
     } else {
       // 10th frame
-      const firstThrow = parseInt(this.bowlingService.frames[frameIndex][0].toString()) || 0;
+      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
       const secondThrow = this.bowlingService.frames[frameIndex][1] || 0;
 
       switch (inputIndex) {
@@ -259,6 +249,9 @@ export class TrackGridComponent implements OnInit {
 
   clearFrames(): void {
     this.bowlingService.clearRolls();
+    this.inputs.forEach((input) => {
+      input.value = '';
+    });
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;
     this.maxScoreChanged.emit(this.maxScore);

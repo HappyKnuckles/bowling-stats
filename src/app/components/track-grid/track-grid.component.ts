@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren, input } from '@angular/core';
 import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
 import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
@@ -46,19 +46,81 @@ export class TrackGridComponent implements OnInit {
   }
 
   simulateScore(event: any, frameIndex: number, inputIndex: number): void {
-    const inputValue = parseInt(event.target.value, 10);
+    const inputValue = event.target.value;
+    let parsedValue: number = 0;
+    if (frameIndex < 9) {
+      // Frames 1-9
+      if (inputValue === 'X' || inputValue === 'x') {
+        parsedValue = 10; // Strike
+      } else if (inputValue === '/') {
+        const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+        parsedValue = 10 - firstThrow; // Spare
+      } else {
+        parsedValue = parseInt(inputValue, 10); // Regular number input
+      }
+    } else {
+      // 10th Frame
+      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+      const secondThrow = this.bowlingService.frames[frameIndex][1] || 0;
+    
+      switch (inputIndex) {
+        case 0: // First throw of 10th frame
+          if (inputValue === 'X' || inputValue === 'x') {
+            parsedValue = 10; // Strike
+          } else {
+            parsedValue = parseInt(inputValue, 10); // Regular number input
+          }
+          break;
+    
+        case 1: // Second throw of 10th frame
+          if (firstThrow === 10) {
+            // First throw was a strike, any value (0-10) is valid
+            if (inputValue === 'X' || inputValue === 'x') {
+              parsedValue = 10; // Strike
+            } else {
+              parsedValue = parseInt(inputValue, 10); // Regular number input
+            }
+          } else if (inputValue === '/') {
+            // First throw was not a strike, use spare notation
+            parsedValue = 10 - firstThrow;
+          } else {
+            parsedValue = parseInt(inputValue, 10); // Regular number input
+          }
+          break;
+    
+        case 2: // Third throw of 10th frame
+          if (firstThrow === 10) {
+            // If first throw is a strike, handle second throw conditions
+            if (secondThrow === 10 && (inputValue === 'X' || inputValue === 'x')) {
+              parsedValue = 10; // Double strike
+            } else if (secondThrow !== 10 && inputValue === '/') {
+              parsedValue = 10 - secondThrow; // Spare after a non-strike second throw
+            } else {
+              parsedValue = parseInt(inputValue, 10); // Regular number input
+            }
+          } else if (firstThrow + secondThrow === 10) {
+            // First two throws were a spare, any value (0-10) is valid
+            if (inputValue === 'X' || inputValue === 'x') {
+              parsedValue = 10; // Strike
+            } else {
+              parsedValue = parseInt(inputValue, 10); // Regular number input
+            }
+          }
+          break;
+      }
+    }
 
-    if (!this.isValidNumber0to10(inputValue)) {
+    if (!this.isValidNumber0to10(parsedValue)) {
       this.handleInvalidInput(event);
       return;
     }
 
-    if (!this.isValidFrameScore(inputValue, frameIndex, inputIndex)) {
+    if (!this.isValidFrameScore(parsedValue, frameIndex, inputIndex)) {
       this.handleInvalidInput(event);
       return;
     }
 
-    this.bowlingService.frames[frameIndex][inputIndex] = inputValue;
+    this.bowlingService.frames[frameIndex][inputIndex] = parsedValue;
     this.updateScores();
     this.focusNextInput(frameIndex, inputIndex);
   }
@@ -68,14 +130,19 @@ export class TrackGridComponent implements OnInit {
   }
 
   private isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number): boolean {
+    if (inputIndex === 1) {
+      if (!this.bowlingService.frames[frameIndex][0]) {
+        return false;
+      }
+    }
     if (frameIndex < 9) {
       // Regular frames (1-9)
-      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+      const firstThrow = parseInt(this.bowlingService.frames[frameIndex][0].toString()) || 0;
       const secondThrow = inputIndex === 1 ? inputValue : this.bowlingService.frames[frameIndex][1] || 0;
       return firstThrow + secondThrow <= 10;
     } else {
       // 10th frame
-      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
+      const firstThrow = parseInt(this.bowlingService.frames[frameIndex][0].toString()) || 0;
       const secondThrow = this.bowlingService.frames[frameIndex][1] || 0;
 
       switch (inputIndex) {
@@ -129,6 +196,7 @@ export class TrackGridComponent implements OnInit {
   }
 
   async focusNextInput(frameIndex: number, inputIndex: number) {
+    await new Promise((resolve) => setTimeout(resolve, 1));
     // Convert QueryList to an array
     const inputArray = this.inputs.toArray();
     // Calculate the current index in the linear array of inputs

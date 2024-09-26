@@ -7,7 +7,7 @@
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
         <ion-input
-          type="number"
+          type="text"
           clearOnEdit="true"
           inputmode="numeric"
           [(ngModel)]="bowlingService.frames[frameIndex][0]"
@@ -16,7 +16,7 @@
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
         <ion-input
-          type="number"
+          type="text"
           clearOnEdit="true"
           inputmode="numeric"
           [(ngModel)]="bowlingService.frames[frameIndex][1]"
@@ -26,7 +26,7 @@
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
         <ion-input
-          type="number"
+          type="text"
           clearOnEdit="true"
           inputmode="numeric"
           [(ngModel)]="bowlingService.frames[frameIndex][1]"
@@ -36,7 +36,7 @@
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
         <ion-input
-          type="number"
+          type="text"
           clearOnEdit="true"
           inputmode="numeric"
           [(ngModel)]="bowlingService.frames[frameIndex][2]"

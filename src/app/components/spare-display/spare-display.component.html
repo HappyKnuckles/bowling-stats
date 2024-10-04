@@ -3,7 +3,7 @@
     <ion-col [id]="'tooltip' + id"
       ><ion-text>Count <ion-icon name="information-circle-outline"></ion-icon></ion-text
     ></ion-col>
-    <ion-popover [trigger]="'tooltip' + id" size="cover">
+    <ion-popover [trigger]="'tooltip' + id">
       <ion-text class="tooltip">This is the pin count you left standing after your first throw.</ion-text>
     </ion-popover>
     <ion-col><ion-text>Missed</ion-text></ion-col>
@@ -28,14 +28,15 @@
         id="spareRates{{ i }}"
         *ngIf="stats.pinCounts[i] !== 0 || stats.missedCounts[i] !== 0"
         [ngStyle]="{ color: getRateColor(stats.spareRates[i]) }">
-        <ion-text
-          >{{ stats.spareRates[i] | number : "1.2-2" }}%
+        <div class="spare-rates-content">
+          <ion-text>{{ stats.spareRates[i] | number : "1.2-2" }}% </ion-text>
           <ion-icon
+            class="arrowIcon"
             *ngIf="prevStats && getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])"
             [name]="getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])"
             [color]="getDiffColor(stats.spareRates[i], prevStats.spareRates[i])">
           </ion-icon>
-        </ion-text>
+        </div>
 
         <ion-popover
           class="diffPopover"

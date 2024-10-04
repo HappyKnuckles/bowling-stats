@@ -7,8 +7,19 @@
 
     ion-icon {
       position: absolute;
-      right: -20px;
-      top: 5%;
+      right: -25px;
     }
   }
+}
+.spare-rates-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.arrowIcon {
+  position: absolute;
+  right: -5px;
+  top: 1px;
 }

@@ -20,7 +20,7 @@ import {
 } from '@ionic/angular/standalone';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { colorPaletteOutline, personCircleOutline } from 'ionicons/icons';
+import { colorPaletteOutline, logoGithub, personCircleOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { UserService } from 'src/app/services/user/user.service';
@@ -75,9 +75,8 @@ export class SettingsPage implements OnInit {
     private toastService: ToastService,
     private loadingService: LoadingService,
     private themeService: ThemeChangerService,
-    private http: HttpClient
   ) {
-    addIcons({ personCircleOutline, colorPaletteOutline });
+    addIcons({ personCircleOutline, colorPaletteOutline, logoGithub });
   }
 
   ngOnInit() {

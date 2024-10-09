@@ -25,7 +25,6 @@ import { CommonModule } from '@angular/common';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { UserService } from 'src/app/services/user/user.service';
 import { ThemeChangerService } from 'src/app/services/theme/theme-changer.service';
-import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import emailjs from '@emailjs/browser';
 import { LoadingService } from 'src/app/services/loader/loading.service';
@@ -74,7 +73,7 @@ export class SettingsPage implements OnInit {
     private userService: UserService,
     private toastService: ToastService,
     private loadingService: LoadingService,
-    private themeService: ThemeChangerService,
+    private themeService: ThemeChangerService
   ) {
     addIcons({ personCircleOutline, colorPaletteOutline, logoGithub });
   }

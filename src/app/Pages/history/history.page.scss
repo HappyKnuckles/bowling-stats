@@ -43,7 +43,10 @@ ion-row {
 }
 
 .sliding {
-  ion-item {
+  .note {
+    --inner-border-width: 0;
+  }
+  ion-item:not(.note) {
     --padding-start: 0;
     --inner-padding-end: 0;
     --inner-border-width: 0;

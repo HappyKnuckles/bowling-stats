@@ -3,6 +3,7 @@ export interface Stats {
   totalPins: number;
   perfectGameCount: number;
   cleanGameCount: number;
+  cleanGamePercentage: number;
   totalStrikes: number;
   totalSpares: number;
   totalSparesMissed: number;
@@ -27,6 +28,8 @@ export interface SessionStats extends Stats {
   lowGame: number;
 }
 export interface PrevStats {
+  cleanGamePercentage: number;
+
   strikePercentage: number;
   sparePercentage: number;
   openPercentage: number;

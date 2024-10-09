@@ -7,7 +7,7 @@ import { Game } from 'src/app/models/game-model';
 export class GameDataTransformerService {
   constructor() {}
 
-  transformGameData(frames: any, frameScores: any, totalScore: any): Game {
+  transformGameData(frames: any, frameScores: any, totalScore: any, isSeries?: boolean, seriesId?: string, note?: string): Game {
     const gameId = Date.now() + '_' + Math.random().toString(36).substr(2, 9); // Generate a unique gameId
     const date = Date.now();
     return {
@@ -22,6 +22,9 @@ export class GameDataTransformerService {
       })),
       frameScores: frameScores,
       totalScore: totalScore,
+      isSeries: isSeries,
+      seriesId: seriesId,
+      note: note,
     };
   }
 }

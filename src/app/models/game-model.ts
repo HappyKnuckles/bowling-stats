@@ -4,7 +4,16 @@ export interface Game {
   frames: any; // Replace 'any' with the appropriate type if known
   totalScore: number;
   frameScores: number[];
+  isSeries?: boolean;
+  seriesId?: string;
+  note?: string;
 }
+
+// interface Session {
+//   isSeries?: boolean;
+//   seriesId?: string;
+//   note?: string;
+// }
 
 // TODO adjust code to use frame interface instead
 

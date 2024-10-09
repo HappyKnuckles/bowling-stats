@@ -4,10 +4,12 @@ import { SaveGameDataService } from 'src/app/services/save-game/save-game.servic
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
 import { NgFor, NgIf } from '@angular/common';
-import { IonGrid, IonRow, IonCol, IonInput } from '@ionic/angular/standalone';
-import { FormsModule } from '@angular/forms';
+import { IonGrid, IonRow, IonCol, IonInput, IonItem, IonTextarea, IonIcon } from '@ionic/angular/standalone';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { ImpactStyle } from '@capacitor/haptics';
+import { addIcons } from 'ionicons';
+import { documentTextOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-track-grid',
@@ -15,7 +17,7 @@ import { ImpactStyle } from '@capacitor/haptics';
   styleUrls: ['./track-grid.component.scss'],
   providers: [BowlingCalculatorService],
   standalone: true,
-  imports: [NgFor, IonGrid, IonRow, IonCol, NgIf, IonInput, FormsModule],
+  imports: [IonIcon, IonItem, NgFor, IonTextarea, IonGrid, IonRow, IonCol, NgIf, IonInput, FormsModule, ReactiveFormsModule],
 })
 export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();
@@ -23,14 +25,16 @@ export class TrackGridComponent implements OnInit {
   @ViewChildren(IonInput) inputs!: QueryList<IonInput>;
   totalScore: any;
   maxScore: any;
-
+  note: string = '';
   constructor(
     public bowlingService: BowlingCalculatorService,
     private saveGameService: SaveGameDataService,
     private transformGameService: GameDataTransformerService,
     private toastService: ToastService,
     private hapticService: HapticService
-  ) {}
+  ) {
+    addIcons({ documentTextOutline });
+  }
 
   ngOnInit(): void {
     // Check if gameIndex exists in local storage
@@ -58,15 +62,20 @@ export class TrackGridComponent implements OnInit {
     this.focusNextInput(frameIndex, inputIndex);
   }
 
-  saveGameToLocalStorage(): void {
+  saveGameToLocalStorage(isSeries: boolean, seriesId: string): void {
     try {
       const gameData = this.transformGameService.transformGameData(
         this.bowlingService.frames,
         this.bowlingService.frameScores,
-        this.bowlingService.totalScore
+        this.bowlingService.totalScore,
+        isSeries,
+        seriesId,
+        this.note
       );
+
       this.saveGameService.saveGameToLocalStorage(gameData);
       this.toastService.showToast('Game saved succesfully.', 'add');
+      this.note = '';
       this.clearFrames();
     } catch (error) {
       this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);

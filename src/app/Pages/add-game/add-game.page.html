@@ -3,7 +3,7 @@
     <ion-button type="button" class="actionSheet" slot="start" fill="clear" (click)="handleImageUpload()">
       <ion-icon slot="icon-only" name="add"></ion-icon>
     </ion-button>
-    <input type="file" id="upload" style="display: none" accept="image/*" />
+    <input type="file" id="upload" class="ion-hide" accept="image/*" />
     <ion-title> Add Game </ion-title>
     <div slot="end">
       <ion-button class="actionSheet" (click)="presentActionSheet()" fill="clear">
@@ -38,7 +38,7 @@
 <ng-container *ngFor="let mode of seriesMode; let i = index;">
   <ion-content [fullscreen]="true" *ngIf="mode">
     <ng-container *ngFor="let trackIndex of trackIndexes[i]; let j = index">
-      <h1 *ngIf="i !== 0">Game {{j + 1}}</h1>
+      <h1 *ngIf="i !== 0" class="ion-padding-start" [ngClass]="{'ion-padding-top': j > 0}">Game {{j + 1}}</h1>
       <app-track-grid
         (maxScoreChanged)="onMaxScoreChanged($event, trackIndex)"
         (totalScoreChanged)="onTotalScoreChange($event, trackIndex)"></app-track-grid>

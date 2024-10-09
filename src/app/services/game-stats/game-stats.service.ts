@@ -15,6 +15,7 @@ export class GameStatsService {
     strikePercentage: 0,
     sparePercentage: 0,
     openPercentage: 0,
+    cleanGamePercentage: 0,
     averageStrikesPerGame: 0,
     averageSparesPerGame: 0,
     averageOpensPerGame: 0,
@@ -33,6 +34,7 @@ export class GameStatsService {
     totalPins: 0,
     perfectGameCount: 0,
     cleanGameCount: 0,
+    cleanGamePercentage: 0,
     totalStrikes: 0,
     totalSpares: 0,
     totalSparesMissed: 0,
@@ -60,6 +62,7 @@ export class GameStatsService {
     totalPins: 0,
     perfectGameCount: 0,
     cleanGameCount: 0,
+    cleanGamePercentage: 0,
     totalStrikes: 0,
     totalSpares: 0,
     totalSparesMissed: 0,
@@ -107,6 +110,7 @@ export class GameStatsService {
           strikePercentage: this.currentStats.strikePercentage,
           sparePercentage: this.currentStats.sparePercentage,
           openPercentage: this.currentStats.openPercentage,
+          cleanGamePercentage: this.currentStats.cleanGamePercentage,
           averageStrikesPerGame: this.currentStats.averageStrikesPerGame,
           averageSparesPerGame: this.currentStats.averageSparesPerGame,
           averageOpensPerGame: this.currentStats.averageOpensPerGame,
@@ -133,6 +137,7 @@ export class GameStatsService {
           strikePercentage: this.currentStats.strikePercentage,
           sparePercentage: this.currentStats.sparePercentage,
           openPercentage: this.currentStats.openPercentage,
+          cleanGamePercentage: this.currentStats.cleanGamePercentage,
           averageStrikesPerGame: this.currentStats.averageStrikesPerGame,
           averageSparesPerGame: this.currentStats.averageSparesPerGame,
           averageOpensPerGame: this.currentStats.averageOpensPerGame,
@@ -149,6 +154,7 @@ export class GameStatsService {
           strikePercentage: 0,
           sparePercentage: 0,
           openPercentage: 0,
+          cleanGamePercentage: 0,
           averageStrikesPerGame: 0,
           averageSparesPerGame: 0,
           averageOpensPerGame: 0,
@@ -280,6 +286,8 @@ export class GameStatsService {
     const highGame = highestScore;
     const lowGame = lowestScore;
 
+    const cleanGamePercentage = (cleanGameCount / totalGames) * 100;
+
     const totalFrames = totalGames * 10;
     const strikeChances = gameHistory.length * 12;
 
@@ -307,6 +315,7 @@ export class GameStatsService {
       missedCounts,
       perfectGameCount,
       cleanGameCount,
+      cleanGamePercentage,
       totalGames,
       averageScore,
       highGame,

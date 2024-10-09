@@ -19,12 +19,13 @@ import {
   IonItem,
   IonItemOptions,
   IonItemOption,
+  IonTextarea,
 } from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Subscription } from 'rxjs';
 import * as ExcelJS from 'exceljs';
 import { addIcons } from 'ionicons';
-import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline } from 'ionicons/icons';
+import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline } from 'ionicons/icons';
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
 import { Share } from '@capacitor/share';
@@ -45,6 +46,7 @@ import { Game } from 'src/app/models/game-model';
   standalone: true,
   providers: [DatePipe],
   imports: [
+    IonTextarea,
     IonItemOption,
     IonItemOptions,
     IonItem,
@@ -96,13 +98,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
-    addIcons({
-      cloudUploadOutline,
-      cloudDownloadOutline,
-      trashOutline,
-      createOutline,
-      shareOutline,
-    });
+    addIcons({ cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline });
   }
 
   parseIntValue(value: any): any {
@@ -446,6 +442,8 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
     headerRow.push('Total Score');
     headerRow.push('FrameScores');
+    headerRow.push('Series');
+    headerRow.push('Series ID');
     gameData.push(headerRow);
 
     // Iterate through game history and format data for export
@@ -480,6 +478,8 @@ export class HistoryPage implements OnInit, OnDestroy {
 
       rowData.push(game.totalScore);
       rowData.push(game.frameScores.join(', '));
+      rowData.push(game.isSeries ? 'true' : 'false');
+      rowData.push(game.seriesId || '');
       gameData.push(rowData);
     });
 
@@ -617,6 +617,8 @@ export class HistoryPage implements OnInit, OnDestroy {
         frames: frames,
         totalScore: parseInt(data[i]['12']),
         frameScores: data[i]['13'].split(', ').map((score: string) => parseInt(score)),
+        isSeries: data[i]['14'] === 'true',
+        seriesId: data[i]['15'],
       };
 
       gameData.push(game);

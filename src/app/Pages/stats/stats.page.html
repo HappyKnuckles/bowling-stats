@@ -25,17 +25,24 @@
       <swiper-slide class="tab">
         <app-stat-display label="Games" [currentStat]="stats.totalGames" id="totalGames"></app-stat-display>
         <app-stat-display
+          label="Perfect games"
+          [currentStat]="stats.perfectGameCount"
+          [prevStat]="prevStats.perfectGameCount"
+          [toolTip]="'A perfect game means every frame is filled with strikes.'"
+          [id]="'perfectGameCount'"></app-stat-display>
+        <app-stat-display
           label="Clean games"
           [currentStat]="stats.cleanGameCount"
           [prevStat]="prevStats.cleanGameCount"
           [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"
           [id]="'cleanGameCount'"></app-stat-display>
         <app-stat-display
-          label="Perfect games"
-          [currentStat]="stats.perfectGameCount"
-          [prevStat]="prevStats.perfectGameCount"
-          [toolTip]="'A perfect game means every frame is filled with strikes.'"
-          [id]="'perfectGameCount'"></app-stat-display>
+          label="Clean game percentage"
+          [currentStat]="stats.cleanGamePercentage"
+          [prevStat]="prevStats.cleanGamePercentage"
+          [toolTip]="'The percentage of how many games were clean games.'"
+          [id]="'cleanGamePercentage'"
+          [isPercentage]="true"></app-stat-display>
         <app-stat-display
           label="Average"
           [currentStat]="stats.averageScore"
@@ -118,16 +125,23 @@
           <swiper-slide class="tab">
             <app-stat-display label="Games" [currentStat]="sessionStats.totalGames"></app-stat-display>
             <app-stat-display
+              label="Perfect games"
+              [id]="'perfect'"
+              [toolTip]="'A perfect game means every frame is filled with strikes.'"
+              [currentStat]="sessionStats.perfectGameCount"></app-stat-display>
+            <app-stat-display
               label="Clean games"
               [id]="'clean'"
               [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"
               [currentStat]="sessionStats.cleanGameCount"
               [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"></app-stat-display>
             <app-stat-display
-              label="Perfect games"
-              [id]="'perfect'"
-              [toolTip]="'A perfect game means every frame is filled with strikes.'"
-              [currentStat]="sessionStats.perfectGameCount"></app-stat-display>
+              label="Clean game percentage"
+              [currentStat]="sessionStats.cleanGamePercentage"
+              [prevStat]="sessionStats.cleanGamePercentage"
+              [toolTip]="'The percentage of how many games were clean games.'"
+              [id]="'cleanPercent'"
+              [isPercentage]="true"></app-stat-display>
             <app-stat-display label="Average" [currentStat]="sessionStats.averageScore"></app-stat-display>
             <app-stat-display label="High game" [currentStat]="sessionStats.highGame"></app-stat-display>
             <app-stat-display label="Low game" [currentStat]="sessionStats.lowGame"></app-stat-display>

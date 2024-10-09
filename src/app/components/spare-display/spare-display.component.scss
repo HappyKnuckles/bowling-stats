@@ -9,17 +9,10 @@
       position: absolute;
       right: -25px;
     }
+    .arrowIcon {
+      position: absolute;
+      right: -35%;
+      top: 1px;
+    }
   }
-}
-.spare-rates-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.arrowIcon {
-  position: absolute;
-  right: -10%;
-  top: 1px;
 }

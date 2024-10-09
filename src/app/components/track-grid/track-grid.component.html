@@ -7,47 +7,35 @@
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
         <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          debounce="1000"
-          (ionInput)="simulateScore($event, frameIndex, 0)">
+          readonly="true"
+          value="{{ bowlingService.frames[frameIndex][0] }}"
+          (click)="(currentFrameIndex === frameIndex); (currentInputIndex === 0)">
         </ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
         <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          debounce="1000"
-          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10"
-          (ionInput)="simulateScore($event, frameIndex, 1)">
+          readonly="true"
+          value="{{ bowlingService.frames[frameIndex][1] }}"
+          [disabled]="bowlingService.frames[frameIndex][0] === 10"
+          (click)="(currentFrameIndex === frameIndex); (currentInputIndex === 1)">
         </ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
         <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          debounce="1000"
+          readonly="true"
+          value="{{ bowlingService.frames[frameIndex][1] }}"
           [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10"
-          (ionInput)="simulateScore($event, frameIndex, 1)">
+          (click)="(currentFrameIndex === frameIndex); (currentInputIndex === 0)">
         </ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
         <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          debounce="1000"
+          readonly="true"
+          value="{{ bowlingService.frames[frameIndex][2] }}"
           [disabled]="
             bowlingService.frames[frameIndex][0] !== 10 && bowlingService.frames[frameIndex][0] + (bowlingService.frames[frameIndex][1] || 0) !== 10
           "
-          (ionInput)="simulateScore($event, frameIndex, 2)">
+          (click)="(currentFrameIndex === frameIndex); (currentInputIndex === 0)">
         </ion-input>
       </ion-col>
     </ion-row>

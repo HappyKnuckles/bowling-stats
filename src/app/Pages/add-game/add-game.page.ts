@@ -36,6 +36,7 @@ import { GameDataTransformerService } from 'src/app/services/transform-game/tran
 import { UserService } from 'src/app/services/user/user.service';
 import { defineCustomElements } from '@teamhive/lottie-player/loader';
 import { Device } from '@capacitor/device';
+import { KeyboardComponent } from 'src/app/keyboard/keyboard.component';
 
 defineCustomElements(window);
 
@@ -62,6 +63,7 @@ defineCustomElements(window);
     IonButtons,
     IonInput,
     CommonModule,
+    KeyboardComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -107,6 +109,22 @@ export class AddGamePage implements OnInit {
     addIcons({ add, chevronDown, chevronUp });
   }
 
+  currentFrameIndex: number = 0;
+  currentInputIndex: number = 0;
+  onKeyPress(key: any) {
+    if (this.currentFrameIndex !== null && this.currentInputIndex !== null) {
+      const trackGrid = this.trackGrids.toArray()[0];
+      trackGrid.handleKeyPress(key);
+    }
+  }
+
+  onFrameChanged(newFrameIndex: number) {
+    this.currentFrameIndex = newFrameIndex;
+  }
+
+  onInputChanged(newInputIndex: number) {
+    this.currentInputIndex = newInputIndex;
+  }
   async ngOnInit(): Promise<void> {
     this.userService.getUsername().subscribe((username: string) => {
       this.username = username;

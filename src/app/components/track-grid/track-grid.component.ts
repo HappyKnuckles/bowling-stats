@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren, Input } from '@angular/core';
 import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
 import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
@@ -22,6 +22,10 @@ import { documentTextOutline } from 'ionicons/icons';
 export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();
   @Output() totalScoreChanged = new EventEmitter<number>();
+  @Output() frameChanged = new EventEmitter<number>();
+  @Output() inputChanged = new EventEmitter<number>();
+  @Input() currentFrameIndex!: number;
+  @Input() currentInputIndex!: number;
   @ViewChildren(IonInput) inputs!: QueryList<IonInput>;
   totalScore: any;
   maxScore: any;
@@ -43,7 +47,20 @@ export class TrackGridComponent implements OnInit {
     this.maxScoreChanged.emit(this.maxScore);
     this.totalScoreChanged.emit(this.totalScore);
   }
+  handleKeyPress(key: string) {
+    const parsedValue = this.parseInputValue(key, this.currentFrameIndex, this.currentInputIndex);
+    if (!this.isValidFrameScore(parsedValue, this.currentFrameIndex, this.currentInputIndex)) {
+      return;
+    }
+    if (key === 'C') {
+      this.bowlingService.frames[this.currentFrameIndex][this.currentInputIndex] = 0;
+    } else {
+      this.bowlingService.frames[this.currentFrameIndex][this.currentInputIndex] = parsedValue;
+    }
 
+    this.updateScores();
+    this.focusNextInput(this.currentFrameIndex, this.currentInputIndex);
+  }
   simulateScore(event: any, frameIndex: number, inputIndex: number): void {
     const inputValue = event.target.value;
     const parsedValue = this.parseInputValue(inputValue, frameIndex, inputIndex);
@@ -117,6 +134,8 @@ export class TrackGridComponent implements OnInit {
     });
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;
+    this.currentFrameIndex = 0;
+    this.currentInputIndex = 0;
     this.maxScoreChanged.emit(this.maxScore);
     this.totalScoreChanged.emit(this.totalScore);
   }
@@ -253,6 +272,17 @@ export class TrackGridComponent implements OnInit {
 
       if (!nextInputElement.disabled) {
         nextInput.setFocus();
+
+        // Calculate the new frameIndex and inputIndex
+        const newFrameIndex = Math.floor(i / 2);
+        const newInputIndex = i % 2;
+
+        // Update the currentFrameIndex and currentInputIndex
+        this.currentFrameIndex = newFrameIndex;
+        this.currentInputIndex = newInputIndex;
+        this.frameChanged.emit(newFrameIndex);
+        this.inputChanged.emit(newInputIndex);
+
         break;
       }
     }

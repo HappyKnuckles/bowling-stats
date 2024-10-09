@@ -41,7 +41,11 @@
       <h1 *ngIf="i !== 0" class="ion-padding-start" [ngClass]="{'ion-padding-top': j > 0}">Game {{j + 1}}</h1>
       <app-track-grid
         (maxScoreChanged)="onMaxScoreChanged($event, trackIndex)"
-        (totalScoreChanged)="onTotalScoreChange($event, trackIndex)"></app-track-grid>
+        (totalScoreChanged)="onTotalScoreChange($event, trackIndex)"
+        (frameChanged)="onFrameChanged($event)"
+        (inputChanged)="onInputChanged($event)"
+        [currentFrameIndex]="currentFrameIndex"
+        [currentInputIndex]="currentInputIndex"></app-track-grid>
       <ion-grid *ngIf="i !== 0">
         <ion-row>
           <ion-col class="middle count">Total: {{ totalScores[trackIndex] }}</ion-col>
@@ -84,6 +88,8 @@
         </ion-col>
       </ion-row>
     </ion-grid>
+
+    <app-keyboard (keyPressEvent)="onKeyPress($event)" [frameIndex]="currentFrameIndex" [throwIndex]="currentInputIndex"></app-keyboard>
 
     <ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false">
       <ng-template>

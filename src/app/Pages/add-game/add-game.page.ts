@@ -21,7 +21,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { SeriesMode } from './seriesModeEnum';
 import { Game } from 'src/app/models/game-model';
 import { addIcons } from 'ionicons';
-import { add, chevronDown, chevronUp } from 'ionicons/icons';
+import { add, chevronDown, chevronUp, cameraOutline } from 'ionicons/icons';
 import { NgIf, NgFor, CommonModule } from '@angular/common';
 import { ImpactStyle } from '@capacitor/haptics';
 import { TrackGridComponent } from 'src/app/components/track-grid/track-grid.component';
@@ -104,7 +104,7 @@ export class AddGamePage implements OnInit {
     private adService: AdService,
     private hapticService: HapticService
   ) {
-    addIcons({ add, chevronDown, chevronUp });
+    addIcons({ cameraOutline, chevronDown, chevronUp, add });
   }
 
   async ngOnInit(): Promise<void> {

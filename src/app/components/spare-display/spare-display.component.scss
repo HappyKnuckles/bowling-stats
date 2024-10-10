@@ -1,18 +1,28 @@
 .statGrid {
   text-align: center;
   padding: 5px 10px 0 5px;
-
-  ion-text {
-    position: relative;
-
+  .statHeader {
+    font-weight: bold;
+    ion-text {
+      position: relative;
+    }
     ion-icon {
       position: absolute;
       right: -25px;
     }
-    .arrowIcon {
-      position: absolute;
-      right: -35%;
-      top: 1px;
+  }
+  .stats {
+    ion-text {
+      position: relative;
+      display: block;
+      width: 80px;
+      margin: 0 auto;
+
+      .arrowIcon {
+        position: absolute;
+        right: -18%;
+        top: 2px;
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 <ion-grid class="statGrid">
-  <ion-row style="font-weight: bold">
+  <ion-row class="statHeader">
     <ion-col [id]="'tooltip' + id"
       ><ion-text>Count <ion-icon name="information-circle-outline"></ion-icon></ion-text
     ></ion-col>
@@ -11,7 +11,7 @@
     <ion-col><ion-text>Converted</ion-text></ion-col>
     <ion-col><ion-text>Rate</ion-text></ion-col>
   </ion-row>
-  <ion-row *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+  <ion-row *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" class="stats">
     <ion-col>
       <ion-text>{{ getLabel(i) }}</ion-text>
     </ion-col>

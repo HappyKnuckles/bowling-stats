@@ -3,7 +3,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnChanges, SimpleChanges } fr
 import { IonText, IonIcon } from '@ionic/angular/standalone';
 import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-number.pipe';
 import { addIcons } from 'ionicons';
-import { information, informationCircleOutline } from 'ionicons/icons';
+import { informationCircleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-stat-display',

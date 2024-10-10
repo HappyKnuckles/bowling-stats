@@ -337,22 +337,16 @@ export class HistoryPage implements OnInit, OnDestroy {
     this.loadingSubscription.unsubscribe();
   }
 
-  handleRefresh(event: any): void {
+  async handleRefresh(event: any): Promise<void> {
     try {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
-      setTimeout(() => {
-        this.loadGameHistory()
-          .then(() => {
-            event.target.complete();
-          })
-          .catch((error) => {
-            console.error('Error loading game history:', error);
-          });
-      }, 100);
+
+      await this.loadGameHistory();
     } catch (error) {
       console.error(error);
     } finally {
+      event.target.complete();
       this.loadingService.setLoading(false);
     }
   }
@@ -444,6 +438,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     headerRow.push('FrameScores');
     headerRow.push('Series');
     headerRow.push('Series ID');
+    headerRow.push('Notes');
     gameData.push(headerRow);
 
     // Iterate through game history and format data for export
@@ -480,6 +475,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       rowData.push(game.frameScores.join(', '));
       rowData.push(game.isSeries ? 'true' : 'false');
       rowData.push(game.seriesId || '');
+      rowData.push(game.note || '');
       gameData.push(rowData);
     });
 
@@ -619,6 +615,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         frameScores: data[i]['13'].split(', ').map((score: string) => parseInt(score)),
         isSeries: data[i]['14'] === 'true',
         seriesId: data[i]['15'],
+        note: data[i]['16'],
       };
 
       gameData.push(game);

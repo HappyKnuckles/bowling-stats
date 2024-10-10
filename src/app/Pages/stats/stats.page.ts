@@ -229,23 +229,17 @@ export class StatsPage implements OnInit, OnDestroy {
     this.sessionStatSubscription.unsubscribe();
   }
 
-  handleRefresh(event: any): void {
+  async handleRefresh(event: any): Promise<void> {
     try {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
-      setTimeout(() => {
-        this.loadDataAndCalculateStats(true)
-          .then(() => {
-            event.target.complete();
-          })
-          .catch((error) => {
-            console.error('Error loading data and calculating stats:', error);
-          });
-      }, 100);
+      await this.loadDataAndCalculateStats(true);
+
       this.generateCharts();
     } catch (error) {
       console.error(error);
     } finally {
+      event.target.complete();
       this.loadingService.setLoading(false);
     }
   }

@@ -21,7 +21,7 @@ export class GameHistoryService {
         gameHistory.push(value);
       }
     });
-    await this.sortGameHistoryByDate(gameHistory);
+    this.sortGameHistoryByDate(gameHistory);
     return gameHistory;
   }
 

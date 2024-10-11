@@ -34,7 +34,7 @@ export class StatDisplayComponent implements OnChanges {
   }
 
   getArrowIcon(currentValue: number, previousValue?: number): string {
-    if (previousValue === undefined) {
+    if (previousValue === undefined || currentValue === undefined) {
       return '';
     }
     if (currentValue === previousValue) {
@@ -44,7 +44,7 @@ export class StatDisplayComponent implements OnChanges {
   }
 
   getDiffColor(currentValue: number, previousValue?: number): string {
-    if (previousValue === undefined) {
+    if (previousValue === undefined || currentValue === undefined) {
       return '';
     }
     if (currentValue === previousValue) {

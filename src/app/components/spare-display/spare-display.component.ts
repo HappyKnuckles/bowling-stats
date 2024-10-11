@@ -23,6 +23,9 @@ export class SpareDisplayComponent {
   }
 
   getStatDifference(currentValue: number, previousValue: number): string {
+    if (previousValue === undefined) {
+      return '0';
+    }
     const difference = (currentValue - previousValue).toFixed(2);
     if (Number(difference) === 0) {
       return '0';
@@ -53,7 +56,7 @@ export class SpareDisplayComponent {
   }
 
   getArrowIcon(currentValue: number, previousValue: number): string {
-    if (previousValue === undefined) {
+    if (previousValue === undefined || currentValue === undefined) {
       return '';
     }
     if (currentValue === previousValue) {
@@ -63,7 +66,7 @@ export class SpareDisplayComponent {
   }
 
   getDiffColor(currentValue: number, previousValue: number): string {
-    if (previousValue === undefined) {
+    if (previousValue === undefined || currentValue === undefined) {
       return '';
     }
     if (currentValue === previousValue) {

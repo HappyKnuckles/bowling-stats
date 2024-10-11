@@ -1,21 +1,25 @@
 .statGrid {
   text-align: center;
   padding: 5px 10px 0 5px;
+
   .statHeader {
     font-weight: bold;
+
     ion-text {
       position: relative;
     }
+
     ion-icon {
       position: absolute;
-      right: -25px;
+      right: -20px;
     }
   }
+
   .stats {
     ion-text {
       position: relative;
       display: block;
-      width: 80px;
+      width: clamp(75px, 4vw, 80px);
       margin: 0 auto;
 
       .arrowIcon {

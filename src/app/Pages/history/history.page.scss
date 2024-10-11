@@ -8,16 +8,13 @@
 
 ion-grid {
   background-color: var(--ion-color-quartiary);
-
   --ion-grid-padding: 0;
-
   border-radius: 3px;
 }
 
 .actionSheet {
   ion-button {
     background: none;
-
     --background-activated: none;
   }
 }
@@ -56,12 +53,12 @@ ion-row {
     padding: 10px 20px 0 !important;
 
     .score {
-      font-size: 16px;
+      font-size: 1rem;
     }
 
     .title {
       font-weight: 600;
-      font-size: 19px;
+      font-size: 1.1875rem;
 
       &:first-child {
         margin-top: 10px;
@@ -77,11 +74,11 @@ ion-row {
   .actionRow {
     display: flex;
     justify-content: space-between;
-    margin: 0.3rem 0.5rem 0;
+    margin: 5px 8px 0;
 
     ion-button {
-      width: 6rem;
-      height: 2rem;
+      min-width: 96px;
+      height: 32px;
 
       // --background: var(--ion-color-dark);
       // color: #fff;

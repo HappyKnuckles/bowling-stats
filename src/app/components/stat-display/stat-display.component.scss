@@ -6,6 +6,11 @@
   ion-text {
     padding: 5px;
     color: white;
+    position: relative;
+
+    ion-icon {
+      position: absolute;
+    }
   }
 
   .value {

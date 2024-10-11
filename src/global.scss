@@ -24,6 +24,7 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
 swiper-container {
   --swiper-pagination-bullet-inactive-color: var(--ion-text-color-step-800, #cccccc);
   --swiper-pagination-color: var(--ion-color-primary, #0054e9);
@@ -42,18 +43,25 @@ ion-header {
   background-color: #080f08;
 
   ion-title {
-    font-size: 22px;
+    font-size: 1.375rem;
     color: white;
   }
+}
+
+ion-app{
+  // letter-spacing: .38px;
+  font-size: 1.1875rem;
 }
 
 .tooltip {
   padding: 8px;
 }
+
 .blue .tooltip {
   padding: 8px;
   color: black;
 }
+
 .green,
 .red,
 .gray,
@@ -62,6 +70,7 @@ ion-header {
     color: white;
   }
 }
+
 .invalid-input {
   border: 1px solid red !important;
 }
@@ -78,6 +87,14 @@ ion-item {
 
   &::part(content) {
     padding: 4px;
+    background: #252525;
+  }
+
+  &::part(arrow) {
+
+    &::after {
+      background: #252525;
+    }
   }
 }
 
@@ -113,7 +130,6 @@ ion-toolbar {
 
   &.count {
     font-weight: 500;
-
     --ion-grid-column-padding: 1px;
   }
 }
@@ -165,9 +181,6 @@ ion-button {
   --background-focused: none;
 }
 
-ion-content {
-  font-size: 19px;
-}
 
 div.mat-expansion-panel-body {
   padding: 0;
@@ -192,11 +205,13 @@ mat-expansion-panel {
 }
 
 .segmentLabel {
-  font-size: 17px;
+  font-size: clamp(.875rem, 4vw, 1.063rem);
 }
 
 ion-segment {
   // --background: var(--ion-tab-bar-background, var(--ion-color-step-50, #f7f7f7))
   // --background: var(--ion-color-dark);
   --background: #252525;
+
+ 
 }

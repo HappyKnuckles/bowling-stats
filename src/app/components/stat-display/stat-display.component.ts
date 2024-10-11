@@ -53,7 +53,7 @@ export class StatDisplayComponent implements OnChanges {
     return currentValue > previousValue ? 'success' : 'danger';
   }
 
-  calculateStatDifference(currentValue: number, previousValue: number): string {
+  private calculateStatDifference(currentValue: number, previousValue: number): string {
     if (previousValue === undefined) {
       return '0';
     }

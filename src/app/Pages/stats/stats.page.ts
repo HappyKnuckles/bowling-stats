@@ -8,9 +8,6 @@ import {
   IonContent,
   IonRefresher,
   IonText,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonSegment,
   IonSegmentButton,
   IonLabel,
@@ -18,7 +15,6 @@ import {
   IonSelectOption,
 } from '@ionic/angular/standalone';
 import { NgIf, NgFor, NgStyle, DecimalPipe, DatePipe } from '@angular/common';
-import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle } from '@angular/material/expansion';
 import { ImpactStyle } from '@capacitor/haptics';
 import { Game } from 'src/app/models/game-model';
 import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
@@ -54,20 +50,14 @@ import { SpareDisplayComponent } from '../../components/spare-display/spare-disp
     IonRefresher,
     IonSelectOption,
     IonSelect,
-    NgIf,
     IonText,
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
-    IonGrid,
-    IonRow,
-    IonCol,
+    NgIf,
     NgFor,
     NgStyle,
-    DecimalPipe,
     FormsModule,
-    StatDisplayComponent,
     DatePipe,
+    DecimalPipe,
+    StatDisplayComponent,
     SpareDisplayComponent,
   ],
 })
@@ -122,13 +112,6 @@ export class StatsPage implements OnInit, OnDestroy {
     overallSpareRate: 0,
     overallMissedRate: 0,
   };
-  // Game Data
-  gameHistory: Game[] = [];
-  gameHistoryChanged: boolean = true;
-  isLoading: boolean = false;
-  selectedSegment: string = 'Overall';
-  segments: string[] = ['Overall', 'Spares', 'Throws', 'Sessions'];
-
   sessionStats: SessionStats = {
     totalGames: 0,
     totalPins: 0,
@@ -158,7 +141,12 @@ export class StatsPage implements OnInit, OnDestroy {
   };
   selectedDate: number = 0;
   uniqueSortedDates: number[] = [];
-
+  // Game Data
+  gameHistory: Game[] = [];
+  gameHistoryChanged: boolean = true;
+  isLoading: boolean = false;
+  selectedSegment: string = 'Overall';
+  segments: string[] = ['Overall', 'Spares', 'Throws', 'Sessions'];
   // Subscriptions
   private newDataAddedSubscription!: Subscription;
   private dataDeletedSubscription!: Subscription;

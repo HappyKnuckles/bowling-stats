@@ -10,18 +10,8 @@ canvas {
   margin-top: 0;
 }
 
-.segmentLabel {
-  font-size: 17px;
-}
-
 .padding {
   padding: 10px 20px 0 0 !important;
-}
-
-ion-segment {
-  // --background: var(--ion-tab-bar-background, var(--ion-color-step-50, #f7f7f7))
-  // --background: var(--ion-color-dark);
-  --background: #252525;
 }
 
 ion-select::part(text) {

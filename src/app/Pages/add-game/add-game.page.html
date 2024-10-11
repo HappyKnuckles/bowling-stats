@@ -7,12 +7,25 @@
     <ion-title> Add Game </ion-title>
     <div slot="end">
       <ion-button class="actionSheet" (click)="presentActionSheet()" fill="clear">
-        {{selectedModeText}}
+        {{selectedMode}}
         <ion-icon *ngIf="!sheetOpen" name="chevron-down" class="chevron"></ion-icon>
         <ion-icon *ngIf="sheetOpen" name="chevron-up" class="chevron"></ion-icon>
       </ion-button>
     </div>
   </ion-toolbar>
+  @if(selectedMode === '3 Series'){
+  <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChanged($event)">
+    <ion-segment-button *ngFor="let segment of segments3" [value]="segment">
+      <ion-label class="segmentLabel">{{segment}}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  } @if(selectedMode === '4 Series'){
+  <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChanged($event)">
+    <ion-segment-button *ngFor="let segment of segments4" [value]="segment">
+      <ion-label class="segmentLabel">{{segment}}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  }
 </ion-header>
 
 <ion-alert [isOpen]="isAlertOpen" header="Error" message="You didn't fill all inputs" [buttons]="alertButton" (didDismiss)="setAlertOpen()">
@@ -37,24 +50,24 @@
 
 <ng-container *ngFor="let mode of seriesMode; let i = index;">
   <ion-content [fullscreen]="true" *ngIf="mode">
-    <ng-container *ngFor="let trackIndex of trackIndexes[i]; let j = index">
-      <h1 *ngIf="i !== 0" class="ion-padding-start" [ngClass]="{'ion-padding-top': j > 0}">Game {{j + 1}}</h1>
-      <app-track-grid
-        (maxScoreChanged)="onMaxScoreChanged($event, trackIndex)"
-        (totalScoreChanged)="onTotalScoreChange($event, trackIndex)"></app-track-grid>
-      <ion-grid *ngIf="i !== 0">
-        <ion-row>
-          <ion-col class="middle count">Total: {{ totalScores[trackIndex] }}</ion-col>
-          <ion-col class="middle count">Max: {{ maxScores[trackIndex] }}</ion-col>
-        </ion-row>
-        <ion-row class="buttonRow">
-          <ion-col>
-            <ion-button (click)="clearFrames(j)">Clear Score</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ng-container>
-
+    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechange)="onSlideChanged()" [autoheight]="true">
+      <swiper-slide *ngFor="let trackIndex of trackIndexes[i]; let j = index">
+        <app-track-grid
+          (maxScoreChanged)="onMaxScoreChanged($event, trackIndex)"
+          (totalScoreChanged)="onTotalScoreChange($event, trackIndex)"></app-track-grid>
+        <ion-grid *ngIf="i !== 0">
+          <ion-row>
+            <ion-col class="middle count">Total: {{ totalScores[trackIndex] }}</ion-col>
+            <ion-col class="middle count">Max: {{ maxScores[trackIndex] }}</ion-col>
+          </ion-row>
+          <ion-row class="buttonRow">
+            <ion-col>
+              <ion-button (click)="clearFrames(j)">Clear Score</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </swiper-slide>
+    </swiper-container>
     <ion-grid *ngIf="i === 0">
       <ion-row>
         <ion-col class="middle count">Total: {{ totalScores[i] }}</ion-col>

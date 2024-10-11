@@ -26,10 +26,9 @@ import { Subscription } from 'rxjs';
 import * as ExcelJS from 'exceljs';
 import { addIcons } from 'ionicons';
 import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline } from 'ionicons/icons';
-import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
+import { NgIf, NgFor, DatePipe, NgClass } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
 import { Share } from '@capacitor/share';
-import { FormsModule } from '@angular/forms';
 import { toPng } from 'html-to-image';
 import { ImpactStyle } from '@capacitor/haptics';
 import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
@@ -59,19 +58,18 @@ import { Game } from 'src/app/models/game-model';
     IonBadge,
     IonContent,
     IonRefresher,
-    NgIf,
-    IonText,
-    NgFor,
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
-    MatExpansionPanelDescription,
     IonGrid,
     IonRow,
     IonCol,
     IonInput,
-    FormsModule,
-    CommonModule,
+    NgIf,
+    NgFor,
+    NgClass,
+    IonText,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatExpansionPanelDescription,
   ],
 })
 export class HistoryPage implements OnInit, OnDestroy {
@@ -101,17 +99,27 @@ export class HistoryPage implements OnInit, OnDestroy {
     addIcons({ cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline });
   }
 
+  async ngOnInit(): Promise<void> {
+    try {
+      this.loadingService.setLoading(true);
+      await this.loadGameHistory();
+      this.subscribeToDataEvents();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.loadingService.setLoading(false);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.newDataAddedSubscription.unsubscribe();
+    this.dataDeletedSubscription.unsubscribe();
+    this.loadingSubscription.unsubscribe();
+  }
+
   parseIntValue(value: any): any {
     const parsedValue = parseInt(value, 10);
     return isNaN(parsedValue) ? '' : parsedValue;
-  }
-
-  async loadGameHistory(): Promise<void> {
-    try {
-      this.gameHistory = await this.gameHistoryService.loadGameHistory();
-    } catch (error) {
-      this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
-    }
   }
 
   saveOriginalStateAndEnableEdit(game: Game, expansionPanel?: MatExpansionPanel) {
@@ -305,38 +313,6 @@ export class HistoryPage implements OnInit, OnDestroy {
     window.dispatchEvent(new Event('dataDeleted'));
   }
 
-  async ngOnInit(): Promise<void> {
-    try {
-      this.loadingService.setLoading(true);
-      await this.loadGameHistory();
-      this.subscribeToDataEvents();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.loadingService.setLoading(false);
-    }
-  }
-
-  private subscribeToDataEvents() {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
-      this.loadGameHistory().catch((error) => {
-        console.error('Error loading game history:', error);
-      });
-    });
-
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
-      this.loadGameHistory().catch((error) => {
-        console.error('Error loading game history:', error);
-      });
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.newDataAddedSubscription.unsubscribe();
-    this.dataDeletedSubscription.unsubscribe();
-    this.loadingSubscription.unsubscribe();
-  }
-
   async handleRefresh(event: any): Promise<void> {
     try {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
@@ -347,6 +323,20 @@ export class HistoryPage implements OnInit, OnDestroy {
       console.error(error);
     } finally {
       event.target.complete();
+      this.loadingService.setLoading(false);
+    }
+  }
+
+  async handleFileUpload(event: any): Promise<void> {
+    try {
+      this.loadingService.setLoading(true);
+      this.file = event.target.files[0];
+      await this.readExcelData();
+      this.toastService.showToast('Uploaded Excel file successfully.', 'checkmark-outline');
+    } catch (error) {
+      this.toastService.showToast(`Error: ${error}`, 'bug', true);
+    } finally {
+      event.target.value = '';
       this.loadingService.setLoading(false);
     }
   }
@@ -414,7 +404,29 @@ export class HistoryPage implements OnInit, OnDestroy {
     this.loadingService.setLoading(false);
   }
 
-  async fileExists(path: string): Promise<boolean> {
+  private async loadGameHistory(): Promise<void> {
+    try {
+      this.gameHistory = await this.gameHistoryService.loadGameHistory();
+    } catch (error) {
+      this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
+    }
+  }
+
+  private subscribeToDataEvents() {
+    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
+      this.loadGameHistory().catch((error) => {
+        console.error('Error loading game history:', error);
+      });
+    });
+
+    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
+      this.loadGameHistory().catch((error) => {
+        console.error('Error loading game history:', error);
+      });
+    });
+  }
+
+  private async fileExists(path: string): Promise<boolean> {
     try {
       await Filesystem.stat({
         path: path + '.xlsx',
@@ -482,7 +494,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     return gameData;
   }
 
-  async saveExcelFile(buffer: any, fileName: string): Promise<void> {
+  private async saveExcelFile(buffer: any, fileName: string): Promise<void> {
     try {
       let binary = '';
       const bytes = new Uint8Array(buffer);
@@ -520,21 +532,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
   }
 
-  async handleFileUpload(event: any): Promise<void> {
-    try {
-      this.loadingService.setLoading(true);
-      this.file = event.target.files[0];
-      await this.readExcelData();
-      this.toastService.showToast('Uploaded Excel file successfully.', 'checkmark-outline');
-    } catch (error) {
-      this.toastService.showToast(`Error: ${error}`, 'bug', true);
-    } finally {
-      event.target.value = '';
-      this.loadingService.setLoading(false);
-    }
-  }
-
-  async readExcelData(): Promise<void> {
+  private async readExcelData(): Promise<void> {
     const workbook = new ExcelJS.Workbook();
     const buffer = await this.fileToBuffer(this.file);
     await workbook.xlsx.load(buffer);
@@ -571,7 +569,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   //   return framesData;
   // }
 
-  fileToBuffer(file: File): Promise<ArrayBuffer> {
+  private fileToBuffer(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (event: any) => resolve(event.target.result);
@@ -581,7 +579,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   // TODO beobachten ob öfter / nach Strike in Excel -> NaN
-  async transformData(data: any[]): Promise<void> {
+  private async transformData(data: any[]): Promise<void> {
     const gameData = [];
 
     for (let i = 1; i < data.length; i++) {
@@ -623,7 +621,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     await this.saveService.saveGamesToLocalStorage(gameData);
   }
 
-  async showPermissionDeniedAlert(): Promise<void> {
+  private async showPermissionDeniedAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Permission Denied',
       message: 'To save to Gamedata.xlsx, you need to give permissions!',

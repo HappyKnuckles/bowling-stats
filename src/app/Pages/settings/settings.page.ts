@@ -21,7 +21,7 @@ import {
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { colorPaletteOutline, logoGithub, personCircleOutline } from 'ionicons/icons';
-import { CommonModule } from '@angular/common';
+import { NgClass, NgFor } from '@angular/common';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { UserService } from 'src/app/services/user/user.service';
 import { ThemeChangerService } from 'src/app/services/theme/theme-changer.service';
@@ -37,7 +37,6 @@ import { LoadingService } from 'src/app/services/loader/loading.service';
   imports: [
     IonText,
     IonTextarea,
-    ReactiveFormsModule,
     IonButton,
     IonLabel,
     IonCardContent,
@@ -53,8 +52,10 @@ import { LoadingService } from 'src/app/services/loader/loading.service';
     IonHeader,
     IonSelect,
     IonSelectOption,
+    NgClass,
+    NgFor,
     FormsModule,
-    CommonModule,
+    ReactiveFormsModule,
   ],
 })
 export class SettingsPage implements OnInit {

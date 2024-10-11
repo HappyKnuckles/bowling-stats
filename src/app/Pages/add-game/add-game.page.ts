@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import {
   ActionSheetController,
   AlertController,
@@ -16,13 +16,15 @@ import {
   IonCol,
   IonButtons,
   IonInput,
+  IonSegment,
+  IonSegmentButton,
 } from '@ionic/angular/standalone';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { SeriesMode } from './seriesModeEnum';
 import { Game } from 'src/app/models/game-model';
 import { addIcons } from 'ionicons';
 import { add, chevronDown, chevronUp, cameraOutline } from 'ionicons/icons';
-import { NgIf, NgFor, CommonModule } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { ImpactStyle } from '@capacitor/haptics';
 import { TrackGridComponent } from 'src/app/components/track-grid/track-grid.component';
 import { AdService } from 'src/app/services/ad/ad.service';
@@ -36,6 +38,8 @@ import { GameDataTransformerService } from 'src/app/services/transform-game/tran
 import { UserService } from 'src/app/services/user/user.service';
 import { defineCustomElements } from '@teamhive/lottie-player/loader';
 import { Device } from '@capacitor/device';
+import Swiper from 'swiper';
+import { IonicSlides } from '@ionic/angular';
 
 defineCustomElements(window);
 
@@ -50,28 +54,29 @@ defineCustomElements(window);
     IonButton,
     IonIcon,
     IonTitle,
-    NgIf,
     IonAlert,
-    NgFor,
     IonContent,
-    TrackGridComponent,
     IonGrid,
     IonRow,
     IonCol,
     IonModal,
     IonButtons,
     IonInput,
-    CommonModule,
+    IonSegmentButton,
+    IonSegment,
+    NgIf,
+    NgFor,
+    TrackGridComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AddGamePage implements OnInit {
+  swiperModules = [IonicSlides];
   totalScores: number[] = new Array(8).fill(0);
   maxScores: number[] = new Array(8).fill(300);
   seriesMode: boolean[] = [true, false, false];
   seriesId: string = '';
-  selectedMode: SeriesMode = SeriesMode.Single; // Initialize selected mode
-  selectedModeText: SeriesMode = SeriesMode.Single;
+  selectedMode: SeriesMode = SeriesMode.Single;
   trackIndexes: number[][] = [[0], [1, 2, 3], [4, 5, 6, 7]];
   sheetOpen: boolean = false;
   isAlertOpen: boolean = false;
@@ -90,7 +95,20 @@ export class AddGamePage implements OnInit {
 
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
   @ViewChild(IonModal) modal!: IonModal;
-
+  @ViewChild('swiper')
+  set swiper(swiperRef: ElementRef) {
+    /**
+     * This setTimeout waits for Ionic's async initialization to complete.
+     * Otherwise, an outdated swiper reference will be used.
+     */
+    setTimeout(() => {
+      this.swiperInstance = swiperRef?.nativeElement.swiper;
+    }, 0);
+  }
+  private swiperInstance: Swiper | undefined;
+  selectedSegment: string = 'Game 1';
+  segments3: string[] = ['Game 1', 'Game 2', 'Game 3'];
+  segments4: string[] = ['Game 1', 'Game 2', 'Game 3', 'Game 4'];
   constructor(
     private actionSheetCtrl: ActionSheetController,
     private imageProcessingService: ImageProcesserService,
@@ -280,6 +298,35 @@ export class AddGamePage implements OnInit {
     return this.bowlingService.getSeriesCurrentScore(index, this.totalScores);
   }
 
+  onSegmentChanged(event: any) {
+    if (this.swiperInstance) {
+      this.selectedSegment = event.detail.value;
+      const activeIndex = this.getSlideIndex(this.selectedSegment);
+      this.swiperInstance.slideTo(activeIndex);
+    }
+  }
+
+  onSlideChanged() {
+    if (this.swiperInstance) {
+      const activeIndex = this.swiperInstance.realIndex;
+      this.selectedSegment = this.getSegmentValue(activeIndex);
+    }
+  }
+
+  private getSlideIndex(segment: string): number {
+    let index = 0;
+    if (this.selectedMode === SeriesMode.Series3) {
+      index = this.segments3.indexOf(segment);
+    } else index = this.segments4.indexOf(segment);
+    return index !== -1 ? index : 0;
+  }
+
+  private getSegmentValue(index: number): string {
+    if (this.selectedMode === SeriesMode.Series3) {
+      return this.segments3[index] || 'Game 1';
+    } else return this.segments4[index] || 'Game 1';
+  }
+
   async presentActionSheet(): Promise<void> {
     const buttons = [];
     this.hapticService.vibrate(ImpactStyle.Medium, 200);
@@ -291,7 +338,7 @@ export class AddGamePage implements OnInit {
           this.seriesMode[0] = true;
           this.seriesMode[1] = false;
           this.seriesMode[2] = false;
-          this.selectedModeText = SeriesMode.Single;
+          this.selectedMode = SeriesMode.Single;
         },
       });
     }
@@ -303,7 +350,7 @@ export class AddGamePage implements OnInit {
           this.seriesMode[0] = false;
           this.seriesMode[1] = true;
           this.seriesMode[2] = false;
-          this.selectedModeText = SeriesMode.Series3;
+          this.selectedMode = SeriesMode.Series3;
         },
       });
     }
@@ -315,7 +362,7 @@ export class AddGamePage implements OnInit {
           this.seriesMode[0] = false;
           this.seriesMode[1] = false;
           this.seriesMode[2] = true;
-          this.selectedModeText = SeriesMode.Series4;
+          this.selectedMode = SeriesMode.Series4;
         },
       });
     }
@@ -331,6 +378,7 @@ export class AddGamePage implements OnInit {
     });
 
     actionSheet.onWillDismiss().then(() => {
+      this.swiperInstance?.slideTo(0);
       this.sheetOpen = false;
     });
 

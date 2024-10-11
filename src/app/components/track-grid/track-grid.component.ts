@@ -5,7 +5,7 @@ import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
 import { NgFor, NgIf } from '@angular/common';
 import { IonGrid, IonRow, IonCol, IonInput, IonItem, IonTextarea, IonIcon } from '@ionic/angular/standalone';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
@@ -17,14 +17,14 @@ import { documentTextOutline } from 'ionicons/icons';
   styleUrls: ['./track-grid.component.scss'],
   providers: [BowlingCalculatorService],
   standalone: true,
-  imports: [IonIcon, IonItem, NgFor, IonTextarea, IonGrid, IonRow, IonCol, NgIf, IonInput, FormsModule, ReactiveFormsModule],
+  imports: [IonIcon, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor],
 })
 export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();
   @Output() totalScoreChanged = new EventEmitter<number>();
   @ViewChildren(IonInput) inputs!: QueryList<IonInput>;
-  totalScore: any;
-  maxScore: any;
+  totalScore: number = 0;
+  maxScore: number = 300;
   note: string = '';
   constructor(
     public bowlingService: BowlingCalculatorService,

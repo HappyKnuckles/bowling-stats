@@ -51,8 +51,21 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
+  async ngOnInit(): Promise<void> {
+    // Load stats here initially so prevstats are loaded before the first game
+    const gameHistory = await this.gameHistoryService.loadGameHistory();
+    this.gameStatsService.calculateStats(gameHistory);
+
+    this.greetUser();
+  }
+
+  ngOnDestroy(): void {
+    this.loadingSubscription.unsubscribe();
+    this.userNameSubscription.unsubscribe();
+  }
+
   //TODO maybe implement custom alert to have title etc instead of confirm
-  initializeApp(): void {
+  private initializeApp(): void {
     // Listen for version updates and prompt the user
     this.swUpdate.versionUpdates.subscribe((event) => {
       if (event.type === 'VERSION_READY') {
@@ -91,20 +104,7 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  async ngOnInit(): Promise<void> {
-    // Load stats here initially so prevstats are loaded before the first game
-    const gameHistory = await this.gameHistoryService.loadGameHistory();
-    this.gameStatsService.calculateStats(gameHistory);
-
-    this.greetUser();
-  }
-
-  ngOnDestroy(): void {
-    this.loadingSubscription.unsubscribe();
-    this.userNameSubscription.unsubscribe();
-  }
-
-  async greetUser(): Promise<void> {
+  private async greetUser(): Promise<void> {
     if (!this.username) {
       await this.showEnterNameAlert();
     } else {
@@ -112,7 +112,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  async showEnterNameAlert() {
+  private async showEnterNameAlert() {
     const alert = await this.alertController.create({
       header: 'Welcome!',
       message: 'Please enter your name:',
@@ -142,7 +142,7 @@ export class AppComponent implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  async presentGreetingAlert(name: string): Promise<void> {
+  private async presentGreetingAlert(name: string): Promise<void> {
     const alert = await this.alertController.create({
       header: `Hello ${name}!`,
       buttons: [

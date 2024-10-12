@@ -27,7 +27,7 @@ export class GameHistoryService {
 
   sortGameHistoryByDate(gameHistory: Game[]): void {
     gameHistory.sort((a: { date: number }, b: { date: number }) => {
-      return a.date - b.date;
+      return b.date - a.date;
     });
   }
 }

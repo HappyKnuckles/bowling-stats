@@ -175,6 +175,18 @@
               </ion-row>
             </ion-grid>
           </div>
+          <ion-item>
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            <ion-textarea
+              type="text"
+              (ionChange)="gameData.note = $event.target.value || ''"
+              name="note"
+              [autoGrow]="true"
+              placeholder="today knee pain, used Ion Pro Max"></ion-textarea>
+          </ion-item>
+          <ion-item>
+            <ion-checkbox (ionChange)="gameData.isPractice = $event.target.checked" name="isPractice">Practice</ion-checkbox>
+          </ion-item>
         </ion-content>
       </ng-template>
     </ion-modal>

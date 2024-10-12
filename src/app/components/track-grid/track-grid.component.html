@@ -74,6 +74,9 @@
   </ion-grid>
 </div>
 <ion-item>
-  <ion-icon name="document-text-outline" slot="start"></ion-icon
-  ><ion-textarea type="text" [(ngModel)]="note" name="note" [autoGrow]="true" placeholder="today knee pain, used Ion Pro Max"></ion-textarea
-></ion-item>
+  <ion-icon name="document-text-outline" slot="start"></ion-icon>
+  <ion-textarea type="text" [(ngModel)]="note" name="note" [autoGrow]="true" placeholder="today knee pain, used Ion Pro Max"></ion-textarea>
+</ion-item>
+<ion-item>
+  <ion-checkbox [(ngModel)]="isPractice" name="isPractice">Practice</ion-checkbox>
+</ion-item>

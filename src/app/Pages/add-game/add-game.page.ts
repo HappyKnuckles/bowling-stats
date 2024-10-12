@@ -23,8 +23,8 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { SeriesMode } from './seriesModeEnum';
 import { Game } from 'src/app/models/game-model';
 import { addIcons } from 'ionicons';
-import { add, chevronDown, chevronUp, cameraOutline } from 'ionicons/icons';
-import { NgIf, NgFor } from '@angular/common';
+import { add, chevronDown, chevronUp, cameraOutline, documentTextOutline } from 'ionicons/icons';
+import { NgIf, NgFor, CommonModule } from '@angular/common';
 import { ImpactStyle } from '@capacitor/haptics';
 import { TrackGridComponent } from 'src/app/components/track-grid/track-grid.component';
 import { AdService } from 'src/app/services/ad/ad.service';
@@ -40,6 +40,7 @@ import { defineCustomElements } from '@teamhive/lottie-player/loader';
 import { Device } from '@capacitor/device';
 import Swiper from 'swiper';
 import { IonicSlides } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 
 defineCustomElements(window);
 
@@ -122,7 +123,7 @@ export class AddGamePage implements OnInit {
     private adService: AdService,
     private hapticService: HapticService
   ) {
-    addIcons({ cameraOutline, chevronDown, chevronUp, add });
+    addIcons({ cameraOutline, chevronDown, chevronUp, documentTextOutline, add });
   }
 
   async ngOnInit(): Promise<void> {
@@ -493,7 +494,7 @@ export class AddGamePage implements OnInit {
 
       const totalScore = frameScores[9];
 
-      this.gameData = this.transformGameService.transformGameData(frames, frameScores, totalScore);
+      this.gameData = this.transformGameService.transformGameData(frames, frameScores, totalScore, false);
 
       if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {
         this.isModalOpen = true;

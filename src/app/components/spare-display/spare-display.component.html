@@ -28,8 +28,7 @@
     @if (stats.pinCounts[i] !== 0 || stats.missedCounts[i] !== 0) {
     <ion-col id="spareRates{{ i }}" [ngStyle]="{ color: getRateColor(stats.spareRates[i]) }">
       <ion-text class="spare-rates-content"
-        >{{ stats.spareRates[i] | number : "1.2-2" }}% 
-        @if (prevStats && getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])) {
+        >{{ stats.spareRates[i] | number : "1.2-2" }}% @if (prevStats && getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])) {
         <ion-icon
           class="arrowIcon"
           [name]="getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])"
@@ -41,10 +40,9 @@
       <ion-popover class="diffPopover" trigger="spareRates{{ i }}">
         <ion-text [color]="getDiffColor(stats.spareRates[i], prevStats.spareRates[i])">
           {{ getStatDifference(stats.spareRates[i], prevStats.spareRates[i]) }}
-        </ion-text> 
-        </ion-popover>} 
-      </ion-col>} 
-  } @else{
+        </ion-text> </ion-popover
+      >} </ion-col
+    >} } @else{
     <!-- Display total spares and conversion rate -->
     <ion-col>
       <ion-text>{{ stats.totalSparesMissed }}</ion-text>
@@ -55,21 +53,20 @@
     @if (stats.totalSparesMissed + stats.totalSparesConverted !== 0) {
     <ion-col id="overallSpareRate" [ngStyle]="{ color: getRateColor(stats.overallSpareRate) }">
       <ion-text class="spare-rates-content">
-        {{ stats.overallSpareRate | number : "1.2-2" }}% 
-        @if (prevStats && getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)) {
+        {{ stats.overallSpareRate | number : "1.2-2" }}% @if (prevStats && getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)) {
         <ion-icon
           class="arrowIcon"
           [name]="getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)"
           [color]="getDiffColor(stats.overallSpareRate, prevStats.overallSpareRate)">
-        </ion-icon>}
+        </ion-icon
+        >}
       </ion-text>
       @if (prevStats && getStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) !== '0') {
       <ion-popover class="diffPopover" trigger="overallSpareRate">
         <ion-text [color]="getDiffColor(stats.overallSpareRate, prevStats.overallSpareRate)">
           {{ getStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) }}
-        </ion-text> 
-      </ion-popover>} 
-      </ion-col>}
-    <ion-col *ngIf="stats.totalSparesMissed + stats.totalSparesConverted === 0"></ion-col>}
+        </ion-text> </ion-popover
+      >} </ion-col
+    >} <ion-col *ngIf="stats.totalSparesMissed + stats.totalSparesConverted === 0"></ion-col>}
   </ion-row>
 </ion-grid>

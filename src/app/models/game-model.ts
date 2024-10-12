@@ -4,6 +4,7 @@ export interface Game {
   frames: any; // Replace 'any' with the appropriate type if known
   totalScore: number;
   frameScores: number[];
+  isPractice: boolean;
   isSeries?: boolean;
   seriesId?: string;
   note?: string;

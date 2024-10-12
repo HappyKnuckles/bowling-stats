@@ -13,9 +13,7 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"></ion-refresher>
   <!-- Show this message if there are no game history items and it's not loading -->
   <ng-container *ngIf="gameHistory.length <= 0 && !isLoading; else content">
-    <ion-text style="width: 60%; display: flex; justify-content: center; height: 100%; align-items: center; margin: 0 auto">
-      Start playing a few games to see your stats here!
-    </ion-text>
+    <ion-text class="no-game-text"> Start playing a few games to see your stats here! </ion-text>
   </ng-container>
 
   <!-- Main content to display when there is game history or when loading is done -->
@@ -109,7 +107,7 @@
       </swiper-slide>
 
       <swiper-slide>
-        <div style="font-size: 20px; padding: 5px 15px 0 20px; box-shadow: 0px 0px 3px 0px; border-radius: 0 0 3px 3px">
+        <div class="date-picker">
           <ion-select
             label="Session date"
             toggleIcon="calendar-number-outline"

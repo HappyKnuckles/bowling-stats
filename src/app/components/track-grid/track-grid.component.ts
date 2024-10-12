@@ -4,7 +4,7 @@ import { SaveGameDataService } from 'src/app/services/save-game/save-game.servic
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
 import { NgFor, NgIf } from '@angular/common';
-import { IonGrid, IonRow, IonCol, IonInput, IonItem, IonTextarea, IonIcon } from '@ionic/angular/standalone';
+import { IonGrid, IonRow, IonCol, IonInput, IonItem, IonTextarea, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { ImpactStyle } from '@capacitor/haptics';
@@ -17,7 +17,7 @@ import { documentTextOutline } from 'ionicons/icons';
   styleUrls: ['./track-grid.component.scss'],
   providers: [BowlingCalculatorService],
   standalone: true,
-  imports: [IonIcon, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor],
+  imports: [IonCheckbox, IonIcon, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor],
 })
 export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();
@@ -26,6 +26,7 @@ export class TrackGridComponent implements OnInit {
   totalScore: number = 0;
   maxScore: number = 300;
   note: string = '';
+  isPractice: boolean = false;
   constructor(
     public bowlingService: BowlingCalculatorService,
     private saveGameService: SaveGameDataService,
@@ -68,6 +69,7 @@ export class TrackGridComponent implements OnInit {
         this.bowlingService.frames,
         this.bowlingService.frameScores,
         this.bowlingService.totalScore,
+        this.isPractice,
         isSeries,
         seriesId,
         this.note
@@ -115,6 +117,7 @@ export class TrackGridComponent implements OnInit {
     this.inputs.forEach((input) => {
       input.value = '';
     });
+    this.isPractice = false;
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;
     this.maxScoreChanged.emit(this.maxScore);

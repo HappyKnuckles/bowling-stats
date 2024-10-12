@@ -39,18 +39,31 @@ swiper-slide {
   height: auto;
 }
 
+.no-game-text {
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  align-items: center;
+  margin: 0 auto;
+}
+
 ion-header {
   background-color: #080f08;
 
+  ion-icon {
+    font-size: 1.5rem !important;
+  }
+
   ion-title {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
     color: white;
   }
 }
 
-ion-app{
+ion-app {
   // letter-spacing: .38px;
-  font-size: 1.1875rem;
+  font-size: 1.1rem;
 }
 
 .tooltip {
@@ -91,7 +104,6 @@ ion-item {
   }
 
   &::part(arrow) {
-
     &::after {
       background: #252525;
     }
@@ -99,7 +111,7 @@ ion-item {
 }
 
 ion-toolbar {
-  height: 59px !important;
+  height: 50px !important;
   display: flex;
   flex: 1 1 0%;
   align-items: center;
@@ -181,7 +193,6 @@ ion-button {
   --background-focused: none;
 }
 
-
 div.mat-expansion-panel-body {
   padding: 0;
 }
@@ -205,13 +216,11 @@ mat-expansion-panel {
 }
 
 .segmentLabel {
-  font-size: clamp(.875rem, 4vw, 1.063rem);
+  font-size: clamp(0.875rem, 4vw, 1.063rem);
 }
 
 ion-segment {
   // --background: var(--ion-tab-bar-background, var(--ion-color-step-50, #f7f7f7))
   // --background: var(--ion-color-dark);
   --background: #252525;
-
- 
 }

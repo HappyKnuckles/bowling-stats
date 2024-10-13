@@ -157,7 +157,7 @@ export class StatsPage implements OnInit, OnDestroy {
   private loadingSubscription: Subscription;
   private currentStatSubscription: Subscription;
   private sessionStatSubscription: Subscription;
-  private filteredGamesSubscription: Subscription;
+  private filteredGamesSubscription!: Subscription;
 
   // Viewchilds and Instances
   @ViewChild('scoreChart', { static: false }) scoreChart?: ElementRef;
@@ -200,12 +200,6 @@ export class StatsPage implements OnInit, OnDestroy {
       this.sessionStats = stats;
     });
 
-    this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
-      this.filteredGameHistory = games;
-      this.loadDataAndCalculateStats(true);
-      this.generateCharts();
-      this.statsValueChanged = [false, true, true];
-    });
     addIcons({ filterOutline, arrowUp, arrowDown, calendarNumberOutline, calendarNumber });
   }
   async ngOnInit(): Promise<void> {
@@ -418,6 +412,9 @@ export class StatsPage implements OnInit, OnDestroy {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats()
         .then(() => {
+          this.filterService.filterGames(this.gameHistory);
+        })
+        .then(() => {
           this.generateCharts();
           this.statsValueChanged = [true, true, true];
         })
@@ -427,6 +424,23 @@ export class StatsPage implements OnInit, OnDestroy {
     });
 
     this.dataDeletedSubscription = this.storageService.dataDeleted.subscribe(() => {
+      this.gameHistoryChanged = true;
+      this.loadDataAndCalculateStats()
+        .then(() => {
+          this.filterService.filterGames(this.gameHistory);
+        })
+        .then(() => {
+          this.generateCharts();
+          this.statsValueChanged = [true, true, true];
+        })
+        .catch((error) => {
+          console.error('Error loading data and calculating stats:', error);
+        });
+    });
+
+    this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
+      this.filteredGameHistory = games;
+      this.activeFilterCount = this.filterService.activeFilterCount;
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats()
         .then(() => {

@@ -115,6 +115,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
       this.filteredGameHistory = games;
+      this.activeFilterCount = this.filterService.activeFilterCount;
     });
 
     addIcons({ cloudUploadOutline, filterOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline });

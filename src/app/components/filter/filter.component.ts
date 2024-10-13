@@ -83,7 +83,7 @@ export class FilterComponent implements OnInit {
       this.filterService.filters.startDate = new Date(this.games[this.games.length - 1].date).toISOString() || Date.now().toString();
       this.filterService.filters.endDate = new Date(this.games[0].date).toISOString() || Date.now().toString();
     }
-    
+
     const textColor = '#000000';
     const rootStyles = getComputedStyle(document.documentElement);
     const backgroundColor = rootStyles.getPropertyValue('--ion-color-primary').trim();

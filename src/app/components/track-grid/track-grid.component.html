@@ -44,18 +44,14 @@
           inputmode="numeric"
           autocapitalize="on"
           debounce="1000"
-          [disabled]="
-            frames[frameIndex][0] !== 10 && frames[frameIndex][0] + (frames[frameIndex][1] || 0) !== 10
-          "
+          [disabled]="frames[frameIndex][0] !== 10 && frames[frameIndex][0] + (frames[frameIndex][1] || 0) !== 10"
           (ionInput)="simulateScore($event, frameIndex, 2)">
         </ion-input>
       </ion-col>
     </ion-row>
     <ion-row
       *ngIf="
-        (frames[frameIndex][0] !== undefined ||
-          frames[frameIndex][1] !== undefined ||
-          (i === 10 && frames[frameIndex][0] !== undefined)) &&
+        (frames[frameIndex][0] !== undefined || frames[frameIndex][1] !== undefined || (i === 10 && frames[frameIndex][0] !== undefined)) &&
         isNumber(frameScores[i - 1])
       ">
       <ion-col class="middle count">{{ frameScores[i - 1] }}</ion-col>
@@ -63,9 +59,7 @@
     <ion-row
       *ngIf="
         !(
-          (frames[frameIndex][0] !== undefined ||
-            frames[frameIndex][1] !== undefined ||
-            (i === 10 && frames[frameIndex][0] !== undefined)) &&
+          (frames[frameIndex][0] !== undefined || frames[frameIndex][1] !== undefined || (i === 10 && frames[frameIndex][0] !== undefined)) &&
           isNumber(frameScores[i - 1])
         )
       ">

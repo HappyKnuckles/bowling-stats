@@ -63,7 +63,7 @@ export class StorageService {
     isRenewed = true;
     localStorage.setItem('isRenewed', JSON.stringify(isRenewed));
     this.sortGameHistoryByDate(gameHistory);
-    this.filterService.filterGames(gameHistory);
+
     return gameHistory;
   }
 

@@ -97,6 +97,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   isLoading: boolean = false;
   isEditMode: { [key: string]: boolean } = {};
   private originalGameState: { [key: string]: Game } = {};
+  activeFilterCount = this.filterService.activeFilterCount;
 
   constructor(
     private alertController: AlertController,
@@ -106,7 +107,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     private datePipe: DatePipe,
     private hapticService: HapticService,
     private modalCtrl: ModalController,
-    public filterService: FilterService
+    private filterService: FilterService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;

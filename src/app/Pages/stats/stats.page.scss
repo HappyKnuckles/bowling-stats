@@ -25,9 +25,11 @@ canvas {
   }
 }
 .actionSheet {
+  margin-right: 8px;
   ion-button {
     background: none;
     --background-activated: none;
+    position: relative;
   }
 }
 .filter-indicator {

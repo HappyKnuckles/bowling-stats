@@ -54,9 +54,10 @@ import { FilterService } from 'src/app/services/filter/filter.service';
 })
 export class FilterComponent implements OnInit {
   @Input({ required: true }) games!: Game[];
+  filters = this.filterService.filters;
 
   highlightedDates: { date: string; textColor: string; backgroundColor: string }[] = [];
-  constructor(private modalCtrl: ModalController, public filterService: FilterService) {}
+  constructor(private modalCtrl: ModalController, private filterService: FilterService) {}
 
   cancel() {
     this.filterService.filters = localStorage.getItem('filter') ? JSON.parse(localStorage.getItem('filter')!) : this.filterService.filters;
@@ -82,9 +83,7 @@ export class FilterComponent implements OnInit {
       this.filterService.filters.startDate = new Date(this.games[this.games.length - 1].date).toISOString() || Date.now().toString();
       this.filterService.filters.endDate = new Date(this.games[0].date).toISOString() || Date.now().toString();
     }
-    this.filterService.defaultFilters.startDate = new Date(this.games[this.games.length - 1].date).toISOString() || Date.now().toString();
-    this.filterService.defaultFilters.endDate = new Date(this.games[0].date).toISOString() || Date.now().toString();
-
+    
     const textColor = '#000000';
     const rootStyles = getComputedStyle(document.documentElement);
     const backgroundColor = rootStyles.getPropertyValue('--ion-color-primary').trim();

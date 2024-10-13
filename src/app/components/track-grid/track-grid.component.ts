@@ -27,8 +27,10 @@ export class TrackGridComponent implements OnInit {
   maxScore: number = 300;
   note: string = '';
   isPractice: boolean = false;
+  frames = this.bowlingService.frames;
+  frameScores = this.bowlingService.frameScores;
   constructor(
-    public bowlingService: BowlingCalculatorService,
+    private bowlingService: BowlingCalculatorService,
     private storageService: StorageService,
     private transformGameService: GameDataTransformerService,
     private toastService: ToastService,

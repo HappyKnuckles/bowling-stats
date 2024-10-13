@@ -22,7 +22,7 @@
           inputmode="numeric"
           autocapitalize="on"
           debounce="1000"
-          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10"
+          [disabled]="frames[frameIndex][0] === 10 && i !== 10"
           (ionInput)="simulateScore($event, frameIndex, 1)">
         </ion-input>
       </ion-col>
@@ -33,7 +33,7 @@
           inputmode="numeric"
           autocapitalize="on"
           debounce="1000"
-          [disabled]="bowlingService.frames[frameIndex][0] === 10 && i !== 10"
+          [disabled]="frames[frameIndex][0] === 10 && i !== 10"
           (ionInput)="simulateScore($event, frameIndex, 1)">
         </ion-input>
       </ion-col>
@@ -45,7 +45,7 @@
           autocapitalize="on"
           debounce="1000"
           [disabled]="
-            bowlingService.frames[frameIndex][0] !== 10 && bowlingService.frames[frameIndex][0] + (bowlingService.frames[frameIndex][1] || 0) !== 10
+            frames[frameIndex][0] !== 10 && frames[frameIndex][0] + (frames[frameIndex][1] || 0) !== 10
           "
           (ionInput)="simulateScore($event, frameIndex, 2)">
         </ion-input>
@@ -53,20 +53,20 @@
     </ion-row>
     <ion-row
       *ngIf="
-        (bowlingService.frames[frameIndex][0] !== undefined ||
-          bowlingService.frames[frameIndex][1] !== undefined ||
-          (i === 10 && bowlingService.frames[frameIndex][0] !== undefined)) &&
-        isNumber(bowlingService.frameScores[i - 1])
+        (frames[frameIndex][0] !== undefined ||
+          frames[frameIndex][1] !== undefined ||
+          (i === 10 && frames[frameIndex][0] !== undefined)) &&
+        isNumber(frameScores[i - 1])
       ">
-      <ion-col class="middle count">{{ bowlingService.frameScores[i - 1] }}</ion-col>
+      <ion-col class="middle count">{{ frameScores[i - 1] }}</ion-col>
     </ion-row>
     <ion-row
       *ngIf="
         !(
-          (bowlingService.frames[frameIndex][0] !== undefined ||
-            bowlingService.frames[frameIndex][1] !== undefined ||
-            (i === 10 && bowlingService.frames[frameIndex][0] !== undefined)) &&
-          isNumber(bowlingService.frameScores[i - 1])
+          (frames[frameIndex][0] !== undefined ||
+            frames[frameIndex][1] !== undefined ||
+            (i === 10 && frames[frameIndex][0] !== undefined)) &&
+          isNumber(frameScores[i - 1])
         )
       ">
       <ion-col class="middle count" style="color: var(--ion-color-quartiary)">0</ion-col>

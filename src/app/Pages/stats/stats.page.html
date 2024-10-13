@@ -1,10 +1,10 @@
 <ion-header [translucent]="true" class="ion-text-center">
   <ion-toolbar>
     <ion-title> Stats </ion-title>
-    <ion-buttons slot="end">
-      <ion-button class="actionSheet" fill="clear" (click)="openFilterModal()" style="position: relative">
+    <ion-buttons slot="end" class="actionSheet">
+      <ion-button  fill="clear" (click)="openFilterModal()">
         <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-        <ion-text class="filter-indicator" *ngIf="filterService.activeFilterCount !== 0">{{filterService.activeFilterCount}}</ion-text>
+        <ion-text class="filter-indicator" *ngIf="activeFilterCount !== 0">{{activeFilterCount}}</ion-text>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -20,7 +20,7 @@
   <!-- Show this message if there are no game history items and it's not loading -->
   <ng-container *ngIf="(gameHistory.length <= 0 && !isLoading) || filteredGameHistory.length <= 0; else content">
     <ion-text class="no-game-text">
-      {{ gameHistory.length <= 0 && !isLoading ? 'Start playing a few games to see your stats here!' : 'No Games for this filter' }}
+      {{ gameHistory.length <= 0 && !isLoading ? 'Start playing a few games to see your stats here!' : 'No Games for this filter!' }}
     </ion-text>
   </ng-container>
   <!-- Main content to display when there is game history or when loading is done -->

@@ -5,13 +5,13 @@
     </ion-button>
     <input type="file" id="upload" class="ion-hide" accept="image/*" />
     <ion-title> Add Game </ion-title>
-    <div slot="end">
+    <ion-buttons slot="end">
       <ion-button class="actionSheet" (click)="presentActionSheet()" fill="clear">
         {{selectedMode}}
         <ion-icon *ngIf="!sheetOpen" name="chevron-down" class="chevron"></ion-icon>
         <ion-icon *ngIf="sheetOpen" name="chevron-up" class="chevron"></ion-icon>
       </ion-button>
-    </div>
+    </ion-buttons>
   </ion-toolbar>
   @if(selectedMode === '3 Series'){
   <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChanged($event)">

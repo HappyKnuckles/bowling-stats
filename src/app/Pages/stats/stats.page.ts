@@ -150,6 +150,7 @@ export class StatsPage implements OnInit, OnDestroy {
   isLoading: boolean = false;
   selectedSegment: string = 'Overall';
   segments: string[] = ['Overall', 'Spares', 'Throws', 'Sessions'];
+  activeFilterCount = this.filterService.activeFilterCount;
   // Subscriptions
   private newDataAddedSubscription!: Subscription;
   private dataDeletedSubscription!: Subscription;
@@ -185,7 +186,7 @@ export class StatsPage implements OnInit, OnDestroy {
     private decimalPipe: DecimalPipe,
     private hapticService: HapticService,
     private modalCtrl: ModalController,
-    public filterService: FilterService
+    private filterService: FilterService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
@@ -201,7 +202,9 @@ export class StatsPage implements OnInit, OnDestroy {
 
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
       this.filteredGameHistory = games;
-      this.loadStats();
+      this.loadDataAndCalculateStats(true);
+      this.generateCharts();
+      this.statsValueChanged = [false, true, true];
     });
     addIcons({ filterOutline, arrowUp, arrowDown, calendarNumberOutline, calendarNumber });
   }
@@ -341,16 +344,6 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  private calculatePinChartData() {
-    const filteredSpareRates: number[] = this.stats.spareRates.slice(1).map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
-    const filteredMissedCounts: number[] = this.stats.missedCounts.slice(1).map((count, i) => {
-      const rate = this.getRate(count, this.stats.pinCounts[i + 1]);
-      const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
-      return parseFloat(transformedRate ?? '0');
-    });
-    return { filteredSpareRates, filteredMissedCounts };
-  }
-
   private calculateScoreChartData() {
     const scoresByDate: { [date: string]: number[] } = {};
     this.gameHistory.forEach((game: any) => {
@@ -385,6 +378,16 @@ export class StatsPage implements OnInit, OnDestroy {
 
     const gamesPlayedDaily = gameLabels.map((date) => scoresByDate[date].length);
     return { gameLabels, overallAverages, differences, gamesPlayedDaily };
+  }
+
+  private calculatePinChartData() {
+    const filteredSpareRates: number[] = this.stats.spareRates.slice(1).map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
+    const filteredMissedCounts: number[] = this.stats.missedCounts.slice(1).map((count, i) => {
+      const rate = this.getRate(count, this.stats.pinCounts[i + 1]);
+      const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
+      return parseFloat(transformedRate ?? '0');
+    });
+    return { filteredSpareRates, filteredMissedCounts };
   }
 
   private calculateThrowChartData() {

@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { SaveGameDataService } from './save-game.service';
 
-describe('SaveGameDataService', () => {
-  let service: SaveGameDataService;
+import { FilterService } from './filter.service';
+
+describe('FilterService', () => {
+  let service: FilterService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SaveGameDataService);
+    service = TestBed.inject(FilterService);
   });
 
   it('should be created', () => {

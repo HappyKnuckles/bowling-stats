@@ -11,7 +11,8 @@ import { register } from 'swiper/element/bundle';
 import { ThemeChangerService } from './services/theme/theme-changer.service';
 import { HttpClient } from '@angular/common/http';
 import { GameStatsService } from './services/game-stats/game-stats.service';
-import { GameHistoryService } from './services/game-history/game-history.service';
+import { StorageService } from './services/storage/storage.service';
+import { FilterService } from './services/filter/filter.service';
 register();
 
 @Component({
@@ -37,7 +38,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private themeService: ThemeChangerService,
     private http: HttpClient,
     private gameStatsService: GameStatsService,
-    private gameHistoryService: GameHistoryService
+    private storageService: StorageService,
+    private filterService: FilterService
   ) {
     this.initializeApp();
     const currentTheme = this.themeService.getCurrentTheme();
@@ -53,7 +55,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     // Load stats here initially so prevstats are loaded before the first game
-    const gameHistory = await this.gameHistoryService.loadGameHistory();
+    const gameHistory = await this.storageService.loadGameHistory();
+    this.filterService.setDefaultFilters(gameHistory);
+    this.filterService.filterGames(gameHistory);
     this.gameStatsService.calculateStats(gameHistory);
 
     this.greetUser();

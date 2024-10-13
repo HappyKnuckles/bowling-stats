@@ -48,6 +48,18 @@ ion-row {
   }
 }
 
+.filter-indicator {
+  position: absolute;
+  bottom: 12px;
+  left: 20px;
+  color: black;
+  background: var(--ion-color-primary);
+  padding: 1px;
+  border-radius: 7px;
+  z-index: 15555;
+  font-size: 14px;
+}
+
 .sliding {
   .note {
     --inner-border-width: 0;
@@ -56,7 +68,6 @@ ion-row {
   ion-item:not(.note) {
     --padding-start: 0;
     --inner-padding-end: 0;
-    --inner-border-width: 0;
   }
 
   .expansion-header {

@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Game } from 'src/app/models/game-model';
 import { PrevStats } from 'src/app/models/stats-model';
 
-const PERFECT_SCORE = 300;
 const MAX_FRAMES = 10;
 @Injectable({
   providedIn: 'root',
@@ -191,23 +190,22 @@ export class GameStatsService {
     let lowestScore = -1;
     let highestScore = -1;
 
-    gameHistory.forEach((game: { frames: any[]; totalScore: number }) => {
-      if (game.totalScore === PERFECT_SCORE) {
+    gameHistory.forEach((game: Game) => {
+      if (game.isPerfect) {
         perfectGameCount++;
       }
+      if (game.isClean) {
+        cleanGameCount++;
+      }
 
-      gameHistory.forEach((game: { totalScore: number }) => {
-        if (game.totalScore > highestScore) {
-          highestScore = game.totalScore;
-        }
-        if (lowestScore === -1 || game.totalScore < lowestScore) {
-          lowestScore = game.totalScore;
-        }
-      });
+      if (game.totalScore > highestScore) {
+        highestScore = game.totalScore;
+      }
+      if (lowestScore === -1 || game.totalScore < lowestScore) {
+        lowestScore = game.totalScore;
+      }
 
-      let isCleanGame = true;
-
-      game.frames.forEach((frame, index) => {
+      game.frames.forEach((frame: { throws: any }, index: number) => {
         const throws = frame.throws;
 
         // Count the first throw in each frame for firstThrowAverage
@@ -260,17 +258,7 @@ export class GameStatsService {
             missedCounts[pinsLeft]++;
           }
         }
-
-        // Check if the current frame has a score of less than 10
-        const frameScore = throws.reduce((acc: any, curr: { value: any }) => acc + curr.value, 0);
-        if (frameScore < 10) {
-          isCleanGame = false; // If any frame is less than 10, the game is not clean
-        }
       });
-
-      if (isCleanGame) {
-        cleanGameCount++;
-      }
     });
 
     for (let i = 1; i <= MAX_FRAMES; i++) {
@@ -280,7 +268,6 @@ export class GameStatsService {
 
     totalSpares = totalSparesConverted;
     const totalPins = gameHistory.reduce((sum, game) => sum + game.totalScore, 0);
-
     const totalGames = gameHistory.length;
     const averageScore = totalPins / gameHistory.length;
     const highGame = highestScore;

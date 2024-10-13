@@ -1,0 +1,77 @@
+import { Injectable } from '@angular/core';
+import { Filter } from 'src/app/models/filter-model';
+import { Game } from 'src/app/models/game-model';
+import { BehaviorSubject } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class FilterService {
+  filters: Filter = {
+    isPractice: false,
+    minScore: 0,
+    maxScore: 300,
+    isClean: false,
+    isPerfect: false,
+    startDate: '',
+    endDate: '',
+  };
+  defaultFilters: Filter = {
+    isPractice: false,
+    minScore: 0,
+    maxScore: 300,
+    isClean: false,
+    isPerfect: false,
+    startDate: '',
+    endDate: '',
+  };
+  private filteredGamesSubject = new BehaviorSubject<Game[]>([]);
+  filteredGames$ = this.filteredGamesSubject.asObservable();
+  activeFilterCount: number = 0;
+
+  constructor() {
+    if (localStorage.getItem('filter')) {
+      const filter = JSON.parse(localStorage.getItem('filter')!);
+      this.filters = filter;
+    }
+  }
+
+  filterGames(games: Game[]): void {
+    localStorage.setItem('filter', JSON.stringify(this.filters));
+    this.updateActiveFilterCount();
+
+    const filteredGames = games.filter((game) => {
+      const formatDate = (date: string) => date.split('T')[0];
+      const gameDate = formatDate(new Date(game.date).toISOString());
+      const startDate = formatDate(this.filters.startDate!);
+      const endDate = formatDate(this.filters.endDate!);
+      const isWithinDateRange = gameDate >= startDate && gameDate <= endDate;
+      const isWithinScoreRange = game.totalScore >= this.filters.minScore && game.totalScore <= this.filters.maxScore;
+      const matchesPracticeFilter = !this.filters.isPractice || game.isPractice;
+      const matchesPerfectFilter = !this.filters.isPerfect || game.isPerfect;
+      const matchesCleanFilter = !this.filters.isClean || game.isClean;
+
+      return isWithinDateRange && isWithinScoreRange && matchesPracticeFilter && matchesPerfectFilter && matchesCleanFilter;
+    });
+
+    this.filteredGamesSubject.next(filteredGames);
+  }
+
+  setDefaultFilters(games: Game[]): void {
+    this.defaultFilters.startDate = new Date(games[games.length - 1].date).toISOString();
+    const currentDate = new Date();
+    const oneWeekLater = new Date(currentDate.setDate(currentDate.getDate() + 7));
+    this.defaultFilters.endDate = oneWeekLater.toISOString();
+    this.filters.startDate = this.defaultFilters.startDate;
+    this.filters.endDate = this.defaultFilters.endDate;
+  }
+
+  updateActiveFilterCount(): void {
+    this.activeFilterCount = Object.keys(this.filters).reduce((count, key) => {
+      if (this.filters[key as keyof Filter] !== this.defaultFilters[key as keyof Filter]) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
+  }
+}

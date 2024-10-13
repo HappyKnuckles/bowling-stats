@@ -17,27 +17,29 @@ import {
 import { NgIf, NgFor, NgStyle, DecimalPipe, DatePipe } from '@angular/common';
 import { ImpactStyle } from '@capacitor/haptics';
 import { Game } from 'src/app/models/game-model';
-import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
 import { GameStatsService } from 'src/app/services/game-stats/game-stats.service';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { LoadingService } from 'src/app/services/loader/loading.service';
-import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { FormsModule } from '@angular/forms';
 import { Swiper } from 'swiper';
 import { IonicSlides } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowDown, arrowUp, calendarNumber, calendarNumberOutline } from 'ionicons/icons';
+import { arrowDown, arrowUp, calendarNumber, calendarNumberOutline, filterOutline } from 'ionicons/icons';
 import { StatDisplayComponent } from 'src/app/components/stat-display/stat-display.component';
 import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
 import { SpareDisplayComponent } from '../../components/spare-display/spare-display.component';
+import { StorageService } from 'src/app/services/storage/storage.service';
+import { FilterComponent } from 'src/app/components/filter/filter.component';
+import { ModalController } from '@ionic/angular';
+import { FilterService } from 'src/app/services/filter/filter.service';
 
 @Component({
   selector: 'app-stats',
   templateUrl: 'stats.page.html',
   styleUrls: ['stats.page.scss'],
   standalone: true,
-  providers: [DecimalPipe, DatePipe],
+  providers: [DecimalPipe, DatePipe, ModalController],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     IonLabel,
@@ -143,6 +145,7 @@ export class StatsPage implements OnInit, OnDestroy {
   uniqueSortedDates: number[] = [];
   // Game Data
   gameHistory: Game[] = [];
+  filteredGameHistory: Game[] = [];
   gameHistoryChanged: boolean = true;
   isLoading: boolean = false;
   selectedSegment: string = 'Overall';
@@ -153,6 +156,7 @@ export class StatsPage implements OnInit, OnDestroy {
   private loadingSubscription: Subscription;
   private currentStatSubscription: Subscription;
   private sessionStatSubscription: Subscription;
+  private filteredGamesSubscription: Subscription;
 
   // Viewchilds and Instances
   @ViewChild('scoreChart', { static: false }) scoreChart?: ElementRef;
@@ -177,10 +181,11 @@ export class StatsPage implements OnInit, OnDestroy {
     private loadingService: LoadingService,
     private statsService: GameStatsService,
     private toastService: ToastService,
-    private gameHistoryService: GameHistoryService,
-    private saveService: SaveGameDataService,
+    private storageService: StorageService,
     private decimalPipe: DecimalPipe,
-    private hapticService: HapticService
+    private hapticService: HapticService,
+    private modalCtrl: ModalController,
+    public filterService: FilterService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
@@ -193,9 +198,13 @@ export class StatsPage implements OnInit, OnDestroy {
     this.sessionStatSubscription = this.statsService.sessionStats$.subscribe((stats) => {
       this.sessionStats = stats;
     });
-    addIcons({ arrowUp, arrowDown, calendarNumberOutline, calendarNumber });
-  }
 
+    this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
+      this.filteredGameHistory = games;
+      this.loadStats();
+    });
+    addIcons({ filterOutline, arrowUp, arrowDown, calendarNumberOutline, calendarNumber });
+  }
   async ngOnInit(): Promise<void> {
     try {
       this.loadingService.setLoading(true);
@@ -208,6 +217,16 @@ export class StatsPage implements OnInit, OnDestroy {
       this.loadingService.setLoading(false);
     }
   }
+  async openFilterModal() {
+    const modal = await this.modalCtrl.create({
+      component: FilterComponent,
+      componentProps: {
+        games: this.gameHistory,
+      },
+    });
+
+    return await modal.present();
+  }
 
   ngOnDestroy(): void {
     this.newDataAddedSubscription.unsubscribe();
@@ -215,6 +234,7 @@ export class StatsPage implements OnInit, OnDestroy {
     this.loadingSubscription.unsubscribe();
     this.currentStatSubscription.unsubscribe();
     this.sessionStatSubscription.unsubscribe();
+    this.filteredGamesSubscription.unsubscribe();
   }
 
   async handleRefresh(event: any): Promise<void> {
@@ -222,7 +242,6 @@ export class StatsPage implements OnInit, OnDestroy {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
       await this.loadDataAndCalculateStats(true);
-
       this.generateCharts();
     } catch (error) {
       console.error(error);
@@ -241,7 +260,6 @@ export class StatsPage implements OnInit, OnDestroy {
     if (this.swiperInstance) {
       this.selectedSegment = event.detail.value;
       const activeIndex = this.getSlideIndex(this.selectedSegment);
-      // Maybe disable loopPreventsSliding (slide bug when sliding only with segment)
       this.swiperInstance.slideTo(activeIndex);
       this.generateCharts(activeIndex);
     }
@@ -283,7 +301,7 @@ export class StatsPage implements OnInit, OnDestroy {
 
   private async loadGameHistory() {
     try {
-      this.gameHistory = await this.gameHistoryService.loadGameHistory();
+      this.gameHistory = await this.storageService.loadGameHistory();
     } catch (error) {
       this.toastService.showToast(`Error loading history: ${error}`, 'bug', true);
     }
@@ -294,7 +312,7 @@ export class StatsPage implements OnInit, OnDestroy {
       // TODO adjust so stats are not calculated twice (on startup and on init)
       // currently this is needed to get previous stats before the first game
       // and has to happen on init because wrong stats if you add games before opening stats page
-      this.statsService.calculateStats(this.gameHistory);
+      this.statsService.calculateStats(this.filteredGameHistory);
 
       // this.stats = this.statsService.currentStats;
 
@@ -393,7 +411,7 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
+    this.newDataAddedSubscription = this.storageService.newDataAdded.subscribe(() => {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats()
         .then(() => {
@@ -405,7 +423,7 @@ export class StatsPage implements OnInit, OnDestroy {
         });
     });
 
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
+    this.dataDeletedSubscription = this.storageService.dataDeleted.subscribe(() => {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats()
         .then(() => {

@@ -7,12 +7,13 @@
     <input type="file" id="excelUpload" class="ion-hide" (input)="handleFileUpload($event)" placeholder="Upload file" accept=".xlsx" />
     <ion-title>
       History
-      <ion-badge>{{gameHistory.length}}</ion-badge>
+      <ion-badge>{{filteredGameHistory.length}}</ion-badge>
     </ion-title>
     <ion-buttons slot="end" style="padding: 5px">
-      <!-- <ion-button class="actionSheet" fill="clear">
+      <ion-button class="actionSheet" fill="clear" (click)="openFilterModal()" style="position: relative">
         <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-      </ion-button> -->
+        <ion-text class="filter-indicator" *ngIf="filterService.activeFilterCount !== 0">{{filterService.activeFilterCount}}</ion-text>
+      </ion-button>
       <ion-button (click)="exportToExcel()" class="actionSheet" fill="clear">
         <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
       </ion-button>
@@ -23,15 +24,15 @@
 <ion-content [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>
   <!-- Show this message if there are no game history items and it's not loading -->
-  <ng-container *ngIf="gameHistory.length <= 0 && !isLoading; else content">
-    <ion-text class="no-game-text"> Start playing a few games to see your games here! </ion-text>
+  <ng-container *ngIf="(gameHistory.length <= 0 && !isLoading) || filteredGameHistory.length <= 0; else content">
+    <ion-text class="no-game-text">
+      {{ gameHistory.length <= 0 && !isLoading ? 'Start playing a few games to see your stats here!' : 'No Games for this filter' }}
+    </ion-text>
   </ng-container>
-
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
     <!-- <ion-button (click)="deleteAll()"> Alles löschen</ion-button>-->
-    @if(gameHistory.length > 0) {
-    <ion-item-sliding *ngFor="let game of gameHistory; let i = index" class="sliding" #slidingItem>
+    <ion-item-sliding *ngFor="let game of filteredGameHistory; let i = index" class="sliding" #slidingItem>
       <ion-item-options side="end" (ionSwipe)="deleteGame(game.gameId); slidingItem.closeOpened();">
         <ion-item-option color="danger" expandable (click)="deleteGame(game.gameId); slidingItem.closeOpened();">
           <ion-icon class="title" style="transform: translateY(-2px)" name="trash-outline"></ion-icon>
@@ -56,12 +57,12 @@
         </ion-item-option>
       </ion-item-options>
 
-      <ion-item>
+      <ion-item lines="none">
         <mat-expansion-panel #expansionPanel>
           <mat-expansion-panel-header class="expansion-header">
             <mat-panel-title>
               <div class="game-info">
-                <div class="title">Game {{gameHistory.length - i}}</div>
+                <div class="title">Game {{filteredGameHistory.length - i}}</div>
                 <div class="score">Score: {{game.totalScore}}</div>
                 <!-- <div class="score">{{game.date | date}}</div> -->
               </div>
@@ -199,6 +200,5 @@
         </mat-expansion-panel>
       </ion-item>
     </ion-item-sliding>
-    }
   </ng-template>
 </ion-content>

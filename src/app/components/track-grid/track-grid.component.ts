@@ -1,6 +1,5 @@
 import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren } from '@angular/core';
 import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
-import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
 import { NgFor, NgIf } from '@angular/common';
@@ -10,6 +9,7 @@ import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
 import { documentTextOutline } from 'ionicons/icons';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 @Component({
   selector: 'app-track-grid',
@@ -29,7 +29,7 @@ export class TrackGridComponent implements OnInit {
   isPractice: boolean = false;
   constructor(
     public bowlingService: BowlingCalculatorService,
-    private saveGameService: SaveGameDataService,
+    private storageService: StorageService,
     private transformGameService: GameDataTransformerService,
     private toastService: ToastService,
     private hapticService: HapticService
@@ -63,7 +63,7 @@ export class TrackGridComponent implements OnInit {
     this.focusNextInput(frameIndex, inputIndex);
   }
 
-  saveGameToLocalStorage(isSeries: boolean, seriesId: string): void {
+  async saveGameToLocalStorage(isSeries: boolean, seriesId: string): Promise<void> {
     try {
       const gameData = this.transformGameService.transformGameData(
         this.bowlingService.frames,
@@ -74,10 +74,8 @@ export class TrackGridComponent implements OnInit {
         seriesId,
         this.note
       );
-
-      this.saveGameService.saveGameToLocalStorage(gameData);
+      await this.storageService.saveGameToLocalStorage(gameData);
       this.toastService.showToast('Game saved succesfully.', 'add');
-      this.note = '';
       this.clearFrames();
     } catch (error) {
       this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);
@@ -118,6 +116,7 @@ export class TrackGridComponent implements OnInit {
       input.value = '';
     });
     this.isPractice = false;
+    this.note = '';
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;
     this.maxScoreChanged.emit(this.maxScore);

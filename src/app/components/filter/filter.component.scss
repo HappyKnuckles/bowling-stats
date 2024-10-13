@@ -1,0 +1,10 @@
+ion-modal {
+  --background: none;
+  --backdrop-opacity: var(--ion-backdrop-opacity, 0.4) !important;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4) !important;
+
+  ion-datetime {
+    border-radius: 16px;
+    box-shadow: rgba(var(--ion-color-primary), 0.3) 0px 10px 15px -3px;
+  }
+}

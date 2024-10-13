@@ -24,7 +24,7 @@ import { SeriesMode } from './seriesModeEnum';
 import { Game } from 'src/app/models/game-model';
 import { addIcons } from 'ionicons';
 import { add, chevronDown, chevronUp, cameraOutline, documentTextOutline } from 'ionicons/icons';
-import { NgIf, NgFor, CommonModule } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { ImpactStyle } from '@capacitor/haptics';
 import { TrackGridComponent } from 'src/app/components/track-grid/track-grid.component';
 import { AdService } from 'src/app/services/ad/ad.service';
@@ -32,7 +32,6 @@ import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bo
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { ImageProcesserService } from 'src/app/services/image-processer/image-processer.service';
 import { LoadingService } from 'src/app/services/loader/loading.service';
-import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
 import { UserService } from 'src/app/services/user/user.service';
@@ -40,7 +39,7 @@ import { defineCustomElements } from '@teamhive/lottie-player/loader';
 import { Device } from '@capacitor/device';
 import Swiper from 'swiper';
 import { IonicSlides } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 defineCustomElements(window);
 
@@ -116,7 +115,7 @@ export class AddGamePage implements OnInit {
     private alertController: AlertController,
     private toastService: ToastService,
     private bowlingService: BowlingCalculatorService,
-    private saveGameService: SaveGameDataService,
+    private storageService: StorageService,
     private transformGameService: GameDataTransformerService,
     private loadingService: LoadingService,
     private userService: UserService,
@@ -172,7 +171,7 @@ export class AddGamePage implements OnInit {
         this.toastService.showToast('Invalid input.', 'bug', true);
         return;
       } else {
-        this.saveGameService.saveGameToLocalStorage(this.gameData);
+        this.storageService.saveGameToLocalStorage(this.gameData);
         this.toastService.showToast('Game saved successfully.', 'add');
         this.modal.dismiss(null, 'confirm');
       }

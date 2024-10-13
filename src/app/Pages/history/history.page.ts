@@ -20,31 +20,43 @@ import {
   IonItemOptions,
   IonItemOption,
   IonTextarea,
+  IonButtons,
 } from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Subscription } from 'rxjs';
 import * as ExcelJS from 'exceljs';
 import { addIcons } from 'ionicons';
-import { cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline } from 'ionicons/icons';
+import {
+  cloudUploadOutline,
+  cloudDownloadOutline,
+  trashOutline,
+  createOutline,
+  shareOutline,
+  documentTextOutline,
+  filterOutline,
+} from 'ionicons/icons';
 import { NgIf, NgFor, DatePipe, NgClass } from '@angular/common';
 import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
 import { Share } from '@capacitor/share';
 import { toPng } from 'html-to-image';
 import { ImpactStyle } from '@capacitor/haptics';
-import { GameHistoryService } from 'src/app/services/game-history/game-history.service';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { LoadingService } from 'src/app/services/loader/loading.service';
-import { SaveGameDataService } from 'src/app/services/save-game/save-game.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { Game } from 'src/app/models/game-model';
+import { FilterComponent } from 'src/app/components/filter/filter.component';
+import { ModalController } from '@ionic/angular';
+import { FilterService } from 'src/app/services/filter/filter.service';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 @Component({
   selector: 'app-history',
   templateUrl: 'history.page.html',
   styleUrls: ['history.page.scss'],
   standalone: true,
-  providers: [DatePipe],
+  providers: [DatePipe, ModalController],
   imports: [
+    IonButtons,
     IonTextarea,
     IonItemOption,
     IonItemOptions,
@@ -75,10 +87,12 @@ import { Game } from 'src/app/models/game-model';
 export class HistoryPage implements OnInit, OnDestroy {
   @ViewChild('expansionPanel') expansionPanel!: MatExpansionPanel;
   gameHistory: Game[] = [];
+  filteredGameHistory: Game[] = [];
   arrayBuffer: any;
   file!: File;
-  newDataAddedSubscription!: Subscription;
-  dataDeletedSubscription!: Subscription;
+  private newDataAddedSubscription!: Subscription;
+  private dataDeletedSubscription!: Subscription;
+  private filteredGamesSubscription: Subscription;
   private loadingSubscription: Subscription;
   isLoading: boolean = false;
   isEditMode: { [key: string]: boolean } = {};
@@ -87,22 +101,29 @@ export class HistoryPage implements OnInit, OnDestroy {
   constructor(
     private alertController: AlertController,
     private toastService: ToastService,
-    private gameHistoryService: GameHistoryService,
-    private saveService: SaveGameDataService,
+    private storageService: StorageService,
     private loadingService: LoadingService,
     private datePipe: DatePipe,
-    private hapticService: HapticService
+    private hapticService: HapticService,
+    private modalCtrl: ModalController,
+    public filterService: FilterService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
-    addIcons({ cloudUploadOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline });
+
+    this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
+      this.filteredGameHistory = games;
+    });
+
+    addIcons({ cloudUploadOutline, filterOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline });
   }
 
   async ngOnInit(): Promise<void> {
     try {
       this.loadingService.setLoading(true);
       await this.loadGameHistory();
+
       this.subscribeToDataEvents();
     } catch (error) {
       console.error(error);
@@ -111,10 +132,22 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
   }
 
+  async openFilterModal() {
+    const modal = await this.modalCtrl.create({
+      component: FilterComponent,
+      componentProps: {
+        games: this.gameHistory,
+      },
+    });
+
+    return await modal.present();
+  }
+
   ngOnDestroy(): void {
     this.newDataAddedSubscription.unsubscribe();
     this.dataDeletedSubscription.unsubscribe();
     this.loadingSubscription.unsubscribe();
+    this.filteredGamesSubscription.unsubscribe();
   }
 
   parseIntValue(value: any): any {
@@ -155,7 +188,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         this.toastService.showToast('Invalid input.', 'bug', true);
         return;
       } else {
-        await this.saveService.saveGameToLocalStorage(game);
+        await this.storageService.saveGameToLocalStorage(game);
         this.toastService.showToast('Game edit saved sucessfully!', 'refresh-outline');
         this.enableEdit(game);
       }
@@ -296,9 +329,9 @@ export class HistoryPage implements OnInit, OnDestroy {
         },
         {
           text: 'Delete',
-          handler: () => {
+          handler: async () => {
             const key = 'game' + gameId;
-            this.saveService.deleteGame(key);
+            await this.storageService.deleteGame(key);
             this.toastService.showToast('Game deleted sucessfully.', 'checkmark-outline');
           },
         },
@@ -309,7 +342,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   deleteAll(): void {
-    this.saveService.deleteAllData();
+    this.storageService.deleteAllData();
     window.dispatchEvent(new Event('dataDeleted'));
   }
 
@@ -406,23 +439,25 @@ export class HistoryPage implements OnInit, OnDestroy {
 
   private async loadGameHistory(): Promise<void> {
     try {
-      this.gameHistory = await this.gameHistoryService.loadGameHistory();
+      this.gameHistory = await this.storageService.loadGameHistory();
     } catch (error) {
       this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
     }
   }
 
   private subscribeToDataEvents() {
-    this.newDataAddedSubscription = this.saveService.newDataAdded.subscribe(() => {
+    this.newDataAddedSubscription = this.storageService.newDataAdded.subscribe(() => {
       this.loadGameHistory().catch((error) => {
         console.error('Error loading game history:', error);
       });
+      this.filterService.filterGames(this.gameHistory);
     });
 
-    this.dataDeletedSubscription = this.saveService.dataDeleted.subscribe(() => {
+    this.dataDeletedSubscription = this.storageService.dataDeleted.subscribe(() => {
       this.loadGameHistory().catch((error) => {
         console.error('Error loading game history:', error);
       });
+      this.filterService.filterGames(this.gameHistory);
     });
   }
 
@@ -448,6 +483,9 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
     headerRow.push('Total Score');
     headerRow.push('FrameScores');
+    headerRow.push('Practice');
+    headerRow.push('Clean');
+    headerRow.push('Perfect');
     headerRow.push('Series');
     headerRow.push('Series ID');
     headerRow.push('Notes');
@@ -485,6 +523,9 @@ export class HistoryPage implements OnInit, OnDestroy {
 
       rowData.push(game.totalScore);
       rowData.push(game.frameScores.join(', '));
+      rowData.push(game.isPractice ? 'true' : 'false');
+      rowData.push(game.isClean ? 'true' : 'false');
+      rowData.push(game.isPerfect ? 'true' : 'false');
       rowData.push(game.isSeries ? 'true' : 'false');
       rowData.push(game.seriesId || '');
       rowData.push(game.note || '');
@@ -611,14 +652,17 @@ export class HistoryPage implements OnInit, OnDestroy {
         frames: frames,
         totalScore: parseInt(data[i]['12']),
         frameScores: data[i]['13'].split(', ').map((score: string) => parseInt(score)),
-        isSeries: data[i]['14'] === 'true',
-        seriesId: data[i]['15'],
-        note: data[i]['16'],
+        isPractice: data[i]['14'],
+        isClean: data[i]['15'],
+        isPerfect: data[i]['16'],
+        isSeries: data[i]['17'] === 'true',
+        seriesId: data[i]['18'],
+        note: data[i]['19'],
       };
 
       gameData.push(game);
     }
-    await this.saveService.saveGamesToLocalStorage(gameData);
+    await this.storageService.saveGamesToLocalStorage(gameData);
   }
 
   private async showPermissionDeniedAlert(): Promise<void> {

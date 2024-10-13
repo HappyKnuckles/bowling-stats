@@ -24,3 +24,20 @@ canvas {
     font-weight: 500;
   }
 }
+.actionSheet {
+  ion-button {
+    background: none;
+    --background-activated: none;
+  }
+}
+.filter-indicator {
+  position: absolute;
+  bottom: 12px;
+  left: 20px;
+  color: black;
+  background: var(--ion-color-primary);
+  padding: 1px;
+  border-radius: 7px;
+  z-index: 15555;
+  font-size: 14px;
+}

@@ -8,7 +8,7 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChanged($event)">
+  <ion-segment *ngIf="!((gameHistory.length <= 0 && !isLoading) || filteredGameHistory.length <= 0)" [value]="selectedSegment" (ionChange)="onSegmentChanged($event)">
     <ion-segment-button *ngFor="let segment of segments" [value]="segment">
       <ion-label class="segmentLabel">{{segment}}</ion-label>
     </ion-segment-button>

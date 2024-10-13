@@ -87,7 +87,6 @@ export class StatsPage implements OnInit, OnDestroy {
     spareRates: [] as number[],
   };
   // Stats
-  //TODO add interface for stats
   stats: Stats = {
     totalGames: 0,
     totalPins: 0,
@@ -322,6 +321,7 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
+  // TODO if filtergamedlength was 0, the charts dont load until restart
   private generateCharts(index?: number) {
     if (this.gameHistory.length > 0 && (index === undefined || this.statsValueChanged[index])) {
       if (this.selectedSegment === 'Overall') {

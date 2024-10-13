@@ -12,9 +12,9 @@
 <ion-content>
   <ion-item>
     <ion-note slot="start">Score Range</ion-note>
-    <ion-input class="ion-text-center" [(ngModel)]="filters.minScore" name="minScore"></ion-input>
+    <ion-input class="ion-text-center" [(ngModel)]="filters.minScore" name="minScore" clearOnEdit="true"></ion-input>
     <ion-label class="ion-text-center">-</ion-label>
-    <ion-input class="ion-text-center" [(ngModel)]="filters.maxScore" name="maxScore"></ion-input>
+    <ion-input class="ion-text-center" [(ngModel)]="filters.maxScore" name="maxScore" clearOnEdit="true"></ion-input>
   </ion-item>
   <ion-item>
     <ion-note slot="start">Time Range</ion-note>
@@ -31,7 +31,8 @@
         name="startDate"
         [highlightedDates]="highlightedDates"
         (ionChange)="updateStart($event)"
-        presentation="date"></ion-datetime>
+        presentation="date"
+        [min]="filters.startDate"></ion-datetime>
     </ng-template>
   </ion-modal>
   <ion-modal [keepContentsMounted]="true" showBackdrop="true">

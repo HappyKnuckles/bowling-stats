@@ -214,10 +214,12 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
   async openFilterModal() {
+    // TODO Think if using it like this so highlighted dates are only that match the current filter or not
     const modal = await this.modalCtrl.create({
       component: FilterComponent,
       componentProps: {
         games: this.gameHistory,
+        filteredGames: this.filteredGameHistory,
       },
     });
 
@@ -282,6 +284,7 @@ export class StatsPage implements OnInit, OnDestroy {
     if (this.gameHistoryChanged || isRefresh) {
       try {
         await this.loadGameHistory();
+        this.sortGameHistoryByDate(this.gameHistory);
         this.loadStats();
 
         if (this.selectedDate) {
@@ -294,7 +297,11 @@ export class StatsPage implements OnInit, OnDestroy {
       }
     }
   }
-
+  private sortGameHistoryByDate(gameHistory: Game[]): void {
+    gameHistory.sort((a: { date: number }, b: { date: number }) => {
+      return a.date - b.date;
+    });
+  }
   private async loadGameHistory() {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();

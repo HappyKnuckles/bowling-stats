@@ -135,10 +135,12 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   async openFilterModal() {
+    // TODO Think if using it like this so highlighted dates are only that match the current filter or not
     const modal = await this.modalCtrl.create({
       component: FilterComponent,
       componentProps: {
         games: this.gameHistory,
+        filteredGames: this.filteredGameHistory,
       },
     });
 

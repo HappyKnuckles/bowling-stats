@@ -269,22 +269,22 @@ export class GameStatsService {
     totalSpares = totalSparesConverted;
     const totalPins = gameHistory.reduce((sum, game) => sum + game.totalScore, 0);
     const totalGames = gameHistory.length;
-    const averageScore = totalPins / gameHistory.length;
+    const averageScore = totalPins / gameHistory.length || 0;
     const highGame = highestScore;
     const lowGame = lowestScore;
 
-    const cleanGamePercentage = (cleanGameCount / totalGames) * 100;
+    const cleanGamePercentage = (cleanGameCount / totalGames) * 100 || 0;
 
     const totalFrames = totalGames * 10;
     const strikeChances = gameHistory.length * 12;
 
-    const averageStrikesPerGame = totalStrikes / totalGames;
-    const averageSparesPerGame = totalSpares / totalGames;
-    const averageOpensPerGame = totalSparesMissed / totalGames;
+    const averageStrikesPerGame = totalStrikes / totalGames || 0;
+    const averageSparesPerGame = totalSpares / totalGames || 0;
+    const averageOpensPerGame = totalSparesMissed / totalGames || 0;
 
-    const strikePercentage = (totalStrikes / strikeChances) * 100;
-    const sparePercentage = (totalSpares / totalFrames) * 100;
-    const openPercentage = (totalSparesMissed / totalFrames) * 100;
+    const strikePercentage = (totalStrikes / strikeChances) * 100 || 0;
+    const sparePercentage = (totalSpares / totalFrames) * 100 || 0;
+    const openPercentage = (totalSparesMissed / totalFrames) * 100 || 0;
 
     const averageFirstCount = firstThrowCount / totalFrames;
 

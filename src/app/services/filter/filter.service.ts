@@ -7,15 +7,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class FilterService {
-  filters: Filter = {
-    isPractice: false,
-    minScore: 0,
-    maxScore: 300,
-    isClean: false,
-    isPerfect: false,
-    startDate: '',
-    endDate: '',
-  };
+  filters: Filter;
   defaultFilters: Filter = {
     isPractice: false,
     minScore: 0,
@@ -24,16 +16,14 @@ export class FilterService {
     isPerfect: false,
     startDate: '',
     endDate: '',
-  };
+  };  
+  activeFilterCount: number = 0;
   private filteredGamesSubject = new BehaviorSubject<Game[]>([]);
   filteredGames$ = this.filteredGamesSubject.asObservable();
-  activeFilterCount: number = 0;
-
+  private filtersSubject = new BehaviorSubject<Filter>(this.loadInitialFilters());
+  filters$ = this.filtersSubject.asObservable();
   constructor() {
-    if (localStorage.getItem('filter')) {
-      const filter = JSON.parse(localStorage.getItem('filter')!);
-      this.filters = filter;
-    }
+    this.filters = this.loadInitialFilters();
   }
 
   filterGames(games: Game[]): void {
@@ -57,6 +47,12 @@ export class FilterService {
     this.filteredGamesSubject.next(filteredGames);
   }
 
+  resetFilters(): void {
+    this.filters = { ...this.defaultFilters };
+    this.filtersSubject.next(this.filters);
+    this.updateActiveFilterCount();
+  }
+
   setDefaultFilters(games: Game[]): void {
     this.defaultFilters.startDate = new Date(games[games.length - 1].date).toISOString();
     const currentDate = new Date();
@@ -64,6 +60,7 @@ export class FilterService {
     this.defaultFilters.endDate = oneWeekLater.toISOString();
     this.filters.startDate = this.defaultFilters.startDate;
     this.filters.endDate = this.defaultFilters.endDate;
+    this.filtersSubject.next(this.filters);
   }
 
   updateActiveFilterCount(): void {
@@ -73,5 +70,9 @@ export class FilterService {
       }
       return count;
     }, 0);
+  }
+  private loadInitialFilters(): Filter {
+    const storedFilter = localStorage.getItem('filter');
+    return storedFilter ? JSON.parse(storedFilter) : { ...this.defaultFilters };
   }
 }

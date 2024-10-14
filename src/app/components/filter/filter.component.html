@@ -12,9 +12,9 @@
 <ion-content>
   <ion-item>
     <ion-note slot="start">Score Range</ion-note>
-    <ion-input class="ion-text-center" [(ngModel)]="filters.minScore" name="minScore" clearOnEdit="true"></ion-input>
+    <ion-input class="ion-text-center" [(ngModel)]="filters.minScore" name="minScore" clearOnEdit="true" inputmode="numeric"></ion-input>
     <ion-label class="ion-text-center">-</ion-label>
-    <ion-input class="ion-text-center" [(ngModel)]="filters.maxScore" name="maxScore" clearOnEdit="true"></ion-input>
+    <ion-input class="ion-text-center" [(ngModel)]="filters.maxScore" name="maxScore" clearOnEdit="true" inputmode="numeric"></ion-input>
   </ion-item>
   <ion-item>
     <ion-note slot="start">Time Range</ion-note>
@@ -26,25 +26,29 @@
     <ng-template>
       <ion-datetime
         id="datetime-min"
+        locale="en-US"
         display-format="MM/DD/YYYY"
         [(ngModel)]="filters.startDate"
         name="startDate"
         [highlightedDates]="highlightedDates"
         (ionChange)="updateStart($event)"
         presentation="date"
-        [min]="filters.startDate"></ion-datetime>
+        [min]="defaultFilters.startDate"
+        [max]="filters.endDate"></ion-datetime>
     </ng-template>
   </ion-modal>
-  <ion-modal [keepContentsMounted]="true" showBackdrop="true">
+  <ion-modal [keepContentsMounted]="true">
     <ng-template>
       <ion-datetime
         id="datetime-max"
+        locale="en-US"
         display-format="MM/DD/YYYY"
         [(ngModel)]="filters.endDate"
         name="endDate"
         [highlightedDates]="highlightedDates"
         (ionChange)="updateEnd($event)"
-        presentation="date"></ion-datetime>
+        presentation="date"
+        [min]="filters.startDate"></ion-datetime>
     </ng-template>
   </ion-modal>
   <ion-item>
@@ -56,5 +60,5 @@
   <ion-item>
     <ion-toggle [(ngModel)]="filters.isClean" name="isClean">Only clean games</ion-toggle>
   </ion-item>
-  <!-- <ion-button (click)="reset()">Reset Filters</ion-button> -->
+  <ion-button class="resetBtn" (click)="reset()">Reset Filters</ion-button>
 </ion-content>

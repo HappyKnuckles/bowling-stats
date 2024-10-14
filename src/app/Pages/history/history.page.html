@@ -10,7 +10,12 @@
       <ion-badge>{{filteredGameHistory.length}}</ion-badge>
     </ion-title>
     <ion-buttons slot="end" style="padding: 5px">
-      <ion-button class="actionSheet" fill="clear" (click)="openFilterModal()" style="position: relative">
+      <ion-button
+        class="actionSheet"
+        fill="clear"
+        (click)="openFilterModal()"
+        [disabled]="(gameHistory.length <= 0 && !isLoading)"
+        style="position: relative">
         <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
         <ion-text class="filter-indicator" *ngIf="activeFilterCount !== 0">{{activeFilterCount}}</ion-text>
       </ion-button>

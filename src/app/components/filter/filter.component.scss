@@ -8,3 +8,13 @@ ion-modal {
     box-shadow: rgba(var(--ion-color-primary), 0.3) 0px 10px 15px -3px;
   }
 }
+
+.resetBtn {
+  position: absolute;
+  bottom: 10%;
+  width: 90%;
+  margin: 0 auto;
+  left: 50%;
+  right: 50%;
+  transform: translate(-50%);
+}

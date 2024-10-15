@@ -16,7 +16,7 @@ export class FilterService {
     isPerfect: false,
     startDate: '',
     endDate: '',
-  };  
+  };
   activeFilterCount: number = 0;
   private filteredGamesSubject = new BehaviorSubject<Game[]>([]);
   filteredGames$ = this.filteredGamesSubject.asObservable();

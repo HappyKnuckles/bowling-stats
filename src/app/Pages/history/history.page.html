@@ -7,7 +7,7 @@
     <input type="file" id="excelUpload" class="ion-hide" (input)="handleFileUpload($event)" placeholder="Upload file" accept=".xlsx" />
     <ion-title>
       History
-      <ion-badge>{{filteredGameHistory.length}}</ion-badge>
+      <ion-badge>{{filterGameLength }}</ion-badge>
     </ion-title>
     <ion-buttons slot="end" style="padding: 5px">
       <ion-button
@@ -36,6 +36,7 @@
   </ng-container>
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
+    <!-- TODO Change this whole to use Ion-Accordion instead-->
     <!-- <ion-button (click)="deleteAll()"> Alles löschen</ion-button>-->
     <ion-item-sliding *ngFor="let game of filteredGameHistory; let i = index" class="sliding" #slidingItem>
       <ion-item-options side="end" (ionSwipe)="deleteGame(game.gameId); slidingItem.closeOpened();">
@@ -67,7 +68,7 @@
           <mat-expansion-panel-header class="expansion-header">
             <mat-panel-title>
               <div class="game-info">
-                <div class="title">Game {{filteredGameHistory.length - i}}</div>
+                <div class="title">Game {{filterGameLength - i}}</div>
                 <div class="score">Score: {{game.totalScore}}</div>
                 <!-- <div class="score">{{game.date | date}}</div> -->
               </div>
@@ -205,5 +206,10 @@
         </mat-expansion-panel>
       </ion-item>
     </ion-item-sliding>
+    
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreGames($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more games...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </ng-template>
 </ion-content>

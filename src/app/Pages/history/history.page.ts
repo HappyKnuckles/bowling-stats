@@ -21,6 +21,8 @@ import {
   IonItemOption,
   IonTextarea,
   IonButtons,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent, IonAccordionGroup, IonAccordion
 } from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Subscription } from 'rxjs';
@@ -55,7 +57,9 @@ import { StorageService } from 'src/app/services/storage/storage.service';
   styleUrls: ['history.page.scss'],
   standalone: true,
   providers: [DatePipe, ModalController],
-  imports: [
+  imports: [IonAccordion, IonAccordionGroup,
+    IonInfiniteScrollContent,
+    IonInfiniteScroll,
     IonButtons,
     IonTextarea,
     IonItemOption,
@@ -98,6 +102,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   isEditMode: { [key: string]: boolean } = {};
   private originalGameState: { [key: string]: Game } = {};
   activeFilterCount = this.filterService.activeFilterCount;
+  @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
   constructor(
     private alertController: AlertController,
@@ -114,13 +119,18 @@ export class HistoryPage implements OnInit, OnDestroy {
     });
 
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
-      this.filteredGameHistory = games;
+      this.gameLength = games;
+      this.filterGameLength = this.gameLength.length;
+      this.filteredGameHistory = this.gameLength.slice(0, 15);
       this.activeFilterCount = this.filterService.activeFilterCount;
+      if (this.infiniteScroll) {
+        this.infiniteScroll.disabled = false;
+      }
     });
 
     addIcons({ cloudUploadOutline, filterOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline });
   }
-
+  gameLength: Game[] = [];
   async ngOnInit(): Promise<void> {
     try {
       this.loadingService.setLoading(true);
@@ -329,7 +339,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => {},
+          handler: () => { },
         },
         {
           text: 'Delete',
@@ -440,12 +450,21 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
     this.loadingService.setLoading(false);
   }
-
-  private async loadGameHistory(): Promise<void> {
+  filterGameLength: number = 0;
+  async loadGameHistory(): Promise<void> {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();
     } catch (error) {
       this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
+    }
+  }
+  loadMoreGames(event: any) {
+    const nextPage = this.filteredGameHistory.length + 15;
+    this.filteredGameHistory = this.gameLength.slice(0, nextPage);
+    event.target.complete();
+
+    if (this.filteredGameHistory.length >= this.filterGameLength) {
+      event.target.disabled = true;
     }
   }
 

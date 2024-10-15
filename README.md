@@ -1,4 +1,4 @@
-# Bowling Stats Tracker
+# Lightning Bowl - A comprehensive bowling tracker
 
 Bowling Stats Tracker is a free app designed for bowlers of all skill levels, from beginners to pros. It helps track your games and statistics with ease, offering a clean and intuitive interface across four main tabs.
 

@@ -19,7 +19,7 @@ import {
   IonDatetime,
   IonModal,
   IonToggle,
-  IonNote,
+  IonNote, IonFooter
 } from '@ionic/angular/standalone';
 import { Filter } from 'src/app/models/filter-model';
 import { Game } from 'src/app/models/game-model';
@@ -30,7 +30,7 @@ import { FilterService } from 'src/app/services/filter/filter.service';
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss'],
   standalone: true,
-  imports: [
+  imports: [IonFooter,
     IonNote,
     IonToggle,
     IonModal,

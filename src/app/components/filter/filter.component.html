@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>Filter</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+      <ion-button (click)="reset()" [strong]="true">Reset</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -60,5 +60,7 @@
   <ion-item>
     <ion-toggle [(ngModel)]="filters.isClean" name="isClean">Only clean games</ion-toggle>
   </ion-item>
-  <ion-button class="resetBtn" (click)="reset()">Reset Filters</ion-button>
 </ion-content>
+<ion-footer style="display: flex;" class="ion-justify-content-center">
+    <ion-button class="confirmBtn" (click)="confirm()">Confirm</ion-button>
+</ion-footer>

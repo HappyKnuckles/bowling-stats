@@ -205,9 +205,8 @@
         </ion-item>
       </ion-item-sliding>
     </ion-accordion-group>
-  
-  </ng-template>  
-  <ion-infinite-scroll (ionInfinite)="loadMoreGames($event)">
-      <ion-infinite-scroll-content loadingText="Loading more games..." loadingSpinner="bubbles"></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
+  </ng-template>
+  <ion-infinite-scroll threshold="100px" [disabled]="filterGameLength === filteredGameHistory.length" (ionInfinite)="loadMoreGames($event)">
+    <ion-infinite-scroll-content loadingText="Loading more games..." loadingSpinner="bubbles"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

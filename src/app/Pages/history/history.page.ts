@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import {
   AlertController,
   isPlatform,
@@ -103,7 +103,6 @@ export class HistoryPage implements OnInit, OnDestroy {
   isEditMode: { [key: string]: boolean } = {};
   private originalGameState: { [key: string]: Game } = {};
   activeFilterCount = this.filterService.activeFilterCount;
-  @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
   constructor(
     private alertController: AlertController,
@@ -113,7 +112,8 @@ export class HistoryPage implements OnInit, OnDestroy {
     private datePipe: DatePipe,
     private hapticService: HapticService,
     private modalCtrl: ModalController,
-    private filterService: FilterService
+    private filterService: FilterService,
+    private renderer: Renderer2
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
@@ -125,7 +125,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     try {
       this.loadingService.setLoading(true);
       await this.loadGameHistory();
- 
+
       this.subscribeToDataEvents();
     } catch (error) {
       console.error(error);
@@ -142,7 +142,6 @@ export class HistoryPage implements OnInit, OnDestroy {
         games: this.gameHistory,
         filteredGames: this.filteredGameHistory,
       },
-      
     });
 
     return await modal.present();
@@ -265,14 +264,15 @@ export class HistoryPage implements OnInit, OnDestroy {
     if (!accordionIsOpen) {
       this.openExpansionPanel(game.gameId);
     }
+    const childNode = accordion.childNodes[1] as HTMLElement;
 
-    const originalWidth = accordion.style.width;
+    const originalWidth = childNode.style.width;
 
     try {
       this.loadingService.setLoading(true);
 
       // Temporarily show the panel content
-      accordion.style.width = '700px';
+      this.renderer.setStyle(childNode, 'width', '750px');
 
       const formattedDate = this.datePipe.transform(game.date, 'dd.MM.yy');
 
@@ -328,7 +328,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.toastService.showToast('Error sharing screenshot!', 'bug', true);
     } finally {
       // Restore the original state
-      accordion.style.width = originalWidth;
+      this.renderer.setStyle(childNode, 'width', originalWidth);
       this.accordionGroup.value = accordionGroupValues;
       this.loadingService.setLoading(false);
     }
@@ -343,7 +343,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => { },
+          handler: () => {},
         },
         {
           text: 'Delete',
@@ -368,7 +368,6 @@ export class HistoryPage implements OnInit, OnDestroy {
     try {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
-
       await this.loadGameHistory();
     } catch (error) {
       console.error(error);
@@ -461,22 +460,17 @@ export class HistoryPage implements OnInit, OnDestroy {
     } catch (error) {
       this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
     }
-
   }
-  loadMoreGames(event: any) {
+  loadMoreGames(event: any): void {
     const nextPage = this.filteredGameHistory.length + 15;
+
     setTimeout(() => {
       (event as InfiniteScrollCustomEvent).target.complete();
       this.filteredGameHistory = this.gameLength.slice(0, nextPage);
-
-    }, 250);
-
-    if (this.filteredGameHistory.length >= this.filterGameLength) {
-      event.target.disabled = true;
-    }
+    }, 150);
   }
 
-  private subscribeToDataEvents() {
+  private subscribeToDataEvents(): void {
     this.newDataAddedSubscription = this.storageService.newDataAdded.subscribe(() => {
       this.loadGameHistory()
         .then(() => {
@@ -500,11 +494,8 @@ export class HistoryPage implements OnInit, OnDestroy {
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
       this.gameLength = games;
       this.filterGameLength = this.gameLength.length;
-      this.filteredGameHistory = this.gameLength.slice(0, 15);
+      this.filteredGameHistory = this.gameLength.slice(0, 20);
       this.activeFilterCount = this.filterService.activeFilterCount;
-      if (this.infiniteScroll) {
-        this.infiniteScroll.disabled = false;
-      }
     });
   }
 

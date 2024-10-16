@@ -42,13 +42,12 @@ export class StorageService {
 
   async loadGameHistory(): Promise<Game[]> {
     const gameHistory: Game[] = [];
-    const keys = await this.storage.keys();
-    const gameKeys = keys.filter(key => key.startsWith('game'));
-
-    for (const key of gameKeys) {
-      const value = await this.storage.get(key);
-      gameHistory.push(value);
-    }
+    
+    await this.storage.forEach((value: Game, key: string) => {
+      if (key.startsWith('game')) {
+        gameHistory.push(value);
+      }
+    });
 
     // TODO remove this block after a while
     let isRenewed = localStorage.getItem('isRenewed') || false;

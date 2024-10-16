@@ -125,6 +125,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     try {
       this.loadingService.setLoading(true);
       await this.loadGameHistory();
+ 
       this.subscribeToDataEvents();
     } catch (error) {
       console.error(error);
@@ -141,6 +142,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         games: this.gameHistory,
         filteredGames: this.filteredGameHistory,
       },
+      
     });
 
     return await modal.present();
@@ -323,7 +325,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error('Error taking screenshot and sharing', error);
-      this.toastService.showToast('Error sharing screenshot: ' + error, 'bug', true);
+      this.toastService.showToast('Error sharing screenshot!', 'bug', true);
     } finally {
       // Restore the original state
       accordion.style.width = originalWidth;
@@ -462,13 +464,13 @@ export class HistoryPage implements OnInit, OnDestroy {
 
   }
   loadMoreGames(event: any) {
-    const nextPage = this.filteredGameHistory.length + 15;  
+    const nextPage = this.filteredGameHistory.length + 15;
     setTimeout(() => {
-      (event as InfiniteScrollCustomEvent).target.complete();   
-       this.filteredGameHistory = this.gameLength.slice(0, nextPage);
+      (event as InfiniteScrollCustomEvent).target.complete();
+      this.filteredGameHistory = this.gameLength.slice(0, nextPage);
 
     }, 250);
-  
+
     if (this.filteredGameHistory.length >= this.filterGameLength) {
       event.target.disabled = true;
     }
@@ -476,18 +478,25 @@ export class HistoryPage implements OnInit, OnDestroy {
 
   private subscribeToDataEvents() {
     this.newDataAddedSubscription = this.storageService.newDataAdded.subscribe(() => {
-      this.loadGameHistory().catch((error) => {
-        console.error('Error loading game history:', error);
-      });
-      this.filterService.filterGames(this.gameHistory);
+      this.loadGameHistory()
+        .then(() => {
+          this.filterService.filterGames(this.gameHistory);
+        })
+        .catch((error) => {
+          console.error('Error loading game history:', error);
+        });
     });
 
     this.dataDeletedSubscription = this.storageService.dataDeleted.subscribe(() => {
-      this.loadGameHistory().catch((error) => {
-        console.error('Error loading game history:', error);
-      });
-      this.filterService.filterGames(this.gameHistory);
+      this.loadGameHistory()
+        .then(() => {
+          this.filterService.filterGames(this.gameHistory);
+        })
+        .catch((error) => {
+          console.error('Error loading game history:', error);
+        });
     });
+
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
       this.gameLength = games;
       this.filterGameLength = this.gameLength.length;

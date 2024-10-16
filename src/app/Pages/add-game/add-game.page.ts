@@ -20,7 +20,6 @@ import {
   IonSegmentButton,
 } from '@ionic/angular/standalone';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { SeriesMode } from './seriesModeEnum';
 import { Game } from 'src/app/models/game-model';
 import { addIcons } from 'ionicons';
 import { add, chevronDown, chevronUp, cameraOutline, documentTextOutline } from 'ionicons/icons';
@@ -40,6 +39,7 @@ import { Device } from '@capacitor/device';
 import Swiper from 'swiper';
 import { IonicSlides } from '@ionic/angular';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { SeriesMode } from './seriesModeEnum';
 
 defineCustomElements(window);
 

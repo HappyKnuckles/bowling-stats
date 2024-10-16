@@ -9,7 +9,7 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content style="--padding-top: 15px">
   <ion-item>
     <ion-note slot="start">Score Range</ion-note>
     <ion-input class="ion-text-center" [(ngModel)]="filters.minScore" name="minScore" clearOnEdit="true" inputmode="numeric"></ion-input>
@@ -61,6 +61,6 @@
     <ion-toggle [(ngModel)]="filters.isClean" name="isClean">Only clean games</ion-toggle>
   </ion-item>
 </ion-content>
-<ion-footer style="display: flex;" class="ion-justify-content-center">
-    <ion-button class="confirmBtn" (click)="confirm()">Confirm</ion-button>
+<ion-footer style="display: flex" class="ion-justify-content-center">
+  <ion-button class="confirmBtn" (click)="confirm()">Confirm</ion-button>
 </ion-footer>

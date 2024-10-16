@@ -70,25 +70,35 @@ ion-row {
     --inner-padding-end: 0;
   }
 
-  .expansion-header {
-    padding: 10px 20px 0 !important;
+  ion-accordion {
+    background-color: transparent;
+    .expansion-header {
+      padding: 10px 0 0 0 !important;
+      background-color: black;
 
-    .score {
-      font-size: 0.875rem;
-    }
-
-    .title {
-      font-weight: 600;
-      font-size: 1.1rem;
-
-      &:first-child {
-        margin-top: 10px;
+      .score {
+        font-size: 0.875rem;
       }
-    }
 
-    .game-info {
-      display: flex;
-      flex-direction: column;
+      .title {
+        font-weight: 600;
+        font-size: 1.1rem;
+
+        &:first-child {
+          margin-top: 10px;
+        }
+      }
+
+      .game-info {
+        display: flex;
+        flex-direction: column;
+        margin-left: 20px;
+      }
+
+      ::ng-deep .ion-accordion-toggle-icon {
+        margin-right: 20px;
+        font-size: 22px;
+      }
     }
   }
 

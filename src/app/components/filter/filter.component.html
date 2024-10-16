@@ -13,13 +13,13 @@
   <ion-item>
     <ion-note slot="start">Score Range</ion-note>
     <ion-input class="ion-text-center" [(ngModel)]="filters.minScore" name="minScore" clearOnEdit="true" inputmode="numeric"></ion-input>
-    <ion-label class="ion-text-center">-</ion-label>
+    <ion-label class="ion-text-center" style="margin-inline-end: 8px">-</ion-label>
     <ion-input class="ion-text-center" [(ngModel)]="filters.maxScore" name="maxScore" clearOnEdit="true" inputmode="numeric"></ion-input>
   </ion-item>
   <ion-item>
     <ion-note slot="start">Time Range</ion-note>
     <ion-datetime-button datetime="datetime-min"></ion-datetime-button>
-    <ion-label class="ion-text-center">-</ion-label>
+    <ion-label class="ion-text-center" style="margin: 0">-</ion-label>
     <ion-datetime-button datetime="datetime-max"></ion-datetime-button>
   </ion-item>
   <ion-modal [keepContentsMounted]="true">

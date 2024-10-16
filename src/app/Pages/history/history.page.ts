@@ -22,7 +22,9 @@ import {
   IonTextarea,
   IonButtons,
   IonInfiniteScroll,
-  IonInfiniteScrollContent, IonAccordionGroup, IonAccordion
+  IonInfiniteScrollContent,
+  IonAccordionGroup,
+  IonAccordion,
 } from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Subscription } from 'rxjs';
@@ -38,7 +40,6 @@ import {
   filterOutline,
 } from 'ionicons/icons';
 import { NgIf, NgFor, DatePipe, NgClass } from '@angular/common';
-import { MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanelDescription } from '@angular/material/expansion';
 import { Share } from '@capacitor/share';
 import { toPng } from 'html-to-image';
 import { ImpactStyle } from '@capacitor/haptics';
@@ -47,7 +48,7 @@ import { LoadingService } from 'src/app/services/loader/loading.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { Game } from 'src/app/models/game-model';
 import { FilterComponent } from 'src/app/components/filter/filter.component';
-import { ModalController } from '@ionic/angular';
+import { InfiniteScrollCustomEvent, ModalController } from '@ionic/angular';
 import { FilterService } from 'src/app/services/filter/filter.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
 
@@ -57,7 +58,9 @@ import { StorageService } from 'src/app/services/storage/storage.service';
   styleUrls: ['history.page.scss'],
   standalone: true,
   providers: [DatePipe, ModalController],
-  imports: [IonAccordion, IonAccordionGroup,
+  imports: [
+    IonAccordion,
+    IonAccordionGroup,
     IonInfiniteScrollContent,
     IonInfiniteScroll,
     IonButtons,
@@ -82,21 +85,19 @@ import { StorageService } from 'src/app/services/storage/storage.service';
     NgFor,
     NgClass,
     IonText,
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
-    MatExpansionPanelDescription,
   ],
 })
 export class HistoryPage implements OnInit, OnDestroy {
-  @ViewChild('expansionPanel') expansionPanel!: MatExpansionPanel;
+  @ViewChild('accordionGroup') accordionGroup!: IonAccordionGroup;
   gameHistory: Game[] = [];
   filteredGameHistory: Game[] = [];
+  gameLength: Game[] = [];
+  filterGameLength: number = 0;
   arrayBuffer: any;
   file!: File;
   private newDataAddedSubscription!: Subscription;
   private dataDeletedSubscription!: Subscription;
-  private filteredGamesSubscription: Subscription;
+  private filteredGamesSubscription!: Subscription;
   private loadingSubscription: Subscription;
   isLoading: boolean = false;
   isEditMode: { [key: string]: boolean } = {};
@@ -118,24 +119,12 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.isLoading = isLoading;
     });
 
-    this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
-      this.gameLength = games;
-      this.filterGameLength = this.gameLength.length;
-      this.filteredGameHistory = this.gameLength.slice(0, 15);
-      this.activeFilterCount = this.filterService.activeFilterCount;
-      if (this.infiniteScroll) {
-        this.infiniteScroll.disabled = false;
-      }
-    });
-
     addIcons({ cloudUploadOutline, filterOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline });
   }
-  gameLength: Game[] = [];
   async ngOnInit(): Promise<void> {
     try {
       this.loadingService.setLoading(true);
       await this.loadGameHistory();
-
       this.subscribeToDataEvents();
     } catch (error) {
       console.error(error);
@@ -169,21 +158,26 @@ export class HistoryPage implements OnInit, OnDestroy {
     return isNaN(parsedValue) ? '' : parsedValue;
   }
 
-  saveOriginalStateAndEnableEdit(game: Game, expansionPanel?: MatExpansionPanel) {
+  saveOriginalStateAndEnableEdit(game: Game) {
     this.originalGameState[game.gameId] = JSON.parse(JSON.stringify(game));
-    this.enableEdit(game, expansionPanel);
+    this.enableEdit(game, game.gameId);
   }
 
-  enableEdit(game: Game, expansionPanel?: MatExpansionPanel): void {
+  enableEdit(game: Game, accordionId?: string): void {
     this.isEditMode[game.gameId] = !this.isEditMode[game.gameId];
     this.hapticService.vibrate(ImpactStyle.Light, 100);
-    if (expansionPanel) {
-      this.openExpansionPanel(expansionPanel);
+
+    if (accordionId) {
+      this.openExpansionPanel(accordionId);
     }
   }
 
-  openExpansionPanel(expansionPanel: MatExpansionPanel): void {
-    expansionPanel.open();
+  openExpansionPanel(accordionId: string): void {
+    const nativeEl = this.accordionGroup;
+
+    if (nativeEl.value === accordionId) {
+      nativeEl.value = undefined;
+    } else nativeEl.value = accordionId;
   }
 
   cancelEdit(game: Game): void {
@@ -250,32 +244,40 @@ export class HistoryPage implements OnInit, OnDestroy {
     return isValid;
   }
 
-  async takeScreenshotAndShare(game: Game, expansionPanel: MatExpansionPanel): Promise<void> {
-    const panelContent = expansionPanel._body.nativeElement;
-    const scoreTemplate = panelContent.querySelector('.grid-container') as HTMLElement;
+  async takeScreenshotAndShare(game: Game): Promise<void> {
+    const accordion = document.getElementById(game.gameId);
+    if (!accordion) {
+      throw new Error('Accordion not found');
+    }
+
+    const scoreTemplate = accordion.querySelector('.grid-container') as HTMLElement;
 
     if (!scoreTemplate) {
-      throw new Error('Score template not found in the expansion panel');
+      throw new Error('Score template not found in the accordion');
     }
 
-    // Save panel state
-    const originalVisibility = panelContent.style.visibility;
-    const originalWidth = panelContent.style.width;
+    const accordionGroupEl = this.accordionGroup;
+    const accordionGroupValues = this.accordionGroup.value;
+    const accordionIsOpen = accordionGroupEl.value?.includes(game.gameId) ?? false;
 
-    // Temporarily show the panel content
-    panelContent.style.visibility = 'visible';
-    panelContent.style.width = '700px';
-
-    const formattedDate = this.datePipe.transform(game.date, 'dd.MM.yy');
-
-    let message = `Check out this game from ${formattedDate}`;
-    if (game.totalScore === 300) {
-      message = `Look at me bitches, perfect game on ${formattedDate}! 🎳🎉.`;
+    if (!accordionIsOpen) {
+      this.openExpansionPanel(game.gameId);
     }
+
+    const originalWidth = accordion.style.width;
 
     try {
       this.loadingService.setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Temporarily show the panel content
+      accordion.style.width = '700px';
+
+      const formattedDate = this.datePipe.transform(game.date, 'dd.MM.yy');
+
+      const message =
+        game.totalScore === 300 ? `Look at me bitches, perfect game on ${formattedDate}! 🎳🎉.` : `Check out this game from ${formattedDate}`;
+
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Give time for layout to update
 
       // Generate screenshot
       const dataUrl = await toPng(scoreTemplate, { quality: 0.7 });
@@ -321,11 +323,11 @@ export class HistoryPage implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error('Error taking screenshot and sharing', error);
-      this.toastService.showToast('Error sharing screenshot', 'bug', true);
+      this.toastService.showToast('Error sharing screenshot: ' + error, 'bug', true);
     } finally {
       // Restore the original state
-      panelContent.style.visibility = originalVisibility;
-      panelContent.style.width = originalWidth;
+      accordion.style.width = originalWidth;
+      this.accordionGroup.value = accordionGroupValues;
       this.loadingService.setLoading(false);
     }
   }
@@ -450,19 +452,23 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
     this.loadingService.setLoading(false);
   }
-  filterGameLength: number = 0;
+
   async loadGameHistory(): Promise<void> {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();
     } catch (error) {
       this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
     }
+
   }
   loadMoreGames(event: any) {
-    const nextPage = this.filteredGameHistory.length + 15;
-    this.filteredGameHistory = this.gameLength.slice(0, nextPage);
-    event.target.complete();
+    const nextPage = this.filteredGameHistory.length + 15;  
+    setTimeout(() => {
+      (event as InfiniteScrollCustomEvent).target.complete();   
+       this.filteredGameHistory = this.gameLength.slice(0, nextPage);
 
+    }, 250);
+  
     if (this.filteredGameHistory.length >= this.filterGameLength) {
       event.target.disabled = true;
     }
@@ -481,6 +487,15 @@ export class HistoryPage implements OnInit, OnDestroy {
         console.error('Error loading game history:', error);
       });
       this.filterService.filterGames(this.gameHistory);
+    });
+    this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
+      this.gameLength = games;
+      this.filterGameLength = this.gameLength.length;
+      this.filteredGameHistory = this.gameLength.slice(0, 15);
+      this.activeFilterCount = this.filterService.activeFilterCount;
+      if (this.infiniteScroll) {
+        this.infiniteScroll.disabled = false;
+      }
     });
   }
 

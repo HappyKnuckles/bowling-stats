@@ -42,11 +42,13 @@ export class StorageService {
 
   async loadGameHistory(): Promise<Game[]> {
     const gameHistory: Game[] = [];
-    await this.storage.forEach((value: Game, key: string) => {
-      if (key.startsWith('game')) {
-        gameHistory.push(value);
-      }
-    });
+    const keys = await this.storage.keys();
+    const gameKeys = keys.filter(key => key.startsWith('game'));
+
+    for (const key of gameKeys) {
+      const value = await this.storage.get(key);
+      gameHistory.push(value);
+    }
 
     // TODO remove this block after a while
     let isRenewed = localStorage.getItem('isRenewed') || false;
@@ -58,10 +60,11 @@ export class StorageService {
           return frameTotal >= 10;
         });
       });
-      this.saveGamesToLocalStorage(gameHistory);
-    }
-    isRenewed = true;
+      this.saveGamesToLocalStorage(gameHistory);    
+      isRenewed = true;
     localStorage.setItem('isRenewed', JSON.stringify(isRenewed));
+
+    }
     this.sortGameHistoryByDate(gameHistory);
 
     return gameHistory;

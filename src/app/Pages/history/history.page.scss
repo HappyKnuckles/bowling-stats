@@ -13,6 +13,8 @@ ion-badge {
   --padding-bottom: 4px;
   font-size: 1rem;
   vertical-align: sub;
+  position: absolute;
+  margin-left: 5px;
 }
 
 ion-grid {
@@ -22,9 +24,11 @@ ion-grid {
 }
 
 .actionSheet {
+  margin-right: 8px;
   ion-button {
     background: none;
     --background-activated: none;
+    position: relative;
   }
 }
 

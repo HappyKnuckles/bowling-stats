@@ -1,26 +1,22 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-button for="excelUpload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openExcelFileInput()">
-      <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
-    </ion-button>
+    <ion-buttons slot="start" style="padding: 5px">
+      <ion-button for="excelUpload" type="button" class="actionSheet" slot="start" fill="clear" (click)="openExcelFileInput()">
+        <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="exportToExcel()" class="actionSheet" fill="clear">
+        <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon> </ion-button
+    ></ion-buttons>
     <!-- Clear Input on Upload-->
     <input type="file" id="excelUpload" class="ion-hide" (input)="handleFileUpload($event)" placeholder="Upload file" accept=".xlsx" />
     <ion-title>
       History
       <ion-badge>{{filterGameLength }}</ion-badge>
     </ion-title>
-    <ion-buttons slot="end" style="padding: 5px">
-      <ion-button
-        class="actionSheet"
-        fill="clear"
-        (click)="openFilterModal()"
-        [disabled]="(gameHistory.length <= 0 && !isLoading)"
-        style="position: relative">
+    <ion-buttons slot="end" class="actionSheet">
+      <ion-button fill="clear" (click)="openFilterModal()" [disabled]="(gameHistory.length <= 0 && !isLoading)">
         <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
         <ion-text class="filter-indicator" *ngIf="activeFilterCount !== 0">{{activeFilterCount}}</ion-text>
-      </ion-button>
-      <ion-button (click)="exportToExcel()" class="actionSheet" fill="clear">
-        <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

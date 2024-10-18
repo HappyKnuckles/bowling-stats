@@ -272,7 +272,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.loadingService.setLoading(true);
 
       // Temporarily show the panel content
-      this.renderer.setStyle(childNode, 'width', '750px');
+      this.renderer.setStyle(childNode, 'width', '700px');
 
       const formattedDate = this.datePipe.transform(game.date, 'dd.MM.yy');
 

@@ -119,6 +119,8 @@ export class TrackGridComponent implements OnInit {
     });
     this.isPractice = false;
     this.note = '';
+    this.frames = this.bowlingService.frames;
+    this.frameScores = this.bowlingService.frameScores;
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;
     this.maxScoreChanged.emit(this.maxScore);

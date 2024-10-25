@@ -1,0 +1,6 @@
+<ion-select>
+  <ion-select-option value="">None</ion-select-option>
+  <ion-select-option *ngFor="let league of leagues" [value]="league">{{league}}</ion-select-option>
+</ion-select>
+  <ion-input [(ngModel)]="newLeague"></ion-input>
+  <ion-button type="submit" (click)="saveLeague()">Save</ion-button>

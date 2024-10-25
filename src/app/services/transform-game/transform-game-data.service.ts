@@ -12,6 +12,7 @@ export class GameDataTransformerService {
     frameScores: number[],
     totalScore: number,
     isPractice: boolean,
+    league?: string,
     isSeries?: boolean,
     seriesId?: string,
     note?: string
@@ -41,6 +42,7 @@ export class GameDataTransformerService {
         seriesId: seriesId,
         note: note,
         isPractice: isPractice,
+        league: league,
         isClean: isClean,
         isPerfect: isPerfect,
       };

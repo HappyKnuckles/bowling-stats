@@ -16,6 +16,11 @@ export class StorageService {
   async init() {
     await this.storage.create();
   }
+
+ async save(key: string, data: any){
+  await this.storage.set(key, data);
+ }
+
   async saveGamesToLocalStorage(gameData: Game[]): Promise<void> {
     for (const game of gameData) {
       const key = 'game' + game.gameId; // Generate key using index
@@ -40,15 +45,23 @@ export class StorageService {
     this.dataDeleted.emit();
   }
 
-  async loadGameHistory(): Promise<Game[]> {
-    const gameHistory: Game[] = [];
-
-    await this.storage.forEach((value: Game, key: string) => {
-      if (key.startsWith('game')) {
-        gameHistory.push(value);
+  async loadData<T>(prefix: string): Promise<T[]> {
+    const data: T[] = [];
+    await this.storage.forEach((value: T, key: string) => {
+      if (key.startsWith(prefix)) {
+        data.push(value);
       }
     });
-
+    return data;
+  }
+  
+  async loadLeagues(): Promise<string[]> {
+    return this.loadData<string>('league');
+  }
+  
+  async loadGameHistory(): Promise<Game[]> {
+    const gameHistory = await this.loadData<Game>('game');
+  
     // TODO remove this block after a while
     let isRenewed = localStorage.getItem('isRenewed') || false;
     if (!isRenewed) {
@@ -64,7 +77,7 @@ export class StorageService {
       localStorage.setItem('isRenewed', JSON.stringify(isRenewed));
     }
     this.sortGameHistoryByDate(gameHistory);
-
+  
     return gameHistory;
   }
 

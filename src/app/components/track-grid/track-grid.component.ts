@@ -26,6 +26,7 @@ export class TrackGridComponent implements OnInit {
   totalScore: number = 0;
   maxScore: number = 300;
   note: string = '';
+  selectedLeague = '';
   isPractice: boolean = false;
   frames = this.bowlingService.frames;
   frameScores = this.bowlingService.frameScores;
@@ -71,7 +72,8 @@ export class TrackGridComponent implements OnInit {
         this.bowlingService.frames,
         this.bowlingService.frameScores,
         this.bowlingService.totalScore,
-        this.isPractice,
+        this.isPractice,       
+        this.selectedLeague,
         isSeries,
         seriesId,
         this.note

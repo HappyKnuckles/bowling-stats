@@ -21,10 +21,12 @@ import {
   IonToggle,
   IonNote,
   IonFooter,
+  IonSelectOption
 } from '@ionic/angular/standalone';
 import { Filter } from 'src/app/models/filter-model';
 import { Game } from 'src/app/models/game-model';
 import { FilterService } from 'src/app/services/filter/filter.service';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 @Component({
   selector: 'app-filter',
@@ -53,6 +55,7 @@ import { FilterService } from 'src/app/services/filter/filter.service';
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
+    IonSelectOption,
   ],
 })
 export class FilterComponent implements OnInit {
@@ -61,7 +64,9 @@ export class FilterComponent implements OnInit {
   filters!: Filter;
   defaultFilters = this.filterService.defaultFilters;
   highlightedDates: { date: string; textColor: string; backgroundColor: string }[] = [];
-  constructor(private modalCtrl: ModalController, private filterService: FilterService) {
+  leagues: string[] = [];
+
+  constructor(private modalCtrl: ModalController, private filterService: FilterService, private storageService: StorageService) {
     this.filterService.filters$.subscribe((filters: Filter) => {
       this.filters = filters;
     });
@@ -90,11 +95,12 @@ export class FilterComponent implements OnInit {
     this.filterService.filters.endDate = event.detail.value!;
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if (!this.filterService.filters.startDate && !this.filterService.filters.endDate) {
       this.filterService.filters.startDate = new Date(this.games[this.games.length - 1].date).toISOString() || Date.now().toString();
       this.filterService.filters.endDate = new Date(this.games[0].date).toISOString() || Date.now().toString();
     }
+    this.leagues = await this.storageService.loadLeagues();
     this.getHighlightedDates();
   }
 

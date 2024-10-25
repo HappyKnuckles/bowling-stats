@@ -4,6 +4,7 @@ export interface Filter {
   maxScore: number;
   isClean: boolean;
   isPerfect: boolean;
+  league: string;
   startDate?: string;
   endDate?: string;
 }

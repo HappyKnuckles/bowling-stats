@@ -61,18 +61,19 @@
           <ion-accordion #accordionRef [value]="game.gameId" [id]="game.gameId">
             <ion-item slot="header" lines="none" class="expansion-header">
               <div class="game-info">
-                <div class="title">Game {{filterGameLength - i}} {{game.league}}</div>
+                <div class="title">Game {{filterGameLength - i}}</div>
+                <div class="score" *ngIf="game.league">{{game.league}}</div>
                 <div class="score">Score: {{game.totalScore}}</div>
                 <!-- <div class="score">{{game.date | date}}</div> -->
               </div>
             </ion-item>
             <div slot="content">
-              @if (game.note) {
+              @if(!isEditMode[game.gameId]) { @if (game.note) {
               <ion-item class="note" lines="none">
                 <ion-icon name="document-text-outline" slot="start"> </ion-icon>
                 <ion-textarea type="text" readonly="true" [value]="game.note" [autoGrow]="true"></ion-textarea>
               </ion-item>
-              } @if(!isEditMode[game.gameId]) {
+              }
               <div *ngIf="!isEditMode[game.gameId]" class="grid-container" #scoreTemplate>
                 <ion-grid fixed="true" *ngFor="let frame of game.frames; let j = index;">
                   <ion-row>
@@ -129,6 +130,10 @@
                 </ion-grid>
               </div>
               } @else{
+              <ion-item class="note" lines="none">
+                <ion-icon name="document-text-outline" slot="start"> </ion-icon>
+                <ion-textarea type="text" [value]="game.note" [autoGrow]="true" (ionInput)="game.note = $event.target.value!"></ion-textarea>
+              </ion-item>
               <div class="grid-container">
                 <ion-grid fixed="true" *ngFor="let frame of game.frames; let frameIndex = index;">
                   <ion-row>

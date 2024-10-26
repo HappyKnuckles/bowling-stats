@@ -11,7 +11,6 @@ export class StorageService {
   newLeagueAdded = new EventEmitter<void>();
   leagueDeleted = new EventEmitter<void>();
 
-
   constructor(private storage: Storage) {
     this.init();
   }
@@ -26,7 +25,7 @@ export class StorageService {
 
   private async delete(key: string) {
     await this.storage.remove(key);
-  } 
+  }
 
   async addLeague(key: string, data: any) {
     await this.save(key, data);

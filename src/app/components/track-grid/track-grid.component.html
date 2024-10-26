@@ -74,4 +74,5 @@
 <ion-item>
   <ion-checkbox [(ngModel)]="isPractice" name="isPractice">Practice</ion-checkbox>
 </ion-item>
+<!-- TODO make this reset on save-->
 <app-league-selector [isAddPage]="true" (leagueChanged)="onLeagueChanged($event)"></app-league-selector>

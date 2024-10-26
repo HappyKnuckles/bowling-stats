@@ -62,7 +62,7 @@
             <ion-item slot="header" lines="none" class="expansion-header">
               <div class="game-info">
                 <div class="title">Game {{filterGameLength - i}}</div>
-                <div class="score" *ngIf="game.league">{{game.league}}</div>
+                <div class="score" *ngIf="game.league">League: {{game.league}}</div>
                 <div class="score">Score: {{game.totalScore}}</div>
                 <!-- <div class="score">{{game.date | date}}</div> -->
               </div>

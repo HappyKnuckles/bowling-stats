@@ -1,11 +1,9 @@
 <ion-item>
   <ion-icon *ngIf="!isAddPage" name="medal-outline" slot="start"></ion-icon>
-  <ion-label>Leagues/Tournaments</ion-label>
-  <ion-select [value]="defaultLeague" [(ngModel)]="selectedLeague" (ionChange)="leagueChanged.emit(selectedLeague)">
+  <ion-select label="Leagues/Tournaments" [value]="defaultLeague" [(ngModel)]="selectedLeague" (ionChange)="leagueChanged.emit(selectedLeague)">
     <ion-select-option value="New">Add New</ion-select-option>
     <ion-select-option value="all" *ngIf="!isAddPage">All</ion-select-option>
     <ion-select-option value="">None</ion-select-option>
-
     <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
   </ion-select>
 </ion-item>

@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren, ViewChild } from '@angular/core';
 import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
@@ -24,11 +24,12 @@ export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();
   @Output() totalScoreChanged = new EventEmitter<number>();
   @ViewChildren(IonInput) inputs!: QueryList<IonInput>;
+  @ViewChild('checkbox') checkbox!: IonCheckbox;
   totalScore: number = 0;
   maxScore: number = 300;
   note: string = '';
   selectedLeague = '';
-  isPractice: boolean = false;
+  isPractice: boolean = true;
   frames = this.bowlingService.frames;
   frameScores = this.bowlingService.frameScores;
   constructor(
@@ -48,8 +49,16 @@ export class TrackGridComponent implements OnInit {
     this.maxScoreChanged.emit(this.maxScore);
     this.totalScoreChanged.emit(this.totalScore);
   }
+
   onLeagueChanged(league: string) {
     this.selectedLeague = league;
+    if (this.selectedLeague === '' || this.selectedLeague === 'New') {
+      this.checkbox.disabled = false;
+    } else {
+      this.isPractice = false;
+      this.checkbox.checked = false;
+      this.checkbox.disabled = true;
+    }
   }
 
   simulateScore(event: any, frameIndex: number, inputIndex: number): void {
@@ -72,6 +81,10 @@ export class TrackGridComponent implements OnInit {
 
   async saveGameToLocalStorage(isSeries: boolean, seriesId: string): Promise<void> {
     try {
+      if (this.selectedLeague === 'New') {
+        this.toastService.showToast('Please select a league or create a new one.', 'bug', true);
+        return;
+      }
       const gameData = this.transformGameService.transformGameData(
         this.bowlingService.frames,
         this.bowlingService.frameScores,

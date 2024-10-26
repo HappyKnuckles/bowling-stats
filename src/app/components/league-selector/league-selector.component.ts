@@ -40,6 +40,7 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
     const key = 'league' + '_' + this.newLeague;
     await this.storageService.addLeague(key, this.newLeague);
     this.selectedLeague = this.newLeague;
+    this.leagueChanged.emit(this.selectedLeague);
     this.newLeague = '';
     this.toastService.showToast('League saved sucessfully.', 'add');
   }

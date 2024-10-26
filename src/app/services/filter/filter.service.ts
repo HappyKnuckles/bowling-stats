@@ -14,7 +14,7 @@ export class FilterService {
     maxScore: 300,
     isClean: false,
     isPerfect: false,
-    league: '',
+    league: 'all',
     startDate: '',
     endDate: '',
   };
@@ -42,7 +42,11 @@ export class FilterService {
       const matchesPracticeFilter = !this.filters.isPractice || game.isPractice;
       const matchesPerfectFilter = !this.filters.isPerfect || game.isPerfect;
       const matchesCleanFilter = !this.filters.isClean || game.isClean;
-      const matchesLeagueFilter = this.filters.league === game.league;
+
+      let matchesLeagueFilter = true;
+      if (this.filters.league !== 'all') {
+        matchesLeagueFilter = this.filters.league === game.league;
+      }
 
       return isWithinDateRange && isWithinScoreRange && matchesPracticeFilter && matchesPerfectFilter && matchesCleanFilter && matchesLeagueFilter;
     });

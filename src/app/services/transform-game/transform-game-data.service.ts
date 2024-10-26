@@ -25,7 +25,7 @@ export class GameDataTransformerService {
         const frameScore = frame.reduce((acc: number, curr: number) => acc + curr, 0);
         return frameScore < 10;
       });
-
+      console.log(league);
       return {
         gameId: gameId,
         date: date,

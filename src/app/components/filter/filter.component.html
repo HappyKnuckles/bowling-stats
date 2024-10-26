@@ -61,9 +61,10 @@
     <ion-toggle [(ngModel)]="filters.isClean" name="isClean">Only clean games</ion-toggle>
   </ion-item>
   <ion-item>
-    <ion-select [(ngModel)]="filters.league"name="league" value="" label="League" name="league">
+    <ion-select name="league" [(ngModel)]="filters.league" label="League" [value]="filters.league">
+      <ion-select-option value="all">All</ion-select-option>
       <ion-select-option value="">None</ion-select-option>
-      <ion-select-option *ngFor="let league of leagues" [value]="league">{{league}}</ion-select-option>
+      <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
     </ion-select>
   </ion-item>
 </ion-content>

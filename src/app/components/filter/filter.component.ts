@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import {
@@ -21,8 +21,10 @@ import {
   IonToggle,
   IonNote,
   IonFooter,
-  IonSelectOption
+  IonSelectOption,
+  IonSelect,
 } from '@ionic/angular/standalone';
+import { Subscription } from 'rxjs';
 import { Filter } from 'src/app/models/filter-model';
 import { Game } from 'src/app/models/game-model';
 import { FilterService } from 'src/app/services/filter/filter.service';
@@ -51,6 +53,7 @@ import { StorageService } from 'src/app/services/storage/storage.service';
     IonTitle,
     IonToolbar,
     IonButtons,
+    IonSelect,
     IonBackButton,
     FormsModule,
     ReactiveFormsModule,
@@ -58,18 +61,31 @@ import { StorageService } from 'src/app/services/storage/storage.service';
     IonSelectOption,
   ],
 })
-export class FilterComponent implements OnInit {
+export class FilterComponent implements OnInit, OnDestroy {
   @Input({ required: true }) games!: Game[];
   @Input() filteredGames!: Game[];
   filters!: Filter;
   defaultFilters = this.filterService.defaultFilters;
   highlightedDates: { date: string; textColor: string; backgroundColor: string }[] = [];
   leagues: string[] = [];
+  newLeagueSubscription: Subscription;
+  filterSubscription: Subscription;
 
   constructor(private modalCtrl: ModalController, private filterService: FilterService, private storageService: StorageService) {
-    this.filterService.filters$.subscribe((filters: Filter) => {
+    this.filterSubscription = this.filterService.filters$.subscribe((filters: Filter) => {
       this.filters = filters;
     });
+
+    this.newLeagueSubscription = this.storageService.newLeagueAdded.subscribe(() => {
+      this.storageService.loadLeagues().then((leagues) => {
+        this.leagues = leagues;
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.filterSubscription.unsubscribe();
+    this.newLeagueSubscription.unsubscribe();
   }
 
   cancel() {

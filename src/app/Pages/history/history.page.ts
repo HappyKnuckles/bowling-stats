@@ -471,7 +471,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.storageService.newDataAdded.subscribe(() => {
+    this.newDataAddedSubscription = this.storageService.newGameAdded.subscribe(() => {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
@@ -481,7 +481,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         });
     });
 
-    this.dataDeletedSubscription = this.storageService.dataDeleted.subscribe(() => {
+    this.dataDeletedSubscription = this.storageService.gameDeleted.subscribe(() => {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
@@ -562,7 +562,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
       rowData.push(game.totalScore);
       rowData.push(game.frameScores.join(', '));
-      rowData.push(game.league);
+      rowData.push(game.league || '');
       rowData.push(game.isPractice ? 'true' : 'false');
       rowData.push(game.isClean ? 'true' : 'false');
       rowData.push(game.isPerfect ? 'true' : 'false');

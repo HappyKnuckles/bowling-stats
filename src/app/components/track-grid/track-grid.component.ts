@@ -10,6 +10,7 @@ import { ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
 import { documentTextOutline } from 'ionicons/icons';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { LeagueSelectorComponent } from '../league-selector/league-selector.component';
 
 @Component({
   selector: 'app-track-grid',
@@ -17,7 +18,7 @@ import { StorageService } from 'src/app/services/storage/storage.service';
   styleUrls: ['./track-grid.component.scss'],
   providers: [BowlingCalculatorService],
   standalone: true,
-  imports: [IonCheckbox, IonIcon, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor],
+  imports: [IonCheckbox, IonIcon, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor, LeagueSelectorComponent],
 })
 export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();
@@ -47,6 +48,9 @@ export class TrackGridComponent implements OnInit {
     this.maxScoreChanged.emit(this.maxScore);
     this.totalScoreChanged.emit(this.totalScore);
   }
+  onLeagueChanged(league: string) {
+    this.selectedLeague = league;
+  }
 
   simulateScore(event: any, frameIndex: number, inputIndex: number): void {
     const inputValue = event.target.value;
@@ -72,12 +76,13 @@ export class TrackGridComponent implements OnInit {
         this.bowlingService.frames,
         this.bowlingService.frameScores,
         this.bowlingService.totalScore,
-        this.isPractice,       
+        this.isPractice,
         this.selectedLeague,
         isSeries,
         seriesId,
         this.note
       );
+
       await this.storageService.saveGameToLocalStorage(gameData);
       this.toastService.showToast('Game saved succesfully.', 'add');
       this.clearFrames();
@@ -121,6 +126,7 @@ export class TrackGridComponent implements OnInit {
     });
     this.isPractice = false;
     this.note = '';
+    this.selectedLeague = '';
     this.frames = this.bowlingService.frames;
     this.frameScores = this.bowlingService.frameScores;
     this.maxScore = this.bowlingService.maxScore;

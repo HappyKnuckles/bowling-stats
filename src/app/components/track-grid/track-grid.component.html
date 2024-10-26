@@ -74,6 +74,4 @@
 <ion-item>
   <ion-checkbox [(ngModel)]="isPractice" name="isPractice">Practice</ion-checkbox>
 </ion-item>
-<!-- <ion-item>
-  <ion-select [(ngModel)]="leagues" name="league">League</ion-select>
-</ion-item> -->
+<app-league-selector [isAddPage]="true" (leagueChanged)="onLeagueChanged($event)"></app-league-selector>

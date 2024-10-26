@@ -25,6 +25,8 @@ import {
   IonInfiniteScrollContent,
   IonAccordionGroup,
   IonAccordion,
+  IonSelect,
+  IonSelectOption,
 } from '@ionic/angular/standalone';
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { Subscription } from 'rxjs';
@@ -51,6 +53,7 @@ import { FilterComponent } from 'src/app/components/filter/filter.component';
 import { InfiniteScrollCustomEvent, ModalController } from '@ionic/angular';
 import { FilterService } from 'src/app/services/filter/filter.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-history',
@@ -85,6 +88,10 @@ import { StorageService } from 'src/app/services/storage/storage.service';
     NgFor,
     NgClass,
     IonText,
+    IonSelect,
+    IonSelectOption,
+    ReactiveFormsModule,
+    FormsModule,
   ],
 })
 export class HistoryPage implements OnInit, OnDestroy {
@@ -92,6 +99,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   gameHistory: Game[] = [];
   filteredGameHistory: Game[] = [];
   gameLength: Game[] = [];
+  leagues: string[] = [];
   filterGameLength: number = 0;
   arrayBuffer: any;
   file!: File;
@@ -99,6 +107,8 @@ export class HistoryPage implements OnInit, OnDestroy {
   private dataDeletedSubscription!: Subscription;
   private filteredGamesSubscription!: Subscription;
   private loadingSubscription: Subscription;
+  private newLeagueSubscription!: Subscription;
+
   isLoading: boolean = false;
   isEditMode: { [key: string]: boolean } = {};
   private originalGameState: { [key: string]: Game } = {};
@@ -125,13 +135,16 @@ export class HistoryPage implements OnInit, OnDestroy {
     try {
       this.loadingService.setLoading(true);
       await this.loadGameHistory();
-
+      await this.getLeagues();
       this.subscribeToDataEvents();
     } catch (error) {
       console.error(error);
     } finally {
       this.loadingService.setLoading(false);
     }
+  }
+  async getLeagues() {
+    this.leagues = await this.storageService.loadLeagues();
   }
 
   async openFilterModal() {
@@ -496,6 +509,12 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.filterGameLength = this.gameLength.length;
       this.filteredGameHistory = this.gameLength.slice(0, 20);
       this.activeFilterCount = this.filterService.activeFilterCount;
+    });
+
+    this.newLeagueSubscription = this.storageService.newLeagueAdded.subscribe(() => {
+      this.storageService.loadLeagues().then((leagues) => {
+        this.leagues = leagues;
+      });
     });
   }
 

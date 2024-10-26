@@ -68,8 +68,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   defaultFilters = this.filterService.defaultFilters;
   highlightedDates: { date: string; textColor: string; backgroundColor: string }[] = [];
   leagues: string[] = [];
-  newLeagueSubscription: Subscription;
-  filterSubscription: Subscription;
+  private newLeagueSubscription: Subscription;
+  private filterSubscription: Subscription;
 
   constructor(private modalCtrl: ModalController, private filterService: FilterService, private storageService: StorageService) {
     this.filterSubscription = this.filterService.filters$.subscribe((filters: Filter) => {

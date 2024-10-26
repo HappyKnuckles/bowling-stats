@@ -130,9 +130,15 @@
                 </ion-grid>
               </div>
               } @else{
+              <ion-item>
+                <ion-select name="league" [(ngModel)]="game.league" label="League" [value]="game.league">
+                  <ion-select-option value="">None</ion-select-option>
+                  <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
+                </ion-select>
+              </ion-item>
               <ion-item class="note" lines="none">
                 <ion-icon name="document-text-outline" slot="start"> </ion-icon>
-                <ion-textarea type="text" [value]="game.note" [autoGrow]="true" (ionInput)="game.note = $event.target.value!"></ion-textarea>
+                <ion-textarea type="text" [(ngModel)]="game.note" [autoGrow]="true"></ion-textarea>
               </ion-item>
               <div class="grid-container">
                 <ion-grid fixed="true" *ngFor="let frame of game.frames; let frameIndex = index;">

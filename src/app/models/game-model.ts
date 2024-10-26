@@ -10,6 +10,7 @@ export interface Game {
   isSeries?: boolean;
   seriesId?: string;
   note?: string;
+  league?: string;
 }
 
 // interface Session {

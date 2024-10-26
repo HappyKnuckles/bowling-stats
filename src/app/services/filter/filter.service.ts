@@ -14,9 +14,11 @@ export class FilterService {
     maxScore: 300,
     isClean: false,
     isPerfect: false,
+    league: 'all',
     startDate: '',
     endDate: '',
   };
+  leagues: string[] = [];
   activeFilterCount: number = 0;
   private filteredGamesSubject = new BehaviorSubject<Game[]>([]);
   filteredGames$ = this.filteredGamesSubject.asObservable();
@@ -41,7 +43,12 @@ export class FilterService {
       const matchesPerfectFilter = !this.filters.isPerfect || game.isPerfect;
       const matchesCleanFilter = !this.filters.isClean || game.isClean;
 
-      return isWithinDateRange && isWithinScoreRange && matchesPracticeFilter && matchesPerfectFilter && matchesCleanFilter;
+      let matchesLeagueFilter = true;
+      if (this.filters.league !== 'all') {
+        matchesLeagueFilter = this.filters.league === game.league;
+      }
+
+      return isWithinDateRange && isWithinScoreRange && matchesPracticeFilter && matchesPerfectFilter && matchesCleanFilter && matchesLeagueFilter;
     });
 
     this.filteredGamesSubject.next(filteredGames);
@@ -71,6 +78,7 @@ export class FilterService {
       return count;
     }, 0);
   }
+
   private loadInitialFilters(): Filter {
     const storedFilter = localStorage.getItem('filter');
     return storedFilter ? JSON.parse(storedFilter) : { ...this.defaultFilters };

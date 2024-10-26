@@ -38,43 +38,64 @@
     <ion-label>Feature/Bug overview</ion-label>
     <a href="https://github.com/HappyKnuckles/bowling-stats/issues">Follow me</a>
   </ion-item>
+  <app-league-selector [defaultLeague]="league"></app-league-selector>
 
-  <ion-card style="margin-top: 20vh">
-    <ion-card-header>
-      <ion-card-title>Contact Us</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <form #feedbackForm="ngForm" (ngSubmit)="submitFeedback(feedbackForm)">
-        <ion-item>
-          <ion-input
-            label="Your email"
-            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}$"
-            labelPlacement="floating"
-            type="email"
-            placeholder="email@domain.com"
-            errorText="Invalid email address."
-            [(ngModel)]="userEmail"
-            name="userEmail"
-            required></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-textarea
-            maxlength="500"
-            counter="true"
-            label="Feedback"
-            labelPlacement="floating"
-            placeholder="Enter your feedback"
-            [(ngModel)]="feedbackMessage"
-            name="feedbackMessage"
-            [autoGrow]="true"
-            required
-            #feedbackInput="ngModel"
-            errorText="Feedback is required."></ion-textarea>
-        </ion-item>
-
-        <ion-button expand="full" color="primary" type="submit" [disabled]="feedbackForm.invalid"> Submit Feedback </ion-button>
-      </form>
-    </ion-card-content>
-  </ion-card>
+  <ion-item id="feedback-modal">
+    <ion-icon name="mail-outline" slot="start"></ion-icon>
+    <ion-label>Feedback/Requests</ion-label>
+    <a href="">Open form</a>
+  </ion-item>
 </ion-content>
+
+<ion-modal trigger="feedback-modal" #feedback [keepContentsMounted]="true">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-button (click)="feedback.dismiss()" slot="start" fill="clear" strong="true">
+          <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-title>Feedback/Request</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Contact Us</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form #feedbackForm="ngForm" (ngSubmit)="submitFeedback(feedbackForm)">
+            <ion-item>
+              <ion-input
+                label="Your email"
+                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}$"
+                labelPlacement="floating"
+                type="email"
+                placeholder="email@domain.com"
+                errorText="Invalid email address."
+                [(ngModel)]="userEmail"
+                name="userEmail"
+                required></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-textarea
+                maxlength="500"
+                counter="true"
+                label="Feedback"
+                labelPlacement="floating"
+                placeholder="Enter your feedback"
+                [(ngModel)]="feedbackMessage"
+                name="feedbackMessage"
+                [autoGrow]="true"
+                required
+                #feedbackInput="ngModel"
+                errorText="Feedback is required."></ion-textarea>
+            </ion-item>
+
+            <ion-button expand="full" color="primary" type="submit" [disabled]="feedbackForm.invalid"> Submit Feedback </ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </ng-template>
+</ion-modal>

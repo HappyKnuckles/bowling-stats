@@ -17,10 +17,12 @@ import {
   IonButton,
   IonTextarea,
   IonText,
+  IonModal,
+  IonBackButton,
 } from '@ionic/angular/standalone';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { colorPaletteOutline, logoGithub, personCircleOutline } from 'ionicons/icons';
+import { colorPaletteOutline, logoGithub, personCircleOutline, sendOutline, addOutline, mailOutline, chevronBack } from 'ionicons/icons';
 import { NgClass, NgFor } from '@angular/common';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { UserService } from 'src/app/services/user/user.service';
@@ -28,6 +30,8 @@ import { ThemeChangerService } from 'src/app/services/theme/theme-changer.servic
 import { environment } from 'src/environments/environment';
 import emailjs from '@emailjs/browser';
 import { LoadingService } from 'src/app/services/loader/loading.service';
+import { LeagueSelectorComponent } from '../../components/league-selector/league-selector.component';
+import { FilterService } from 'src/app/services/filter/filter.service';
 
 @Component({
   selector: 'app-settings',
@@ -35,6 +39,8 @@ import { LoadingService } from 'src/app/services/loader/loading.service';
   styleUrls: ['./settings.page.scss'],
   standalone: true,
   imports: [
+    IonBackButton,
+    IonModal,
     IonText,
     IonTextarea,
     IonButton,
@@ -56,11 +62,13 @@ import { LoadingService } from 'src/app/services/loader/loading.service';
     NgFor,
     FormsModule,
     ReactiveFormsModule,
+    LeagueSelectorComponent,
   ],
 })
 export class SettingsPage implements OnInit {
   username: string | null = '';
   currentColor: string | null = '';
+  league: string = this.filterService.filters.league;
   optionsWithClasses: { name: string; class: string }[] = [
     { name: 'Blue', class: 'blue-option' },
     { name: 'Lila', class: 'lila-option' },
@@ -74,9 +82,10 @@ export class SettingsPage implements OnInit {
     private userService: UserService,
     private toastService: ToastService,
     private loadingService: LoadingService,
-    private themeService: ThemeChangerService
+    private themeService: ThemeChangerService,
+    private filterService: FilterService
   ) {
-    addIcons({ personCircleOutline, colorPaletteOutline, logoGithub });
+    addIcons({ personCircleOutline, colorPaletteOutline, logoGithub, addOutline, mailOutline, chevronBack, sendOutline });
   }
 
   ngOnInit() {

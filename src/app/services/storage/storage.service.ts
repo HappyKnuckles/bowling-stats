@@ -1,53 +1,82 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Game } from 'src/app/models/game-model';
 import { Storage } from '@ionic/storage-angular';
-import { FilterService } from '../filter/filter.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
-  newDataAdded = new EventEmitter<void>();
-  dataDeleted = new EventEmitter<void>();
-  constructor(private storage: Storage, private filterService: FilterService) {
+  newGameAdded = new EventEmitter<void>();
+  gameDeleted = new EventEmitter<void>();
+  newLeagueAdded = new EventEmitter<void>();
+  leagueDeleted = new EventEmitter<void>();
+
+  constructor(private storage: Storage) {
     this.init();
   }
 
   async init() {
     await this.storage.create();
   }
+
+  private async save(key: string, data: any) {
+    await this.storage.set(key, data);
+  }
+
+  private async delete(key: string) {
+    await this.storage.remove(key);
+  }
+
+  async addLeague(key: string, data: any) {
+    await this.save(key, data);
+    this.newLeagueAdded.emit();
+  }
+
+  async deleteLeague(key: string) {
+    await this.storage.remove(key);
+    this.leagueDeleted.emit();
+  }
+
   async saveGamesToLocalStorage(gameData: Game[]): Promise<void> {
     for (const game of gameData) {
       const key = 'game' + game.gameId; // Generate key using index
-      await this.storage.set(key, game);
+      await this.save(key, game);
     }
-    this.newDataAdded.emit();
+    this.newGameAdded.emit();
   }
 
   async saveGameToLocalStorage(gameData: Game): Promise<void> {
     const key = 'game' + gameData.gameId; // Generate key using index
-    await this.storage.set(key, gameData);
-    this.newDataAdded.emit();
+    await this.save(key, gameData);
+    this.newGameAdded.emit();
   }
 
   async deleteGame(key: string): Promise<void> {
-    await this.storage.remove(key);
-    this.dataDeleted.emit();
+    await this.delete(key);
+    this.gameDeleted.emit();
   }
 
   async deleteAllData(): Promise<void> {
     await this.storage.clear();
-    this.dataDeleted.emit();
+    this.gameDeleted.emit();
   }
 
-  async loadGameHistory(): Promise<Game[]> {
-    const gameHistory: Game[] = [];
-
-    await this.storage.forEach((value: Game, key: string) => {
-      if (key.startsWith('game')) {
-        gameHistory.push(value);
+  async loadData<T>(prefix: string): Promise<T[]> {
+    const data: T[] = [];
+    await this.storage.forEach((value: T, key: string) => {
+      if (key.startsWith(prefix)) {
+        data.push(value);
       }
     });
+    return data;
+  }
+
+  async loadLeagues(): Promise<string[]> {
+    const leagues = await this.loadData<string>('league');
+    return leagues.reverse();
+  }
+  async loadGameHistory(): Promise<Game[]> {
+    const gameHistory = await this.loadData<Game>('game');
 
     // TODO remove this block after a while
     let isRenewed = localStorage.getItem('isRenewed') || false;

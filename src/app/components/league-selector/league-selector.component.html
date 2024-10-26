@@ -1,0 +1,15 @@
+<ion-item>
+  <ion-icon *ngIf="!isAddPage" name="medal-outline" slot="start"></ion-icon>
+  <ion-select label="Leagues/Tournaments" [value]="defaultLeague" [(ngModel)]="selectedLeague" (ionChange)="leagueChanged.emit(selectedLeague)">
+    <ion-select-option value="New">Add New</ion-select-option>
+    <ion-select-option value="all" *ngIf="!isAddPage">All</ion-select-option>
+    <ion-select-option value="">None</ion-select-option>
+    <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
+  </ion-select>
+</ion-item>
+
+<ion-item *ngIf="selectedLeague === 'New'">
+  <ion-icon name="add-outline" slot="start"></ion-icon>
+  <ion-input label="Enter new league" [(ngModel)]="newLeague" placeholder="League name"></ion-input>
+  <ion-button type="submit" (click)="saveLeague()">Save</ion-button>
+</ion-item>

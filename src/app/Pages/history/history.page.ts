@@ -471,7 +471,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.storageService.newDataAdded.subscribe(() => {
+    this.newDataAddedSubscription = this.storageService.newGameAdded.subscribe(() => {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
@@ -481,7 +481,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         });
     });
 
-    this.dataDeletedSubscription = this.storageService.dataDeleted.subscribe(() => {
+    this.dataDeletedSubscription = this.storageService.gameDeleted.subscribe(() => {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
@@ -521,6 +521,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     }
     headerRow.push('Total Score');
     headerRow.push('FrameScores');
+    headerRow.push('League');
     headerRow.push('Practice');
     headerRow.push('Clean');
     headerRow.push('Perfect');
@@ -561,6 +562,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
       rowData.push(game.totalScore);
       rowData.push(game.frameScores.join(', '));
+      rowData.push(game.league || '');
       rowData.push(game.isPractice ? 'true' : 'false');
       rowData.push(game.isClean ? 'true' : 'false');
       rowData.push(game.isPerfect ? 'true' : 'false');
@@ -690,12 +692,13 @@ export class HistoryPage implements OnInit, OnDestroy {
         frames: frames,
         totalScore: parseInt(data[i]['12']),
         frameScores: data[i]['13'].split(', ').map((score: string) => parseInt(score)),
-        isPractice: data[i]['14'],
-        isClean: data[i]['15'],
-        isPerfect: data[i]['16'],
-        isSeries: data[i]['17'] === 'true',
-        seriesId: data[i]['18'],
-        note: data[i]['19'],
+        league: data[i]['14'],
+        isPractice: data[i]['15'],
+        isClean: data[i]['16'],
+        isPerfect: data[i]['17'],
+        isSeries: data[i]['18'] === 'true',
+        seriesId: data[i]['19'],
+        note: data[i]['20'],
       };
 
       gameData.push(game);

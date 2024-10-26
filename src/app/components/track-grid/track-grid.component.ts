@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, QueryList, ViewChildren, ViewChild } from '@angular/core';
 import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bowling-calculator.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
@@ -10,6 +10,7 @@ import { ImpactStyle } from '@capacitor/haptics';
 import { addIcons } from 'ionicons';
 import { documentTextOutline } from 'ionicons/icons';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { LeagueSelectorComponent } from '../league-selector/league-selector.component';
 
 @Component({
   selector: 'app-track-grid',
@@ -17,16 +18,18 @@ import { StorageService } from 'src/app/services/storage/storage.service';
   styleUrls: ['./track-grid.component.scss'],
   providers: [BowlingCalculatorService],
   standalone: true,
-  imports: [IonCheckbox, IonIcon, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor],
+  imports: [IonCheckbox, IonIcon, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor, LeagueSelectorComponent],
 })
 export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();
   @Output() totalScoreChanged = new EventEmitter<number>();
   @ViewChildren(IonInput) inputs!: QueryList<IonInput>;
+  @ViewChild('checkbox') checkbox!: IonCheckbox;
   totalScore: number = 0;
   maxScore: number = 300;
   note: string = '';
-  isPractice: boolean = false;
+  selectedLeague = '';
+  isPractice: boolean = true;
   frames = this.bowlingService.frames;
   frameScores = this.bowlingService.frameScores;
   constructor(
@@ -45,6 +48,17 @@ export class TrackGridComponent implements OnInit {
     this.totalScore = this.bowlingService.totalScore;
     this.maxScoreChanged.emit(this.maxScore);
     this.totalScoreChanged.emit(this.totalScore);
+  }
+
+  onLeagueChanged(league: string) {
+    this.selectedLeague = league;
+    if (this.selectedLeague === '' || this.selectedLeague === 'New') {
+      this.checkbox.disabled = false;
+    } else {
+      this.isPractice = false;
+      this.checkbox.checked = false;
+      this.checkbox.disabled = true;
+    }
   }
 
   simulateScore(event: any, frameIndex: number, inputIndex: number): void {
@@ -67,15 +81,21 @@ export class TrackGridComponent implements OnInit {
 
   async saveGameToLocalStorage(isSeries: boolean, seriesId: string): Promise<void> {
     try {
+      if (this.selectedLeague === 'New') {
+        this.toastService.showToast('Please select a league or create a new one.', 'bug', true);
+        return;
+      }
       const gameData = this.transformGameService.transformGameData(
         this.bowlingService.frames,
         this.bowlingService.frameScores,
         this.bowlingService.totalScore,
         this.isPractice,
+        this.selectedLeague,
         isSeries,
         seriesId,
         this.note
       );
+
       await this.storageService.saveGameToLocalStorage(gameData);
       this.toastService.showToast('Game saved succesfully.', 'add');
       this.clearFrames();
@@ -119,6 +139,7 @@ export class TrackGridComponent implements OnInit {
     });
     this.isPractice = false;
     this.note = '';
+    this.selectedLeague = '';
     this.frames = this.bowlingService.frames;
     this.frameScores = this.bowlingService.frameScores;
     this.maxScore = this.bowlingService.maxScore;

@@ -415,7 +415,7 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.storageService.newDataAdded.subscribe(() => {
+    this.newDataAddedSubscription = this.storageService.newGameAdded.subscribe(() => {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats()
         .then(() => {
@@ -430,7 +430,7 @@ export class StatsPage implements OnInit, OnDestroy {
         });
     });
 
-    this.dataDeletedSubscription = this.storageService.dataDeleted.subscribe(() => {
+    this.dataDeletedSubscription = this.storageService.gameDeleted.subscribe(() => {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats()
         .then(() => {

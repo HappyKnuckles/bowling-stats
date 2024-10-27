@@ -81,7 +81,7 @@ export class SettingsPage implements OnInit {
     private toastService: ToastService,
     private loadingService: LoadingService,
     private themeService: ThemeChangerService
-    ) {
+  ) {
     addIcons({ personCircleOutline, colorPaletteOutline, logoGithub, addOutline, mailOutline, chevronBack, sendOutline });
   }
 

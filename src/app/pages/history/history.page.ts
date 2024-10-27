@@ -39,7 +39,8 @@ import {
   createOutline,
   shareOutline,
   documentTextOutline,
-  filterOutline, medalOutline
+  filterOutline,
+  medalOutline,
 } from 'ionicons/icons';
 import { NgIf, NgFor, DatePipe, NgClass } from '@angular/common';
 import { Share } from '@capacitor/share';
@@ -129,7 +130,16 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.isLoading = isLoading;
     });
 
-    addIcons({ cloudUploadOutline, cloudDownloadOutline, filterOutline, trashOutline, createOutline, shareOutline, documentTextOutline, medalOutline });
+    addIcons({
+      cloudUploadOutline,
+      cloudDownloadOutline,
+      filterOutline,
+      trashOutline,
+      createOutline,
+      shareOutline,
+      documentTextOutline,
+      medalOutline,
+    });
   }
   async ngOnInit(): Promise<void> {
     try {
@@ -360,7 +370,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => { },
+          handler: () => {},
         },
         {
           text: 'Delete',

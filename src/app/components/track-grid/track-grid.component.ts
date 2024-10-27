@@ -54,7 +54,7 @@ export class TrackGridComponent implements OnInit {
     this.selectedLeague = league;
     if (this.selectedLeague === '' || this.selectedLeague === 'New') {
       this.isPractice = true;
-      this.checkbox.checked = true;      
+      this.checkbox.checked = true;
       this.checkbox.disabled = false;
     } else {
       this.isPractice = false;

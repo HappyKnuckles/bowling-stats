@@ -28,8 +28,9 @@
   }
 }
 
-.link{
+.link {
   text-decoration: underline;
   background-color: transparent;
   color: var(--ion-color-primary, #3880ff);
+  cursor: pointer;
 }

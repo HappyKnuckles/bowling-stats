@@ -47,6 +47,9 @@ export class FilterService {
       if (this.filters.league !== 'all') {
         matchesLeagueFilter = this.filters.league === game.league;
       }
+      if (this.filters.league === '') {
+        matchesLeagueFilter = game.league === '' || game.league === undefined;
+      }
 
       return isWithinDateRange && isWithinScoreRange && matchesPracticeFilter && matchesPerfectFilter && matchesCleanFilter && matchesLeagueFilter;
     });

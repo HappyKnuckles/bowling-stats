@@ -1,4 +1,3 @@
-
 @if (isAddPage) {
 
 <ion-item>
@@ -8,12 +7,10 @@
     <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
   </ion-select>
 </ion-item>
-}
-@else {
+} @else {
 <ion-item>
   <ion-icon name="medal-outline" slot="start"></ion-icon>
-  <ion-select label="Leagues/Tournaments" [(ngModel)]="selectedLeague"
-    (ionChange)="leagueChanged.emit(selectedLeague)">
+  <ion-select label="Leagues/Tournaments" [(ngModel)]="selectedLeague" (ionChange)="leagueChanged.emit(selectedLeague)">
     <ion-select-option value="New">Add New</ion-select-option>
     <ion-select-option value="all">All</ion-select-option>
     <ion-select-option value="">None</ion-select-option>
@@ -21,7 +18,6 @@
   </ion-select>
 </ion-item>
 }
-
 
 <ion-item *ngIf="selectedLeague === 'New'">
   <ion-icon name="add-outline" slot="start"></ion-icon>

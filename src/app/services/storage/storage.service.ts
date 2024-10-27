@@ -95,7 +95,7 @@ export class StorageService {
           game.isPractice = true;
         } else game.isPractice = false;
       });
-      
+
       this.saveGamesToLocalStorage(gameHistory);
       isRenewed = true;
       localStorage.setItem('isRenewedAgain', JSON.stringify(isRenewed));

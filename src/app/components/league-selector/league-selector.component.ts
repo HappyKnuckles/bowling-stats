@@ -17,7 +17,6 @@ import { ToastService } from 'src/app/services/toast/toast.service';
 })
 export class LeagueSelectorComponent implements OnInit, OnDestroy {
   @Input() isAddPage: boolean = false;
-  @Input() defaultLeague: string = '';
   @Output() leagueChanged = new EventEmitter<string>();
   leagues: string[] = [];
   selectedLeague: string = '';
@@ -34,6 +33,7 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
   }
   async ngOnInit() {
     await this.getLeagues();
+    this.selectedLeague = this.isAddPage ? '' : 'New';
   }
 
   async saveLeague(): Promise<void> {

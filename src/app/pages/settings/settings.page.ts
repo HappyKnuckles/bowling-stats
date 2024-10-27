@@ -31,7 +31,6 @@ import { environment } from 'src/environments/environment';
 import emailjs from '@emailjs/browser';
 import { LoadingService } from 'src/app/services/loader/loading.service';
 import { LeagueSelectorComponent } from '../../components/league-selector/league-selector.component';
-import { FilterService } from 'src/app/services/filter/filter.service';
 
 @Component({
   selector: 'app-settings',
@@ -68,7 +67,6 @@ import { FilterService } from 'src/app/services/filter/filter.service';
 export class SettingsPage implements OnInit {
   username: string | null = '';
   currentColor: string | null = '';
-  league: string = this.filterService.filters.league;
   optionsWithClasses: { name: string; class: string }[] = [
     { name: 'Blue', class: 'blue-option' },
     { name: 'Lila', class: 'lila-option' },
@@ -82,9 +80,8 @@ export class SettingsPage implements OnInit {
     private userService: UserService,
     private toastService: ToastService,
     private loadingService: LoadingService,
-    private themeService: ThemeChangerService,
-    private filterService: FilterService
-  ) {
+    private themeService: ThemeChangerService
+    ) {
     addIcons({ personCircleOutline, colorPaletteOutline, logoGithub, addOutline, mailOutline, chevronBack, sendOutline });
   }
 

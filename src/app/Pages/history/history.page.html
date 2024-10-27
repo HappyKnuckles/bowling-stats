@@ -62,7 +62,7 @@
             <ion-item slot="header" lines="none" class="expansion-header">
               <div class="game-info">
                 <div class="title">Game {{filterGameLength - i}}</div>
-                <div class="score" *ngIf="game.league">League: {{game.league}}</div>
+                <div class="score" *ngIf="game.league">League/Tournament: {{game.league}}</div>
                 <div class="score">Score: {{game.totalScore}}</div>
                 <!-- <div class="score">{{game.date | date}}</div> -->
               </div>
@@ -130,8 +130,9 @@
                 </ion-grid>
               </div>
               } @else{
-              <ion-item>
-                <ion-select name="league" [(ngModel)]="game.league" label="League" [value]="game.league">
+              <ion-item class="league">
+                <ion-icon name="medal-outline" slot="start"></ion-icon>
+                <ion-select name="league" [(ngModel)]="game.league" label="League/Tournament" [value]="game.league">
                   <ion-select-option value="">None</ion-select-option>
                   <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
                 </ion-select>
@@ -192,7 +193,7 @@
                     <ion-col class="middle count">
                       <ion-input
                         type="text"
-                        class="frameScores"
+                        class="frameScoresEdit"
                         [value]="game.frameScores[frameIndex]"
                         inputmode="numeric"
                         clearOnEdit="true"

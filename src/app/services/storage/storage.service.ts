@@ -37,18 +37,22 @@ export class StorageService {
     this.leagueDeleted.emit();
   }
 
-  async saveGamesToLocalStorage(gameData: Game[]): Promise<void> {
+  async saveGamesToLocalStorage(gameData: Game[], isEdit?: boolean): Promise<void> {
     for (const game of gameData) {
-      const key = 'game' + game.gameId; // Generate key using index
+      const key = 'game' + game.gameId;
       await this.save(key, game);
     }
-    this.newGameAdded.emit();
+    if (!isEdit) {
+      this.newGameAdded.emit();
+    }
   }
 
-  async saveGameToLocalStorage(gameData: Game): Promise<void> {
-    const key = 'game' + gameData.gameId; // Generate key using index
+  async saveGameToLocalStorage(gameData: Game, isEdit?: boolean): Promise<void> {
+    const key = 'game' + gameData.gameId;
     await this.save(key, gameData);
-    this.newGameAdded.emit();
+    if (!isEdit) {
+      this.newGameAdded.emit();
+    }
   }
 
   async deleteGame(key: string): Promise<void> {
@@ -79,7 +83,7 @@ export class StorageService {
     const gameHistory = await this.loadData<Game>('game');
 
     // TODO remove this block after a while
-    let isRenewed = localStorage.getItem('isRenewed') || false;
+    let isRenewed = localStorage.getItem('isRenewedAgain') || false;
     if (!isRenewed) {
       gameHistory.forEach((game) => {
         game.isPerfect = game.totalScore === 300;
@@ -87,10 +91,14 @@ export class StorageService {
           const frameTotal = frame.throws.reduce((sum: any, currentThrow: { value: any }) => sum + currentThrow.value, 0);
           return frameTotal >= 10;
         });
+        if (game.league === undefined || game.league === '') {
+          game.isPractice = true;
+        } else game.isPractice = false;
       });
+      
       this.saveGamesToLocalStorage(gameHistory);
       isRenewed = true;
-      localStorage.setItem('isRenewed', JSON.stringify(isRenewed));
+      localStorage.setItem('isRenewedAgain', JSON.stringify(isRenewed));
     }
     this.sortGameHistoryByDate(gameHistory);
 

@@ -39,7 +39,7 @@ import {
   createOutline,
   shareOutline,
   documentTextOutline,
-  filterOutline,
+  filterOutline, medalOutline
 } from 'ionicons/icons';
 import { NgIf, NgFor, DatePipe, NgClass } from '@angular/common';
 import { Share } from '@capacitor/share';
@@ -129,7 +129,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.isLoading = isLoading;
     });
 
-    addIcons({ cloudUploadOutline, filterOutline, cloudDownloadOutline, trashOutline, createOutline, shareOutline, documentTextOutline });
+    addIcons({ cloudUploadOutline, cloudDownloadOutline, filterOutline, trashOutline, createOutline, shareOutline, documentTextOutline, medalOutline });
   }
   async ngOnInit(): Promise<void> {
     try {
@@ -210,7 +210,11 @@ export class HistoryPage implements OnInit, OnDestroy {
         this.toastService.showToast('Invalid input.', 'bug', true);
         return;
       } else {
-        await this.storageService.saveGameToLocalStorage(game);
+        if (game.league === undefined || game.league === '') {
+          game.isPractice = true;
+        } else game.isPractice = false;
+
+        await this.storageService.saveGameToLocalStorage(game, true);
         this.toastService.showToast('Game edit saved sucessfully!', 'refresh-outline');
         this.enableEdit(game);
       }
@@ -356,7 +360,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         {
           text: 'Cancel',
           role: 'cancel',
-          handler: () => {},
+          handler: () => { },
         },
         {
           text: 'Delete',

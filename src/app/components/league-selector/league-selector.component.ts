@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonSelect, IonInput, IonButton, IonSelectOption, IonItem, IonIcon, IonLabel } from '@ionic/angular/standalone';
@@ -12,7 +12,7 @@ import { ToastService } from 'src/app/services/toast/toast.service';
   selector: 'app-league-selector',
   templateUrl: './league-selector.component.html',
   styleUrls: ['./league-selector.component.scss'],
-  imports: [IonLabel, IonIcon, IonItem, IonButton, IonInput, IonSelect, CommonModule, FormsModule, ReactiveFormsModule, IonSelectOption],
+  imports: [IonLabel, IonIcon, IonItem, IonButton, IonInput, IonSelect, NgIf, NgFor, FormsModule, ReactiveFormsModule, IonSelectOption],
   standalone: true,
 })
 export class LeagueSelectorComponent implements OnInit, OnDestroy {
@@ -20,7 +20,7 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
   @Input() defaultLeague: string = '';
   @Output() leagueChanged = new EventEmitter<string>();
   leagues: string[] = [];
-  selectedLeague: string = '';
+  selectedLeague: string = 'New';
   newLeague: string = '';
   newLeagueSubscription: Subscription;
   constructor(private storageService: StorageService, private toastService: ToastService) {

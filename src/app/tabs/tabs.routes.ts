@@ -8,19 +8,19 @@ export const routes: Routes = [
     children: [
       {
         path: 'add',
-        loadComponent: () => import('../Pages/add-game/add-game.page').then((m) => m.AddGamePage),
+        loadComponent: () => import('../pages/add-game/add-game.page').then((m) => m.AddGamePage),
       },
       {
         path: 'stats',
-        loadComponent: () => import('../Pages/stats/stats.page').then((m) => m.StatsPage),
+        loadComponent: () => import('../pages/stats/stats.page').then((m) => m.StatsPage),
       },
       {
         path: 'history',
-        loadComponent: () => import('../Pages/history/history.page').then((m) => m.HistoryPage),
+        loadComponent: () => import('../pages/history/history.page').then((m) => m.HistoryPage),
       },
       {
         path: 'settings',
-        loadComponent: () => import('../Pages/settings/settings.page').then((m) => m.SettingsPage),
+        loadComponent: () => import('../pages/settings/settings.page').then((m) => m.SettingsPage),
       },
       {
         path: '',

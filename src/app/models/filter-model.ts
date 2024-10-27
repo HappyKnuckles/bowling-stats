@@ -1,5 +1,5 @@
 export interface Filter {
-  isPractice: boolean;
+  excludePractice: boolean;
   minScore: number;
   maxScore: number;
   isClean: boolean;

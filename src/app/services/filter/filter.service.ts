@@ -9,7 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 export class FilterService {
   filters: Filter;
   defaultFilters: Filter = {
-    isPractice: false,
+    excludePractice: false,
     minScore: 0,
     maxScore: 300,
     isClean: false,
@@ -39,7 +39,7 @@ export class FilterService {
       const endDate = formatDate(this.filters.endDate!);
       const isWithinDateRange = gameDate >= startDate && gameDate <= endDate;
       const isWithinScoreRange = game.totalScore >= this.filters.minScore && game.totalScore <= this.filters.maxScore;
-      const matchesPracticeFilter = !this.filters.isPractice || game.isPractice;
+      const matchesPracticeFilter = this.filters.excludePractice ? !game.isPractice : true;
       const matchesPerfectFilter = !this.filters.isPerfect || game.isPerfect;
       const matchesCleanFilter = !this.filters.isClean || game.isClean;
 

@@ -20,7 +20,7 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
   @Input() defaultLeague: string = '';
   @Output() leagueChanged = new EventEmitter<string>();
   leagues: string[] = [];
-  selectedLeague: string = 'New';
+  selectedLeague: string = '';
   newLeague: string = '';
   newLeagueSubscription: Subscription;
   constructor(private storageService: StorageService, private toastService: ToastService) {

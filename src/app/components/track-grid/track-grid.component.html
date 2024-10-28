@@ -6,58 +6,34 @@
     <ion-row>
       <ion-col class="inputCol" *ngIf="i !== 10"></ion-col>
       <ion-col class="inputCol">
-        <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          debounce="1000"
+        <ion-input type="text" clearOnEdit="true" inputmode="numeric" autocapitalize="on" debounce="1000"
           (ionInput)="simulateScore($event, frameIndex, 0)">
         </ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i !== 10">
-        <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          debounce="1000"
-          [disabled]="frames[frameIndex][0] === 10 && i !== 10"
-          (ionInput)="simulateScore($event, frameIndex, 1)">
+        <ion-input type="text" clearOnEdit="true" inputmode="numeric" autocapitalize="on" debounce="1000"
+          [disabled]="frames[frameIndex][0] === 10 && i !== 10" (ionInput)="simulateScore($event, frameIndex, 1)">
         </ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          debounce="1000"
-          [disabled]="frames[frameIndex][0] === 10 && i !== 10"
-          (ionInput)="simulateScore($event, frameIndex, 1)">
+        <ion-input type="text" clearOnEdit="true" inputmode="numeric" autocapitalize="on" debounce="1000"
+          [disabled]="frames[frameIndex][0] === 10 && i !== 10" (ionInput)="simulateScore($event, frameIndex, 1)">
         </ion-input>
       </ion-col>
       <ion-col class="inputCol" *ngIf="i === 10">
-        <ion-input
-          type="text"
-          clearOnEdit="true"
-          inputmode="numeric"
-          autocapitalize="on"
-          debounce="1000"
+        <ion-input type="text" clearOnEdit="true" inputmode="numeric" autocapitalize="on" debounce="1000"
           [disabled]="frames[frameIndex][0] !== 10 && frames[frameIndex][0] + (frames[frameIndex][1] || 0) !== 10"
           (ionInput)="simulateScore($event, frameIndex, 2)">
         </ion-input>
       </ion-col>
     </ion-row>
-    <ion-row
-      *ngIf="
+    <ion-row *ngIf="
         (frames[frameIndex][0] !== undefined || frames[frameIndex][1] !== undefined || (i === 10 && frames[frameIndex][0] !== undefined)) &&
         isNumber(frameScores[i - 1])
       ">
       <ion-col class="middle count">{{ frameScores[i - 1] }}</ion-col>
     </ion-row>
-    <ion-row
-      *ngIf="
+    <ion-row *ngIf="
         !(
           (frames[frameIndex][0] !== undefined || frames[frameIndex][1] !== undefined || (i === 10 && frames[frameIndex][0] !== undefined)) &&
           isNumber(frameScores[i - 1])
@@ -67,12 +43,15 @@
     </ion-row>
   </ion-grid>
 </div>
-<ion-item>
-  <ion-icon name="document-text-outline" slot="start"></ion-icon>
-  <ion-textarea type="text" [(ngModel)]="note" name="note" [autoGrow]="true" placeholder="today knee pain, used Ion Pro Max"></ion-textarea>
-</ion-item>
-<ion-item>
-  <ion-checkbox [(ngModel)]="isPractice" name="isPractice" #checkbox>Practice</ion-checkbox>
-</ion-item>
-<!-- TODO make this reset on save-->
-<app-league-selector [isAddPage]="true" (leagueChanged)="onLeagueChanged($event)"></app-league-selector>
+<div style="margin: 0 5px;
+">
+  <ion-item style="border-radius: 7px;">
+    <ion-checkbox [(ngModel)]="isPractice" name="isPractice" #checkbox>Practice</ion-checkbox>
+  </ion-item>
+  <!-- TODO make this reset on save-->
+  <app-league-selector [isAddPage]="true" (leagueChanged)="onLeagueChanged($event)"></app-league-selector>
+  <ion-item style="border-radius: 7px;">
+    <ion-textarea label="Note" type="text" [(ngModel)]="note" name="note" [autoGrow]="true"
+      placeholder="today knee pain, used Ion Pro Max"></ion-textarea>
+  </ion-item>
+</div>

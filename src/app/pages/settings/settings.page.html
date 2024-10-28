@@ -7,27 +7,16 @@
 <ion-content [fullscreen]="true">
   <ion-item>
     <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-    <ion-input
-      class="ion-text-right"
-      label="Your name"
-      type="text"
-      [value]="username"
-      placeholder="{{username}}"
-      (ionChange)="username = $event.target.value!.toString()"
-      (ionChange)="changeName()"
-      style="margin-right: 21px">
+    <ion-input class="ion-text-right" label="Your name" type="text" [value]="username" placeholder="{{username}}"
+      (ionChange)="username = $event.target.value!.toString()" (ionChange)="changeName()" style="margin-right: 21px">
     </ion-input>
   </ion-item>
   <ion-item>
     <ion-icon name="color-palette-outline" slot="start"></ion-icon>
-    <ion-select
-      label="Color Theme"
-      interface="popover"
-      [(ngModel)]="currentColor"
-      [ngClass]="currentColor"
-      placeholder="{{currentColor}}"
-      (ionChange)="changeColor()">
-      <ion-select-option *ngFor="let color of optionsWithClasses; let i = index;" [value]="color.name" [ngClass]="color.class">
+    <ion-select label="Color Theme" interface="popover" [(ngModel)]="currentColor" [ngClass]="currentColor"
+      placeholder="{{currentColor}}" (ionChange)="changeColor()">
+      <ion-select-option *ngFor="let color of optionsWithClasses; let i = index;" [value]="color.name"
+        [ngClass]="color.class">
         {{ color.name }}
       </ion-select-option>
     </ion-select>
@@ -50,11 +39,11 @@
 
 <ion-modal trigger="feedback-modal" #feedback [keepContentsMounted]="true">
   <ng-template>
-    <ion-header>
+    <ion-header [translucent]="true">
       <ion-toolbar>
-        <ion-button (click)="feedback.dismiss()" slot="start" fill="clear" strong="true">
-          <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
-        </ion-button>
+        <ion-buttons slot="start">
+          <ion-button color="medium" (click)="feedback.dismiss()">Cancel</ion-button>
+        </ion-buttons>
         <ion-title>Feedback/Request</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -66,34 +55,19 @@
         <ion-card-content>
           <form #feedbackForm="ngForm" (ngSubmit)="submitFeedback(feedbackForm)">
             <ion-item>
-              <ion-input
-                label="Your email"
-                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}$"
-                labelPlacement="floating"
-                type="email"
-                placeholder="email@domain.com"
-                errorText="Invalid email address."
-                [(ngModel)]="userEmail"
-                name="userEmail"
-                required></ion-input>
+              <ion-input label="Your email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,4}$"
+                labelPlacement="floating" type="email" placeholder="email@domain.com" errorText="Invalid email address."
+                [(ngModel)]="userEmail" name="userEmail" required></ion-input>
             </ion-item>
 
             <ion-item>
-              <ion-textarea
-                maxlength="500"
-                counter="true"
-                label="Feedback"
-                labelPlacement="floating"
-                placeholder="Enter your feedback"
-                [(ngModel)]="feedbackMessage"
-                name="feedbackMessage"
-                [autoGrow]="true"
-                required
-                #feedbackInput="ngModel"
-                errorText="Feedback is required."></ion-textarea>
+              <ion-textarea maxlength="500" counter="true" label="Feedback" labelPlacement="floating"
+                placeholder="Enter your feedback" [(ngModel)]="feedbackMessage" name="feedbackMessage" [autoGrow]="true"
+                required #feedbackInput="ngModel" errorText="Feedback is required."></ion-textarea>
             </ion-item>
 
-            <ion-button expand="full" color="primary" type="submit" [disabled]="feedbackForm.invalid"> Submit Feedback </ion-button>
+            <ion-button expand="full" color="primary" type="submit" [disabled]="feedbackForm.invalid"> Submit Feedback
+            </ion-button>
           </form>
         </ion-card-content>
       </ion-card>

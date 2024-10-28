@@ -25,6 +25,7 @@ ion-grid {
 
 .actionSheet {
   margin-right: 8px;
+
   ion-button {
     background: none;
     --background-activated: none;
@@ -79,7 +80,6 @@ ion-row {
 
     .expansion-header {
       padding: 10px 0 0 0 !important;
-      background-color: black;
 
       .score {
         font-size: 0.875rem;

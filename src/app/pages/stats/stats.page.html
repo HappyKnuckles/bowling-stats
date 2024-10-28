@@ -28,9 +28,11 @@
   </ng-container>
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechange)="onSlideChanged()" [autoheight]="true">
+    <swiper-container [modules]="swiperModules" #swiper [slidesPerView]="1" (swiperslidechange)="onSlideChanged()" [autoheight]="true" style="      background: var(--ion-item-background);
+">
       <!-- Overall Segment -->
-      <swiper-slide class="tab">
+      <swiper-slide>
+        <div class="tab">
         <app-stat-display label="Games" [currentStat]="stats.totalGames" id="totalGames"></app-stat-display>
         <app-stat-display
           label="Perfect games"
@@ -103,21 +105,24 @@
           [toolTip]="'This is the probability of how likely you miss a spare if your first throw was not a strike.'"
           [isPercentage]="true"></app-stat-display>
         <canvas #scoreChart class="score" style="width: 300px; height: 300px"></canvas>
+        </div>
       </swiper-slide>
 
       <!-- Spares Segment -->
-      <swiper-slide class="tab">
+      <swiper-slide>
+        <div class="tab">
         <app-spare-display [stats]="stats" [prevStats]="prevStats" [id]="'1'"></app-spare-display>
         <canvas #pinChart class="spares" style="width: 300px; height: 300px"></canvas>
+        </div>
       </swiper-slide>
 
       <!-- Throws Segment -->
-      <swiper-slide class="tab">
+      <swiper-slide>
         <canvas #throwChart class="throws" style="width: 300px; height: 300px"></canvas>
       </swiper-slide>
 
       <swiper-slide>
-        <div class="date-picker">
+        <ion-item class="date-picker" lines="none">
           <ion-select
             label="Session date"
             toggleIcon="calendar-number-outline"
@@ -128,9 +133,10 @@
               {{ (unixDate | date:'dd.MM.yyyy') }}
             </ion-select-option>
           </ion-select>
-        </div>
+        </ion-item>
         <swiper-container [nested]="true" [modules]="swiperModules" #swipernest>
-          <swiper-slide class="tab">
+          <swiper-slide>
+            
             <app-stat-display label="Games" [currentStat]="sessionStats.totalGames"></app-stat-display>
             <app-stat-display
               label="Perfect games"
@@ -181,7 +187,7 @@
               [isPercentage]="true"></app-stat-display>
           </swiper-slide>
 
-          <swiper-slide class="tab">
+          <swiper-slide>
             <app-spare-display [stats]="sessionStats" [id]="'2'"></app-spare-display>
           </swiper-slide>
         </swiper-container>

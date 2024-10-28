@@ -1,5 +1,5 @@
 .tab {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 canvas {
@@ -16,10 +16,11 @@ canvas {
 
 .date-picker {
   font-size: 1.1rem;
-  padding: 5px 15px 0 20px;
+  padding-left: 4px;
   box-shadow: 0px 0px 3px 0px;
   border-radius: 0 0 3px 3px;
-
+  margin-bottom: 10px;
+  
   ion-select::part(text) {
     font-weight: 500;
   }

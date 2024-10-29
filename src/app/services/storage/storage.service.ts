@@ -19,14 +19,6 @@ export class StorageService {
     await this.storage.create();
   }
 
-  private async save(key: string, data: any) {
-    await this.storage.set(key, data);
-  }
-
-  private async delete(key: string) {
-    await this.storage.remove(key);
-  }
-
   async addLeague(key: string, data: any) {
     await this.save(key, data);
     this.newLeagueAdded.emit();
@@ -65,20 +57,11 @@ export class StorageService {
     this.gameDeleted.emit();
   }
 
-  async loadData<T>(prefix: string): Promise<T[]> {
-    const data: T[] = [];
-    await this.storage.forEach((value: T, key: string) => {
-      if (key.startsWith(prefix)) {
-        data.push(value);
-      }
-    });
-    return data;
-  }
-
   async loadLeagues(): Promise<string[]> {
     const leagues = await this.loadData<string>('league');
     return leagues.reverse();
   }
+
   async loadGameHistory(): Promise<Game[]> {
     const gameHistory = await this.loadData<Game>('game');
 
@@ -103,6 +86,24 @@ export class StorageService {
     this.sortGameHistoryByDate(gameHistory);
 
     return gameHistory;
+  }
+
+  private async loadData<T>(prefix: string): Promise<T[]> {
+    const data: T[] = [];
+    await this.storage.forEach((value: T, key: string) => {
+      if (key.startsWith(prefix)) {
+        data.push(value);
+      }
+    });
+    return data;
+  }
+
+  private async save(key: string, data: any) {
+    await this.storage.set(key, data);
+  }
+
+  private async delete(key: string) {
+    await this.storage.remove(key);
   }
 
   private sortGameHistoryByDate(gameHistory: Game[]): void {

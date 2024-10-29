@@ -23,7 +23,10 @@ import { LeagueSelectorComponent } from '../league-selector/league-selector.comp
 export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();
   @Output() totalScoreChanged = new EventEmitter<number>();
+  @Output() leagueChanged = new EventEmitter<string>();
+  @Output() isPracticeChanged = new EventEmitter<boolean>();
   @ViewChildren(IonInput) inputs!: QueryList<IonInput>;
+  @ViewChild('leagueSelector') leagueSelector!: LeagueSelectorComponent;
   @ViewChild('checkbox') checkbox!: IonCheckbox;
   totalScore: number = 0;
   maxScore: number = 300;
@@ -61,6 +64,7 @@ export class TrackGridComponent implements OnInit {
       this.checkbox.checked = false;
       this.checkbox.disabled = true;
     }
+    this.leagueChanged.emit(this.selectedLeague);
   }
 
   simulateScore(event: any, frameIndex: number, inputIndex: number): void {
@@ -139,9 +143,9 @@ export class TrackGridComponent implements OnInit {
     this.inputs.forEach((input) => {
       input.value = '';
     });
-    this.isPractice = false;
     this.note = '';
     this.selectedLeague = '';
+    this.leagueSelector.selectedLeague = '';
     this.frames = this.bowlingService.frames;
     this.frameScores = this.bowlingService.frameScores;
     this.maxScore = this.bowlingService.maxScore;

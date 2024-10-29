@@ -54,7 +54,9 @@
       <swiper-slide *ngFor="let trackIndex of trackIndexes[i]; let j = index">
         <app-track-grid
           (maxScoreChanged)="onMaxScoreChanged($event, trackIndex)"
-          (totalScoreChanged)="onTotalScoreChange($event, trackIndex)"></app-track-grid>
+          (totalScoreChanged)="onTotalScoreChange($event, trackIndex)"
+          (leagueChanged)="onLeagueChange($event)"
+          (isPracticeChanged)="onisPracticeChange($event)"></app-track-grid>
         <ion-grid *ngIf="i !== 0">
           <ion-row>
             <ion-col class="middle count">Total: {{ totalScores[trackIndex] }}</ion-col>
@@ -112,7 +114,7 @@
           </ion-toolbar>
         </ion-header>
         <ion-content>
-          <h2 class="ion-text-center">Passe hier falsche Spieldaten an</h2>
+          <h2 class="ion-text-center">Edit wrong game data</h2>
           <div class="grid-container">
             <ion-grid fixed="true" *ngFor="let frame of gameData.frames; let frameIndex = index;">
               <ion-row>
@@ -176,16 +178,22 @@
             </ion-grid>
           </div>
           <ion-item>
-            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            <ion-checkbox (ionChange)="gameData.isPractice = $event.target.checked" name="isPractice">Practice</ion-checkbox>
+          </ion-item>
+          <ion-item class="league">
+            <ion-select name="league" (ionChange)="gameData.league = $event.target.value" label="League/Tournament" value="">
+              <ion-select-option value="">None</ion-select-option>
+              <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
             <ion-textarea
               type="text"
+              label="Note"
               (ionChange)="gameData.note = $event.target.value || ''"
               name="note"
               [autoGrow]="true"
               placeholder="today knee pain, used Ion Pro Max"></ion-textarea>
-          </ion-item>
-          <ion-item>
-            <ion-checkbox (ionChange)="gameData.isPractice = $event.target.checked" name="isPractice">Practice</ion-checkbox>
           </ion-item>
         </ion-content>
       </ng-template>

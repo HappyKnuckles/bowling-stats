@@ -18,7 +18,7 @@ import {
   IonTextarea,
   IonText,
   IonModal,
-  IonButtons
+  IonButtons,
 } from '@ionic/angular/standalone';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -37,7 +37,8 @@ import { LeagueSelectorComponent } from '../../components/league-selector/league
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
   standalone: true,
-  imports: [IonButtons,
+  imports: [
+    IonButtons,
     IonModal,
     IonText,
     IonTextarea,

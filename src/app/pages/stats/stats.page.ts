@@ -297,11 +297,13 @@ export class StatsPage implements OnInit, OnDestroy {
       }
     }
   }
+
   private sortGameHistoryByDate(gameHistory: Game[]): void {
     gameHistory.sort((a: { date: number }, b: { date: number }) => {
       return a.date - b.date;
     });
   }
+
   private async loadGameHistory() {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();

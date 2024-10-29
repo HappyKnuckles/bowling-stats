@@ -104,8 +104,8 @@ export class HistoryPage implements OnInit, OnDestroy {
   filterGameLength: number = 0;
   arrayBuffer: any;
   file!: File;
-  private newDataAddedSubscription!: Subscription;
-  private dataDeletedSubscription!: Subscription;
+  private gameAddedSubscription!: Subscription;
+  private gameDeletedSubscription!: Subscription;
   private filteredGamesSubscription!: Subscription;
   private loadingSubscription: Subscription;
   private newLeagueSubscription!: Subscription;
@@ -171,8 +171,9 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.newDataAddedSubscription.unsubscribe();
-    this.dataDeletedSubscription.unsubscribe();
+    this.gameAddedSubscription.unsubscribe();
+    this.gameDeletedSubscription.unsubscribe();
+    this.newLeagueSubscription.unsubscribe();
     this.loadingSubscription.unsubscribe();
     this.filteredGamesSubscription.unsubscribe();
   }
@@ -488,6 +489,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
     }
   }
+
   loadMoreGames(event: any): void {
     const nextPage = this.filteredGameHistory.length + 15;
 
@@ -498,7 +500,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.storageService.newGameAdded.subscribe(() => {
+    this.gameAddedSubscription = this.storageService.newGameAdded.subscribe(() => {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
@@ -508,7 +510,7 @@ export class HistoryPage implements OnInit, OnDestroy {
         });
     });
 
-    this.dataDeletedSubscription = this.storageService.gameDeleted.subscribe(() => {
+    this.gameDeletedSubscription = this.storageService.gameDeleted.subscribe(() => {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);

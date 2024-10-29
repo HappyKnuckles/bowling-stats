@@ -22,7 +22,7 @@ import {
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Game } from 'src/app/models/game-model';
 import { addIcons } from 'ionicons';
-import { add, chevronDown, chevronUp, cameraOutline, documentTextOutline } from 'ionicons/icons';
+import { add, chevronDown, chevronUp, cameraOutline, documentTextOutline, medalOutline } from 'ionicons/icons';
 import { NgIf, NgFor } from '@angular/common';
 import { ImpactStyle } from '@capacitor/haptics';
 import { TrackGridComponent } from 'src/app/components/track-grid/track-grid.component';
@@ -86,6 +86,7 @@ export class AddGamePage implements OnInit {
   username = '';
   gameData!: Game;
   deviceId: string = '';
+  leagues: string[] = [];
   private allowedDeviceIds = [
     '820fabe8-d29b-45c2-89b3-6bcc0e149f2b',
     '21330a3a-9cff-41ce-981a-00208c21d883',
@@ -122,7 +123,7 @@ export class AddGamePage implements OnInit {
     private adService: AdService,
     private hapticService: HapticService
   ) {
-    addIcons({ cameraOutline, chevronDown, chevronUp, documentTextOutline, add });
+    addIcons({ cameraOutline, chevronDown, chevronUp, medalOutline, documentTextOutline, add });
   }
 
   async ngOnInit(): Promise<void> {
@@ -130,6 +131,7 @@ export class AddGamePage implements OnInit {
       this.username = username;
     });
     this.deviceId = (await Device.getId()).identifier;
+    this.leagues = await this.storageService.loadLeagues();
   }
 
   async handleImageUpload(): Promise<void> {
@@ -162,6 +164,19 @@ export class AddGamePage implements OnInit {
 
   cancel(): void {
     this.modal.dismiss(null, 'cancel');
+  }
+
+  onLeagueChange(league: string): void {
+    this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
+      trackGrid.leagueSelector.selectedLeague = league;
+      trackGrid.selectedLeague = league;
+    });
+  }
+
+  onisPracticeChange(isPractice: boolean): void {
+    this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
+      trackGrid.isPractice = isPractice;
+    });
   }
 
   confirm(): void {

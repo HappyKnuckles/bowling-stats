@@ -39,6 +39,10 @@ swiper-slide {
   height: auto;
 }
 
+ion-input {
+  --highlight-color-focused: var(--ion-input-color) !important;
+}
+
 .no-game-text {
   width: 60%;
   display: flex;

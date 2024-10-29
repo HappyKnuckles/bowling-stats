@@ -79,7 +79,7 @@ ion-row {
     background-color: transparent;
 
     .expansion-header {
-      padding: 10px 0 0 0 !important;
+      margin-top: 8px;
 
       .score {
         font-size: 0.875rem;
@@ -88,16 +88,13 @@ ion-row {
       .title {
         font-weight: 600;
         font-size: 1.1rem;
-
-        &:first-child {
-          margin-top: 10px;
-        }
       }
 
       .game-info {
         display: flex;
         flex-direction: column;
         margin-left: 20px;
+        padding: 4px 0;
       }
 
       ::ng-deep .ion-accordion-toggle-icon {

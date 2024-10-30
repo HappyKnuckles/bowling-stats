@@ -178,6 +178,9 @@ export class BowlingCalculatorService {
     if (index === 2) {
       return maxScores[4] + maxScores[5] + maxScores[6] + maxScores[7];
     }
+    if (index === 3) {
+      return maxScores[8] + maxScores[9] + maxScores[10] + maxScores[11] + maxScores[12];
+    }
     return 900;
   }
 
@@ -187,6 +190,9 @@ export class BowlingCalculatorService {
     }
     if (index === 2) {
       return totalScores[4] + totalScores[5] + totalScores[6] + totalScores[7];
+    }
+    if (index === 3) {
+      return totalScores[8] + totalScores[9] + totalScores[10] + totalScores[11] + totalScores[12];
     }
     return 0;
   }

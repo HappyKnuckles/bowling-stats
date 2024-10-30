@@ -13,15 +13,9 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  @if(selectedMode === '3 Series'){
+  @if(selectedMode !== 'Single'){
   <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChanged($event)">
-    <ion-segment-button *ngFor="let segment of segments3" [value]="segment">
-      <ion-label class="segmentLabel">{{segment}}</ion-label>
-    </ion-segment-button>
-  </ion-segment>
-  } @if(selectedMode === '4 Series'){
-  <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChanged($event)">
-    <ion-segment-button *ngFor="let segment of segments4" [value]="segment">
+    <ion-segment-button *ngFor="let segment of segments" [value]="segment">
       <ion-label class="segmentLabel">{{segment}}</ion-label>
     </ion-segment-button>
   </ion-segment>

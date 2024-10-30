@@ -74,10 +74,10 @@ export class AddGamePage implements OnInit {
   swiperModules = [IonicSlides];
   totalScores: number[] = new Array(8).fill(0);
   maxScores: number[] = new Array(8).fill(300);
-  seriesMode: boolean[] = [true, false, false];
+  seriesMode: boolean[] = [true, false, false, false];
   seriesId: string = '';
   selectedMode: SeriesMode = SeriesMode.Single;
-  trackIndexes: number[][] = [[0], [1, 2, 3], [4, 5, 6, 7]];
+  trackIndexes: number[][] = [[0], [1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11, 12]];
   sheetOpen: boolean = false;
   isAlertOpen: boolean = false;
   alertButton = ['Dismiss'];
@@ -108,8 +108,19 @@ export class AddGamePage implements OnInit {
   }
   private swiperInstance: Swiper | undefined;
   selectedSegment: string = 'Game 1';
-  segments3: string[] = ['Game 1', 'Game 2', 'Game 3'];
-  segments4: string[] = ['Game 1', 'Game 2', 'Game 3', 'Game 4'];
+  segments: string[] = ['Game 1'];
+  updateSegments(): void {
+    if (this.selectedMode === SeriesMode.Series3) {
+      this.segments = ['Game 1', 'Game 2', 'Game 3'];
+    } else if (this.selectedMode === SeriesMode.Series4) {
+      this.segments = ['Game 1', 'Game 2', 'Game 3', 'Game 4'];
+    } else if (this.selectedMode === SeriesMode.Series5) {
+      this.segments = ['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5'];
+    } else {
+      this.segments = ['Game 1'];
+    }
+    this.selectedSegment = this.segments[0];
+  }
   constructor(
     private actionSheetCtrl: ActionSheetController,
     private imageProcessingService: ImageProcesserService,
@@ -170,6 +181,15 @@ export class AddGamePage implements OnInit {
     this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
       trackGrid.leagueSelector.selectedLeague = league;
       trackGrid.selectedLeague = league;
+      if (league === '' || league === 'New') {
+        trackGrid.isPractice = true;
+        trackGrid.checkbox.checked = true;
+        trackGrid.checkbox.disabled = false;
+      } else {
+        trackGrid.isPractice = false;
+        trackGrid.checkbox.checked = false;
+        trackGrid.checkbox.disabled = true;
+      }
     });
   }
 
@@ -287,6 +307,7 @@ export class AddGamePage implements OnInit {
         // }
         this.hapticService.vibrate(ImpactStyle.Medium, 200);
         this.toastService.showToast('Game saved successfully.', 'add');
+        this.swiperInstance?.slideTo(0);
       } catch (error) {
         this.toastService.showToast('Oops, something went wrong.', 'bug', true);
       }
@@ -329,17 +350,12 @@ export class AddGamePage implements OnInit {
   }
 
   private getSlideIndex(segment: string): number {
-    let index = 0;
-    if (this.selectedMode === SeriesMode.Series3) {
-      index = this.segments3.indexOf(segment);
-    } else index = this.segments4.indexOf(segment);
+    const index = this.segments.indexOf(segment);
     return index !== -1 ? index : 0;
   }
 
   private getSegmentValue(index: number): string {
-    if (this.selectedMode === SeriesMode.Series3) {
-      return this.segments3[index] || 'Game 1';
-    } else return this.segments4[index] || 'Game 1';
+    return this.segments[index] || 'Game 1';
   }
 
   async presentActionSheet(): Promise<void> {
@@ -353,6 +369,7 @@ export class AddGamePage implements OnInit {
           this.seriesMode[0] = true;
           this.seriesMode[1] = false;
           this.seriesMode[2] = false;
+          this.seriesMode[3] = false;
           this.selectedMode = SeriesMode.Single;
         },
       });
@@ -365,6 +382,7 @@ export class AddGamePage implements OnInit {
           this.seriesMode[0] = false;
           this.seriesMode[1] = true;
           this.seriesMode[2] = false;
+          this.seriesMode[3] = false;
           this.selectedMode = SeriesMode.Series3;
         },
       });
@@ -377,7 +395,21 @@ export class AddGamePage implements OnInit {
           this.seriesMode[0] = false;
           this.seriesMode[1] = false;
           this.seriesMode[2] = true;
+          this.seriesMode[3] = false;
           this.selectedMode = SeriesMode.Series4;
+        },
+      });
+    }
+
+    if (!this.seriesMode[3]) {
+      buttons.push({
+        text: SeriesMode.Series5,
+        handler: () => {
+          this.seriesMode[0] = false;
+          this.seriesMode[1] = false;
+          this.seriesMode[2] = false;
+          this.seriesMode[3] = true;
+          this.selectedMode = SeriesMode.Series5;
         },
       });
     }
@@ -395,6 +427,7 @@ export class AddGamePage implements OnInit {
     actionSheet.onWillDismiss().then(() => {
       this.swiperInstance?.slideTo(0);
       this.sheetOpen = false;
+      this.updateSegments();
     });
 
     await actionSheet.present();

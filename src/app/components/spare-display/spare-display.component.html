@@ -26,7 +26,7 @@
     </ion-col>
     <ion-col *ngIf="stats.pinCounts[i] === 0 && stats.missedCounts[i] === 0"></ion-col>
     @if (stats.pinCounts[i] !== 0 || stats.missedCounts[i] !== 0) {
-    <ion-col id="spareRates{{ i }}" [ngStyle]="{ color: getRateColor(stats.spareRates[i]) }">
+    <ion-col [id]="id! + i" [ngStyle]="{ color: getRateColor(stats.spareRates[i]) }">
       <ion-text class="spare-rates-content"
         >{{ stats.spareRates[i] | number : "1.2-2" }}% @if (prevStats && getArrowIcon(stats.spareRates[i], prevStats.spareRates[i])) {
         <ion-icon
@@ -37,7 +37,7 @@
         >}
       </ion-text>
       @if (prevStats && getStatDifference(stats.spareRates[i], prevStats.spareRates[i]) !== '0') {
-      <ion-popover class="diffPopover" trigger="spareRates{{ i }}">
+      <ion-popover class="diffPopover" [trigger]="id! + i">
         <ion-text [color]="getDiffColor(stats.spareRates[i], prevStats.spareRates[i])">
           {{ getStatDifference(stats.spareRates[i], prevStats.spareRates[i]) }}
         </ion-text> </ion-popover

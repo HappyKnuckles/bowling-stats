@@ -212,7 +212,7 @@ export class TrackGridComponent implements OnInit {
 
   private isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number): boolean {
     if (inputIndex === 1) {
-      if (!this.bowlingService.frames[frameIndex][0]) {
+      if (this.bowlingService.frames[frameIndex][0] === undefined) {
         return false;
       }
     }

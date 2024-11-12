@@ -504,6 +504,8 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
+        }).then(() => {
+          this.sortGameHistoryByDate(this.gameHistory);
         })
         .catch((error) => {
           console.error('Error loading game history:', error);
@@ -514,6 +516,8 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
+        }).then(() => {
+          this.sortGameHistoryByDate(this.gameHistory);
         })
         .catch((error) => {
           console.error('Error loading game history:', error);
@@ -522,6 +526,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
       this.gameLength = games;
+      this.sortGameHistoryByDate(this.gameLength);
       this.filterGameLength = this.gameLength.length;
       this.filteredGameHistory = this.gameLength.slice(0, 20);
       this.activeFilterCount = this.filterService.activeFilterCount;
@@ -531,6 +536,12 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.storageService.loadLeagues().then((leagues) => {
         this.leagues = leagues;
       });
+    });
+  }
+
+  private sortGameHistoryByDate(gameHistory: Game[]): void {
+    gameHistory.sort((a: { date: number }, b: { date: number }) => {
+      return b.date - a.date;
     });
   }
 

@@ -54,7 +54,6 @@ export class StatDisplayComponent implements OnChanges {
   }
 
   private calculateStatDifference(currentValue: number, previousValue: number): string {
-    console.log(this.label, previousValue, currentValue);
     if (previousValue === undefined) {
       return '0';
     }

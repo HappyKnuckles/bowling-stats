@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Filter } from 'src/app/models/filter-model';
+import { Filter, TimeRange } from 'src/app/models/filter-model';
 import { Game } from 'src/app/models/game-model';
 import { BehaviorSubject } from 'rxjs';
 
@@ -15,6 +15,7 @@ export class FilterService {
     isClean: false,
     isPerfect: false,
     league: 'all',
+    timeRange: TimeRange.ALL,
     startDate: '',
     endDate: '',
   };

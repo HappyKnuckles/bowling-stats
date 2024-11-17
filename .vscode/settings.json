@@ -3,5 +3,9 @@
     "@ionic/angular/common",
     "@ionic/angular/standalone"
   ],
-  "jira-plugin.workingProject": ""
+  "jira-plugin.workingProject": "",
+  "cSpell.words": [
+    "ionicons"
+  ],
+  "cSpell.enabled": false
 }

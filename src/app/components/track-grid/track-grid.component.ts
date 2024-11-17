@@ -3,7 +3,7 @@ import { BowlingCalculatorService } from 'src/app/services/bowling-calculator/bo
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { GameDataTransformerService } from 'src/app/services/transform-game/transform-game-data.service';
 import { NgFor, NgIf } from '@angular/common';
-import { IonGrid, IonRow, IonCol, IonInput, IonItem, IonTextarea, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
+import { IonGrid, IonRow, IonCol, IonInput, IonItem, IonTextarea, IonCheckbox } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { ImpactStyle } from '@capacitor/haptics';
@@ -18,7 +18,7 @@ import { LeagueSelectorComponent } from '../league-selector/league-selector.comp
   styleUrls: ['./track-grid.component.scss'],
   providers: [BowlingCalculatorService],
   standalone: true,
-  imports: [IonCheckbox, IonIcon, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor, LeagueSelectorComponent],
+  imports: [IonCheckbox, IonItem, IonTextarea, IonGrid, IonRow, IonCol, IonInput, FormsModule, NgIf, NgFor, LeagueSelectorComponent],
 })
 export class TrackGridComponent implements OnInit {
   @Output() maxScoreChanged = new EventEmitter<number>();

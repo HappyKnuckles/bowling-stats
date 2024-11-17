@@ -1,4 +1,4 @@
-import { NgIf, NgStyle } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { IonText, IonIcon } from '@ionic/angular/standalone';
 import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-number.pipe';
@@ -11,7 +11,7 @@ import { informationCircleOutline } from 'ionicons/icons';
   styleUrls: ['./stat-display.component.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [NgIf, IonText, NgStyle, IonIcon, ConditionalNumberPipe],
+  imports: [NgIf, IonText, IonIcon, ConditionalNumberPipe],
 })
 export class StatDisplayComponent implements OnChanges {
   @Input({ required: true }) label!: string;

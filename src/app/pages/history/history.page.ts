@@ -504,7 +504,8 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
-        }).then(() => {
+        })
+        .then(() => {
           this.sortGameHistoryByDate(this.gameHistory);
         })
         .catch((error) => {
@@ -516,7 +517,8 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.loadGameHistory()
         .then(() => {
           this.filterService.filterGames(this.gameHistory);
-        }).then(() => {
+        })
+        .then(() => {
           this.sortGameHistoryByDate(this.gameHistory);
         })
         .catch((error) => {

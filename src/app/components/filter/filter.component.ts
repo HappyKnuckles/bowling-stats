@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import {
@@ -7,25 +7,22 @@ import {
   IonHeader,
   IonTitle,
   IonButtons,
-  IonBackButton,
   IonToolbar,
-  IonCheckbox,
   IonItem,
   IonButton,
-  IonRange,
   IonInput,
   IonLabel,
   IonDatetimeButton,
   IonDatetime,
   IonModal,
   IonToggle,
-  IonNote,
   IonFooter,
   IonSelectOption,
   IonSelect,
+  IonList,
 } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
-import { Filter } from 'src/app/models/filter-model';
+import { Filter, TimeRange } from 'src/app/models/filter-model';
 import { Game } from 'src/app/models/game-model';
 import { FilterService } from 'src/app/services/filter/filter.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
@@ -36,30 +33,28 @@ import { StorageService } from 'src/app/services/storage/storage.service';
   styleUrls: ['./filter.component.scss'],
   standalone: true,
   imports: [
+    IonList,
     IonFooter,
-    IonNote,
     IonToggle,
     IonModal,
     IonDatetime,
     IonDatetimeButton,
     IonLabel,
     IonInput,
-    IonRange,
     IonButton,
     IonItem,
-    IonCheckbox,
     IonContent,
     IonHeader,
     IonTitle,
     IonToolbar,
     IonButtons,
     IonSelect,
-    IonBackButton,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
     IonSelectOption,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class FilterComponent implements OnInit, OnDestroy {
   @Input({ required: true }) games!: Game[];
@@ -86,6 +81,34 @@ export class FilterComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.filterSubscription.unsubscribe();
     this.newLeagueSubscription.unsubscribe();
+  }
+
+  startDateChange(event: CustomEvent) {
+    const now = new Date(Date.now());
+    switch (event.detail.value) {
+      case TimeRange.TODAY:
+        this.filters.startDate = new Date(now.setHours(0, 0, 0, 0)).toISOString();
+        break;
+      case TimeRange.WEEK:
+        this.filters.startDate = new Date(now.setDate(now.getDate() - 7)).toISOString();
+        break;
+      case TimeRange.MONTH:
+        this.filters.startDate = new Date(now.setMonth(now.getMonth() - 1)).toISOString();
+        break;
+      case TimeRange.QUARTER:
+        this.filters.startDate = new Date(now.setMonth(now.getMonth() - 3)).toISOString();
+        break;
+      case TimeRange.HALF:
+        this.filters.startDate = new Date(now.setMonth(now.getMonth() - 6)).toISOString();
+        break;
+      case TimeRange.YEAR:
+        this.filters.startDate = new Date(now.setFullYear(now.getFullYear() - 1)).toISOString();
+        break;
+      case TimeRange.ALL:
+      default:
+        this.filters.startDate = this.defaultFilters.startDate;
+        break;
+    }
   }
 
   cancel() {

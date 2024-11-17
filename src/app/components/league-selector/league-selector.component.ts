@@ -1,7 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonSelect, IonInput, IonButton, IonSelectOption, IonItem, IonIcon, IonLabel } from '@ionic/angular/standalone';
+import { IonSelect, IonInput, IonButton, IonSelectOption, IonItem, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addOutline, medalOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { ToastService } from 'src/app/services/toast/toast.service';
   selector: 'app-league-selector',
   templateUrl: './league-selector.component.html',
   styleUrls: ['./league-selector.component.scss'],
-  imports: [IonLabel, IonIcon, IonItem, IonButton, IonInput, IonSelect, NgIf, NgFor, FormsModule, ReactiveFormsModule, IonSelectOption],
+  imports: [IonIcon, IonItem, IonButton, IonInput, IonSelect, NgIf, NgFor, FormsModule, ReactiveFormsModule, IonSelectOption],
   standalone: true,
 })
 export class LeagueSelectorComponent implements OnInit, OnDestroy {

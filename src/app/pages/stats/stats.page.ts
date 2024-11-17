@@ -14,7 +14,7 @@ import {
   IonSelect,
   IonSelectOption,
 } from '@ionic/angular/standalone';
-import { NgIf, NgFor, NgStyle, DecimalPipe, DatePipe } from '@angular/common';
+import { NgIf, NgFor, DecimalPipe, DatePipe } from '@angular/common';
 import { ImpactStyle } from '@capacitor/haptics';
 import { Game } from 'src/app/models/game-model';
 import { GameStatsService } from 'src/app/services/game-stats/game-stats.service';
@@ -55,10 +55,8 @@ import { FilterService } from 'src/app/services/filter/filter.service';
     IonText,
     NgIf,
     NgFor,
-    NgStyle,
     FormsModule,
     DatePipe,
-    DecimalPipe,
     StatDisplayComponent,
     SpareDisplayComponent,
   ],

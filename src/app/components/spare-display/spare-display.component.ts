@@ -2,7 +2,6 @@ import { CommonModule, NgIf, NgStyle } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
 import { IonText, IonCol, IonRow, IonIcon, IonGrid } from '@ionic/angular/standalone';
 import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
-import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-number.pipe';
 import { addIcons } from 'ionicons';
 import { informationCircleOutline } from 'ionicons/icons';
 
@@ -12,7 +11,7 @@ import { informationCircleOutline } from 'ionicons/icons';
   styleUrls: ['./spare-display.component.scss'],
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [IonText, IonCol, IonRow, IonIcon, IonGrid, NgIf, NgStyle, ConditionalNumberPipe, CommonModule],
+  imports: [IonText, IonCol, IonRow, IonIcon, IonGrid, NgIf, NgStyle, CommonModule],
 })
 export class SpareDisplayComponent {
   @Input({ required: true }) stats!: Stats | SessionStats;

@@ -294,7 +294,9 @@ export class AddGamePage implements OnInit {
           if (trackGrid.totalScore === 300) {
             perfectGame = true;
           }
-          trackGrid.saveGameToLocalStorage(isSeries, this.seriesId);
+          setTimeout(() => {
+            trackGrid.saveGameToLocalStorage(isSeries, this.seriesId);
+          }, 5);
         });
         if (perfectGame) {
           this.is300 = true;

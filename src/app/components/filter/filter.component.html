@@ -9,64 +9,108 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content style="--padding-top: 15px">
-  <ion-item>
-    <ion-note slot="start">Score Range</ion-note>
-    <ion-input class="ion-text-center" [(ngModel)]="filters.minScore" name="minScore" clearOnEdit="true" inputmode="numeric"></ion-input>
-    <ion-label class="ion-text-center" style="margin-inline-end: 8px">-</ion-label>
-    <ion-input class="ion-text-center" [(ngModel)]="filters.maxScore" name="maxScore" clearOnEdit="true" inputmode="numeric"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-note slot="start">Time Range</ion-note>
-    <ion-datetime-button datetime="datetime-min"></ion-datetime-button>
-    <ion-label class="ion-text-center" style="margin: 0">-</ion-label>
-    <ion-datetime-button datetime="datetime-max"></ion-datetime-button>
-  </ion-item>
-  <ion-modal [keepContentsMounted]="true">
-    <ng-template>
-      <ion-datetime
-        id="datetime-min"
-        locale="en-US"
-        display-format="MM/DD/YYYY"
-        [(ngModel)]="filters.startDate"
-        name="startDate"
-        [highlightedDates]="highlightedDates"
-        (ionChange)="updateStart($event)"
-        presentation="date"
-        [min]="defaultFilters.startDate"
-        [max]="filters.endDate"></ion-datetime>
-    </ng-template>
-  </ion-modal>
-  <ion-modal [keepContentsMounted]="true">
-    <ng-template>
-      <ion-datetime
-        id="datetime-max"
-        locale="en-US"
-        display-format="MM/DD/YYYY"
-        [(ngModel)]="filters.endDate"
-        name="endDate"
-        [highlightedDates]="highlightedDates"
-        (ionChange)="updateEnd($event)"
-        presentation="date"
-        [min]="filters.startDate"></ion-datetime>
-    </ng-template>
-  </ion-modal>
-  <ion-item>
-    <ion-toggle [(ngModel)]="filters.excludePractice" name="isPractice">Exclude practice games</ion-toggle>
-  </ion-item>
-  <ion-item>
-    <ion-toggle [(ngModel)]="filters.isPerfect" name="isPerfect">Only perfect games</ion-toggle>
-  </ion-item>
-  <ion-item>
-    <ion-toggle [(ngModel)]="filters.isClean" name="isClean">Only clean games</ion-toggle>
-  </ion-item>
-  <ion-item>
-    <ion-select name="league" [(ngModel)]="filters.league" label="League" [value]="filters.league">
-      <ion-select-option value="all">All</ion-select-option>
-      <ion-select-option value="">None</ion-select-option>
-      <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
-    </ion-select>
-  </ion-item>
+<ion-content>
+  <ion-list style="padding-top: 10px">
+    <ion-item>
+      <ion-input
+        class="ion-text-center"
+        [(ngModel)]="filters.minScore"
+        name="minScore"
+        clearOnEdit="true"
+        inputmode="numeric"
+        label="Score range"></ion-input>
+      <!-- <ion-label class="ion-text-center" style="margin-inline-end: 8px">-</ion-label> -->
+      <ion-input
+        label="-"
+        class="ion-text-center"
+        style="width: 60%"
+        [(ngModel)]="filters.maxScore"
+        name="maxScore"
+        clearOnEdit="true"
+        inputmode="numeric"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-select
+        name="timeRange"
+        label="Time Range"
+        (ionChange)="startDateChange($event)"
+        [(ngModel)]="filters.timeRange"
+        [value]="filters.timeRange">
+        <ion-select-option [value]="0">Today</ion-select-option>
+        <ion-select-option [value]="1">Last week</ion-select-option>
+        <ion-select-option [value]="2">Last month</ion-select-option>
+        <ion-select-option [value]="3">Last 3 months</ion-select-option>
+        <ion-select-option [value]="4">Last 6 months</ion-select-option>
+        <ion-select-option [value]="5">Last year</ion-select-option>
+        <ion-select-option [value]="6">All time</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label style="flex: 2">Advanced time range</ion-label>
+      <ion-datetime-button datetime="datetime-min"></ion-datetime-button>
+      <ion-label class="ion-text-center" style="margin: 0">-</ion-label>
+      <ion-datetime-button datetime="datetime-max"></ion-datetime-button>
+    </ion-item>
+
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime
+          id="datetime-min"
+          locale="de-DE"
+          [formatOptions]="{
+            date: {
+              month: '2-digit',
+              day: '2-digit',
+              year: 'numeric'
+            }
+          }"
+          [(ngModel)]="filters.startDate"
+          name="startDate"
+          [highlightedDates]="highlightedDates"
+          (ionChange)="updateStart($event)"
+          presentation="date"
+          [min]="defaultFilters.startDate"
+          [max]="filters.endDate"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime
+          id="datetime-max"
+          locale="de-DE"
+          [formatOptions]="{
+            date: {
+              month: '2-digit',
+              day: '2-digit',
+              year: 'numeric'
+            }
+          }"
+          [(ngModel)]="filters.endDate"
+          name="endDate"
+          [highlightedDates]="highlightedDates"
+          (ionChange)="updateEnd($event)"
+          presentation="date"
+          [min]="filters.startDate"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+    <ion-item>
+      <ion-toggle [(ngModel)]="filters.excludePractice" name="isPractice">Exclude practice games</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-toggle [(ngModel)]="filters.isPerfect" name="isPerfect">Only perfect games</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-toggle [(ngModel)]="filters.isClean" name="isClean">Only clean games</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-select name="league" [(ngModel)]="filters.league" label="League" [value]="filters.league">
+        <ion-select-option value="all">All</ion-select-option>
+        <ion-select-option value="">None</ion-select-option>
+        <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
+      </ion-select>
+    </ion-item></ion-list
+  >
 </ion-content>
 <ion-footer style="display: flex" class="ion-justify-content-center">
   <ion-button class="confirmBtn" (click)="confirm()">Confirm</ion-button>

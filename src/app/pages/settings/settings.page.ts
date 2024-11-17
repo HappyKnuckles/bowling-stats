@@ -16,7 +16,6 @@ import {
   IonLabel,
   IonButton,
   IonTextarea,
-  IonText,
   IonModal,
   IonButtons,
 } from '@ionic/angular/standalone';
@@ -40,7 +39,6 @@ import { LeagueSelectorComponent } from '../../components/league-selector/league
   imports: [
     IonButtons,
     IonModal,
-    IonText,
     IonTextarea,
     IonButton,
     IonLabel,

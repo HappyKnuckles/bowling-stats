@@ -238,7 +238,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
       await this.loadDataAndCalculateStats(true);
-      this.generateCharts();
+      this.generateCharts(undefined, true);
     } catch (error) {
       console.error(error);
     } finally {
@@ -329,14 +329,14 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   // TODO if filtergamedlength was 0, the charts dont load until restart
-  private generateCharts(index?: number) {
+  private generateCharts(index?: number, isReload?: boolean): void {
     if (this.gameHistory.length > 0 && (index === undefined || this.statsValueChanged[index])) {
       if (this.selectedSegment === 'Overall') {
-        this.generateScoreChart();
+        this.generateScoreChart(isReload);
       } else if (this.selectedSegment === 'Spares') {
-        this.generatePinChart();
+        this.generatePinChart(isReload);
       } else if (this.selectedSegment === 'Throws') {
-        this.generateThrowChart();
+        this.generateThrowChart(isReload);
       }
 
       if (index !== undefined) {
@@ -451,7 +451,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.gameHistoryChanged = true;
       this.loadDataAndCalculateStats()
         .then(() => {
-          this.generateCharts();
+          this.generateCharts(undefined, true);
           this.statsValueChanged = [true, true, true];
         })
         .catch((error) => {
@@ -468,7 +468,7 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   //TODO adjust look of this
-  private generatePinChart(): void {
+  private generatePinChart(isReload?: boolean): void {
     if (!this.pinChart) {
       return;
     }
@@ -476,7 +476,12 @@ export class StatsPage implements OnInit, OnDestroy {
     const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
 
     const ctx = this.pinChart.nativeElement;
-    if (this.pinChartInstance) {
+
+    if (isReload) {
+      this.pinChartInstance?.destroy();
+    }
+
+    if (this.pinChartInstance && !isReload) {
       this.pinChartInstance.data.datasets[0].data = filteredSpareRates;
       this.pinChartInstance.data.datasets[1].data = filteredMissedCounts;
       this.pinChartInstance.update();
@@ -593,7 +598,7 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  private generateScoreChart(): void {
+  private generateScoreChart(isReload?: boolean): void {
     if (!this.scoreChart) {
       return;
     }
@@ -601,7 +606,13 @@ export class StatsPage implements OnInit, OnDestroy {
     const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
 
     const ctx = this.scoreChart.nativeElement;
-    if (this.scoreChartInstance) {
+
+    if (isReload) {
+      this.scoreChartInstance?.destroy();
+    }
+
+    if (this.scoreChartInstance && !isReload) {
+
       this.scoreChartInstance.data.labels = gameLabels;
       this.scoreChartInstance.data.datasets[0].data = overallAverages;
       this.scoreChartInstance.data.datasets[1].data = differences;
@@ -724,7 +735,7 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  private generateThrowChart(): void {
+  private generateThrowChart(isReload?: boolean): void {
     if (!this.throwChart) {
       return;
     }
@@ -732,7 +743,12 @@ export class StatsPage implements OnInit, OnDestroy {
     const { opens, spares, strikes } = this.calculateThrowChartData();
 
     const ctx = this.throwChart.nativeElement;
-    if (this.throwChartInstance) {
+
+    if (isReload) {
+      this.throwChartInstance?.destroy();
+    }
+
+    if (this.throwChartInstance && !isReload) {
       this.throwChartInstance.data.datasets[0].data = [spares, strikes, opens];
       this.throwChartInstance.update();
     } else {

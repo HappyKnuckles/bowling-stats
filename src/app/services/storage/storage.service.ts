@@ -19,14 +19,28 @@ export class StorageService {
     await this.storage.create();
   }
 
-  async addLeague(key: string, data: any) {
-    await this.save(key, data);
+  async addLeague(key: string, league: string) {
+    await this.save(key, league);
     this.newLeagueAdded.emit();
   }
 
   async deleteLeague(key: string) {
     await this.storage.remove(key);
     this.leagueDeleted.emit();
+  }
+
+  async editLeague(newKey: string, newLeague: string, oldLeague: string) {
+    await this.deleteLeague('league' + '_' + oldLeague);
+    await this.save(newKey, newLeague);
+    const games = await this.loadData<Game>('game');
+    const updatedGames = games.map((game) => {
+      if (game.league === oldLeague) {
+        game.league = newLeague;
+      }
+      return game;
+    });
+    await this.saveGamesToLocalStorage(updatedGames);
+    this.newLeagueAdded.emit();
   }
 
   async saveGamesToLocalStorage(gameData: Game[], isEdit?: boolean): Promise<void> {

@@ -1,8 +1,8 @@
 @if (isAddPage) {
-
 <ion-item>
-  <ion-select label="League/Tournament" [(ngModel)]="selectedLeague" (ionChange)="leagueChanged.emit(selectedLeague)">
-    <ion-select-option value="New">Add New</ion-select-option>
+  <ion-select label="League/Tournament" [(ngModel)]="selectedLeague"
+    (ionChange)="leagueChanged.emit(this.selectedLeague); onLeagueChange($event)">
+    <ion-select-option value="new">Add new</ion-select-option>
     <ion-select-option value="">None</ion-select-option>
     <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
   </ion-select>
@@ -10,17 +10,39 @@
 } @else {
 <ion-item>
   <ion-icon name="medal-outline" slot="start"></ion-icon>
-  <ion-select label="Leagues/Tournaments" [(ngModel)]="selectedLeague" (ionChange)="leagueChanged.emit(selectedLeague)">
-    <ion-select-option value="New">Add New</ion-select-option>
-    <ion-select-option value="all">All</ion-select-option>
-    <ion-select-option value="">None</ion-select-option>
-    <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
+  <ion-select label="Leagues/Tournaments" (ionChange)="onLeagueChange($event)" interface="action-sheet"
+    placeholder="Edit leagues" [(ngModel)]="selectedLeague">
+    <ion-select-option value="new">Add league</ion-select-option>
+    <ion-select-option value="edit" *ngIf="leagues.length !== 0">Edit league</ion-select-option>
+    <ion-select-option value="delete" *ngIf="leagues.length !== 0">Delete league</ion-select-option>
   </ion-select>
 </ion-item>
 }
 
-<ion-item *ngIf="selectedLeague === 'New'">
-  <ion-icon name="add-outline" slot="start"></ion-icon>
-  <ion-input label="Enter new league" [(ngModel)]="newLeague" placeholder="League name"></ion-input>
-  <ion-button type="submit" (click)="saveLeague()" [disabled]="newLeague === ''">Save</ion-button>
-</ion-item>
+<ion-modal [isOpen]="isModalOpen" #modal>
+  <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancel()">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Edit league</ion-title>
+          <ion-buttons slot="end">
+            <ion-button type="submit" (click)="editLeague()" [disabled]="newLeague === ''">Save</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-item>
+          <ion-icon name="medal-outline" slot="start"></ion-icon>
+          <ion-select label="Choose League" [(ngModel)]="leagueToChange">
+            <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          <ion-input label="Change league name" [value]="leagueToChange" [readonly]="leagueToChange === ''" placeholder="League name" (ionChange)="newLeague = $event.target.value!.toString()"></ion-input>
+        </ion-item>
+      </ion-content>
+  </ng-template>
+</ion-modal>

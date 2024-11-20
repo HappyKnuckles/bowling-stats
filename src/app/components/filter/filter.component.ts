@@ -21,7 +21,7 @@ import {
   IonSelect,
   IonList,
 } from '@ionic/angular/standalone';
-import { Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 import { Filter, TimeRange } from 'src/app/models/filter-model';
 import { Game } from 'src/app/models/game-model';
 import { FilterService } from 'src/app/services/filter/filter.service';
@@ -63,24 +63,25 @@ export class FilterComponent implements OnInit, OnDestroy {
   defaultFilters = this.filterService.defaultFilters;
   highlightedDates: { date: string; textColor: string; backgroundColor: string }[] = [];
   leagues: string[] = [];
-  private newLeagueSubscription: Subscription;
+  private leagueSubscriptions: Subscription = new Subscription();
   private filterSubscription: Subscription;
 
   constructor(private modalCtrl: ModalController, private filterService: FilterService, private storageService: StorageService) {
     this.filterSubscription = this.filterService.filters$.subscribe((filters: Filter) => {
       this.filters = filters;
     });
-
-    this.newLeagueSubscription = this.storageService.newLeagueAdded.subscribe(() => {
-      this.storageService.loadLeagues().then((leagues) => {
-        this.leagues = leagues;
-      });
-    });
+    this.leagueSubscriptions.add(
+      merge(this.storageService.newLeagueAdded, this.storageService.leagueDeleted, this.storageService.leagueChanged).subscribe(() => {
+        this.storageService.loadLeagues().then((leagues) => {
+          this.leagues = leagues;
+        });
+      })
+    );
   }
 
   ngOnDestroy(): void {
     this.filterSubscription.unsubscribe();
-    this.newLeagueSubscription.unsubscribe();
+    this.leagueSubscriptions.unsubscribe();
   }
 
   startDateChange(event: CustomEvent) {

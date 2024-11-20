@@ -52,8 +52,9 @@ ion-input {
   margin: 0 auto;
 }
 
-.league-alert-input {
+.alert-input {
   background-color: white !important;
+  color: #080f08 !important;
 }
 
 ion-header {
@@ -77,9 +78,11 @@ ion-app {
 .tooltip {
   padding: 8px;
 }
-
+.tooltipPopover {
+  --min-width: 200px;
+  --max-width: fit-content;
+}
 .blue .tooltip {
-  padding: 8px;
   color: black;
 }
 

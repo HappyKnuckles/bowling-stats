@@ -50,7 +50,7 @@
           (maxScoreChanged)="onMaxScoreChanged($event, trackIndex)"
           (totalScoreChanged)="onTotalScoreChange($event, trackIndex)"
           (leagueChanged)="onLeagueChange($event)"
-          (isPracticeChanged)="onisPracticeChange($event)"></app-track-grid>
+          (isPracticeChanged)="onIsPracticeChange($event)"></app-track-grid>
         <ion-grid *ngIf="i !== 0">
           <ion-row>
             <ion-col class="middle count">Total: {{ totalScores[trackIndex] }}</ion-col>
@@ -103,7 +103,7 @@
             </ion-buttons>
             <ion-title>Dein Spiel</ion-title>
             <ion-buttons slot="end">
-              <ion-button (click)="confirm()" [strong]="true">Speichern</ion-button>
+              <ion-button (click)="confirm()" [strong]="true" [disabled]="!isGameValid(gameData)">Speichern</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>

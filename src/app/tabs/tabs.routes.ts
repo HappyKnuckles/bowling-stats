@@ -23,6 +23,10 @@ export const routes: Routes = [
         loadComponent: () => import('../pages/settings/settings.page').then((m) => m.SettingsPage),
       },
       {
+        path: 'league',
+        loadComponent: () => import('../pages/league/league.page').then((m) => m.LeaguePage),
+      },
+      {
         path: '',
         redirectTo: '/tabs/add',
         pathMatch: 'full',

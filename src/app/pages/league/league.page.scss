@@ -1,0 +1,36 @@
+.actionSheet {
+  margin-right: 8px;
+
+  ion-button {
+    background: none;
+    --background-activated: none;
+    position: relative;
+  }
+}
+
+.sliding {
+  ion-item:not(.note, .league) {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+  }
+
+  .score {
+    font-size: 0.875rem;
+  }
+
+  .title {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .game-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    padding: 4px 0;
+  }
+}
+
+.tab {
+  margin-top: 8px;
+}

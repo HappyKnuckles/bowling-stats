@@ -36,10 +36,10 @@
         </ion-icon
         >}
       </ion-text>
-      @if (prevStats && getStatDifference(stats.spareRates[i], prevStats.spareRates[i]) !== '0') {
+      @if (prevStats && calculateStatDifference(stats.spareRates[i], prevStats.spareRates[i]) !== '0') {
       <ion-popover class="diffPopover" [trigger]="id! + i">
         <ion-text [color]="getDiffColor(stats.spareRates[i], prevStats.spareRates[i])">
-          {{ getStatDifference(stats.spareRates[i], prevStats.spareRates[i]) }}
+          {{ calculateStatDifference(stats.spareRates[i], prevStats.spareRates[i]) }}
         </ion-text> </ion-popover
       >} </ion-col
     >} } @else{
@@ -61,10 +61,10 @@
         </ion-icon
         >}
       </ion-text>
-      @if (prevStats && getStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) !== '0') {
+      @if (prevStats && calculateStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) !== '0') {
       <ion-popover class="diffPopover" trigger="overallSpareRate">
         <ion-text [color]="getDiffColor(stats.overallSpareRate, prevStats.overallSpareRate)">
-          {{ getStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) }}
+          {{ calculateStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) }}
         </ion-text> </ion-popover
       >} </ion-col
     >} <ion-col *ngIf="stats.totalSparesMissed + stats.totalSparesConverted === 0"></ion-col>}

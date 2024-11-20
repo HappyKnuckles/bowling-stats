@@ -4,6 +4,7 @@ import { IonText, IonCol, IonRow, IonIcon, IonGrid } from '@ionic/angular/standa
 import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
 import { addIcons } from 'ionicons';
 import { informationCircleOutline } from 'ionicons/icons';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
   selector: 'app-spare-display',
@@ -17,23 +18,21 @@ export class SpareDisplayComponent {
   @Input({ required: true }) stats!: Stats | SessionStats;
   @Input() prevStats?: PrevStats;
   @Input() id?: string;
-  constructor() {
+  constructor(private utilsService: UtilsService) {
     addIcons({ informationCircleOutline });
   }
 
-  getStatDifference(currentValue: number, previousValue: number): string {
-    if (previousValue === undefined) {
-      return '0';
-    }
-    const difference = (currentValue - previousValue).toFixed(2);
-    if (Number(difference) === 0) {
-      return '0';
-    }
-    const percentageChange = previousValue === 0 ? '' : ((Number(difference) / previousValue) * 100).toFixed(2);
-    const differenceWithSign = Number(difference) > 0 ? `+${difference}` : difference;
-    return previousValue === 0 ? `${differenceWithSign}` : `${differenceWithSign} (${percentageChange}%)`;
+  calculateStatDifference(currentValue: number, previousValue: number): string {
+    return this.utilsService.calculateStatDifference(currentValue, previousValue);
+  }
+  getArrowIcon(currentValue: number, previousValue: number): string {
+    return this.utilsService.getArrowIcon(currentValue, previousValue);
   }
 
+  getDiffColor(currentValue: number, previousValue: number): string {
+    return this.utilsService.getDiffColor(currentValue, previousValue);
+  }
+  
   getLabel(i: number): string {
     if (i === 0) return 'Overall';
     if (i === 1) return `${i} Pin`;
@@ -54,23 +53,5 @@ export class SpareDisplayComponent {
     }
   }
 
-  getArrowIcon(currentValue: number, previousValue: number): string {
-    if (previousValue === undefined || currentValue === undefined) {
-      return '';
-    }
-    if (currentValue === previousValue) {
-      return '';
-    }
-    return currentValue > previousValue ? 'arrow-up' : 'arrow-down';
-  }
 
-  getDiffColor(currentValue: number, previousValue: number): string {
-    if (previousValue === undefined || currentValue === undefined) {
-      return '';
-    }
-    if (currentValue === previousValue) {
-      return '';
-    }
-    return currentValue > previousValue ? 'success' : 'danger';
-  }
 }

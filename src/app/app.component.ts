@@ -125,7 +125,7 @@ export class AppComponent implements OnInit, OnDestroy {
           name: 'username',
           type: 'text',
           placeholder: 'Your Name',
-          cssClass: 'nameInput',
+          cssClass: 'alert-input',
         },
       ],
       buttons: [

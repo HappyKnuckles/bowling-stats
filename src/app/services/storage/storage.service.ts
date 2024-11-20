@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Game } from 'src/app/models/game-model';
 import { Storage } from '@ionic/storage-angular';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,8 +11,9 @@ export class StorageService {
   gameDeleted = new EventEmitter<void>();
   newLeagueAdded = new EventEmitter<void>();
   leagueDeleted = new EventEmitter<void>();
+  leagueChanged = new EventEmitter<void>();
 
-  constructor(private storage: Storage) {
+  constructor(private storage: Storage, private utilsService: UtilsService) {
     this.init();
   }
 
@@ -40,7 +42,7 @@ export class StorageService {
       return game;
     });
     await this.saveGamesToLocalStorage(updatedGames);
-    this.newLeagueAdded.emit();
+    this.leagueChanged.emit();
   }
 
   async saveGamesToLocalStorage(gameData: Game[], isEdit?: boolean): Promise<void> {
@@ -80,10 +82,11 @@ export class StorageService {
     const gameHistory = await this.loadData<Game>('game');
 
     // TODO remove this block after a while
-    let isRenewed = localStorage.getItem('isRenewedAgain') || false;
+    let isRenewed = localStorage.getItem('isRenewedAgainAgain') || false;
     if (!isRenewed) {
       gameHistory.forEach((game) => {
         game.isPerfect = game.totalScore === 300;
+        game.isSeries = game.seriesId !== undefined;
         game.isClean = game.frames.every((frame: { throws: any[] }) => {
           const frameTotal = frame.throws.reduce((sum: any, currentThrow: { value: any }) => sum + currentThrow.value, 0);
           return frameTotal >= 10;
@@ -95,9 +98,9 @@ export class StorageService {
 
       this.saveGamesToLocalStorage(gameHistory);
       isRenewed = true;
-      localStorage.setItem('isRenewedAgain', JSON.stringify(isRenewed));
+      localStorage.setItem('isRenewedAgainAgain', JSON.stringify(isRenewed));
     }
-    this.sortGameHistoryByDate(gameHistory);
+    this.utilsService.sortGameHistoryByDate(gameHistory);
 
     return gameHistory;
   }
@@ -118,11 +121,5 @@ export class StorageService {
 
   private async delete(key: string) {
     await this.storage.remove(key);
-  }
-
-  private sortGameHistoryByDate(gameHistory: Game[]): void {
-    gameHistory.sort((a: { date: number }, b: { date: number }) => {
-      return b.date - a.date;
-    });
   }
 }

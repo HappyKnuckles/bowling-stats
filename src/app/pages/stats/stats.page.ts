@@ -1,6 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Chart from 'chart.js/auto';
-import { Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 import {
   IonHeader,
   IonToolbar,
@@ -33,6 +33,8 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 import { FilterComponent } from 'src/app/components/filter/filter.component';
 import { ModalController } from '@ionic/angular';
 import { FilterService } from 'src/app/services/filter/filter.service';
+import { UtilsService } from 'src/app/services/utils/utils.service';
+import { ChartDataService } from 'src/app/services/chart/chart-data.service';
 
 @Component({
   selector: 'app-stats',
@@ -149,8 +151,7 @@ export class StatsPage implements OnInit, OnDestroy {
   segments: string[] = ['Overall', 'Spares', 'Throws', 'Sessions'];
   activeFilterCount = this.filterService.activeFilterCount;
   // Subscriptions
-  private newDataAddedSubscription!: Subscription;
-  private dataDeletedSubscription!: Subscription;
+  private gameSubscriptions: Subscription = new Subscription();
   private loadingSubscription: Subscription;
   private currentStatSubscription: Subscription;
   private sessionStatSubscription: Subscription;
@@ -180,10 +181,11 @@ export class StatsPage implements OnInit, OnDestroy {
     private statsService: GameStatsService,
     private toastService: ToastService,
     private storageService: StorageService,
-    private decimalPipe: DecimalPipe,
     private hapticService: HapticService,
     private modalCtrl: ModalController,
-    private filterService: FilterService
+    private filterService: FilterService,
+    private utilsService: UtilsService,
+    private chartDataService: ChartDataService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
@@ -225,8 +227,6 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.newDataAddedSubscription.unsubscribe();
-    this.dataDeletedSubscription.unsubscribe();
     this.loadingSubscription.unsubscribe();
     this.currentStatSubscription.unsubscribe();
     this.sessionStatSubscription.unsubscribe();
@@ -269,12 +269,12 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  getSlideIndex(segment: string): number {
+  private getSlideIndex(segment: string): number {
     const index = this.segments.indexOf(segment);
     return index !== -1 ? index : 0;
   }
 
-  getSegmentValue(index: number): string {
+  private getSegmentValue(index: number): string {
     return this.segments[index] || 'Overall';
   }
 
@@ -282,7 +282,7 @@ export class StatsPage implements OnInit, OnDestroy {
     if (this.gameHistoryChanged || isRefresh) {
       try {
         await this.loadGameHistory();
-        this.sortGameHistoryByDate(this.gameHistory);
+        this.utilsService.sortGameHistoryByDate(this.gameHistory, true);
         this.loadStats();
 
         if (this.selectedDate) {
@@ -294,12 +294,6 @@ export class StatsPage implements OnInit, OnDestroy {
         this.toastService.showToast(`Error loading history and stats: ${error}`, 'bug', true);
       }
     }
-  }
-
-  private sortGameHistoryByDate(gameHistory: Game[]): void {
-    gameHistory.sort((a: { date: number }, b: { date: number }) => {
-      return a.date - b.date;
-    });
   }
 
   private async loadGameHistory() {
@@ -345,59 +339,6 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  private calculateScoreChartData() {
-    const scoresByDate: { [date: string]: number[] } = {};
-    this.gameHistory.forEach((game: any) => {
-      const date = new Date(game.date).toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: '2-digit',
-      });
-      if (!scoresByDate[date]) {
-        scoresByDate[date] = [];
-      }
-      scoresByDate[date].push(game.totalScore);
-    });
-
-    const gameLabels = Object.keys(scoresByDate).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-    let cumulativeSum = 0;
-    let cumulativeCount = 0;
-
-    const overallAverages = gameLabels.map((date) => {
-      cumulativeSum += scoresByDate[date].reduce((sum, score) => sum + score, 0);
-      cumulativeCount += scoresByDate[date].length;
-      return cumulativeSum / cumulativeCount;
-    });
-    overallAverages.map((average) => parseFloat(this.decimalPipe.transform(average, '1.2-2')!));
-
-    const differences = gameLabels.map((date, index) => {
-      const dailySum = scoresByDate[date].reduce((sum, score) => sum + score, 0);
-      const dailyAverage = dailySum / scoresByDate[date].length;
-      return dailyAverage - overallAverages[index];
-    });
-    differences.map((difference) => parseFloat(this.decimalPipe.transform(difference, '1.2-2')!));
-
-    const gamesPlayedDaily = gameLabels.map((date) => scoresByDate[date].length);
-    return { gameLabels, overallAverages, differences, gamesPlayedDaily };
-  }
-
-  private calculatePinChartData() {
-    const filteredSpareRates: number[] = this.stats.spareRates.slice(1).map((rate) => parseFloat(this.decimalPipe.transform(rate, '1.2-2')!));
-    const filteredMissedCounts: number[] = this.stats.missedCounts.slice(1).map((count, i) => {
-      const rate = this.getRate(count, this.stats.pinCounts[i + 1]);
-      const transformedRate = this.decimalPipe.transform(rate, '1.2-2');
-      return parseFloat(transformedRate ?? '0');
-    });
-    return { filteredSpareRates, filteredMissedCounts };
-  }
-
-  private calculateThrowChartData() {
-    const opens = parseFloat(this.decimalPipe.transform(this.stats.openPercentage, '1.2-2')!);
-    const spares = parseFloat(this.decimalPipe.transform(this.stats.sparePercentage, '1.2-2')!);
-    const strikes = parseFloat(this.decimalPipe.transform(this.stats.strikePercentage, '1.2-2')!);
-    return { opens, spares, strikes };
-  }
-
   private processDates() {
     const dateSet = new Set<number>();
 
@@ -415,35 +356,22 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   private subscribeToDataEvents(): void {
-    this.newDataAddedSubscription = this.storageService.newGameAdded.subscribe(() => {
-      this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats()
-        .then(() => {
-          this.filterService.filterGames(this.gameHistory);
-        })
-        .then(() => {
-          this.generateCharts();
-          this.statsValueChanged = [true, true, true];
-        })
-        .catch((error) => {
-          console.error('Error loading data and calculating stats:', error);
-        });
-    });
-
-    this.dataDeletedSubscription = this.storageService.gameDeleted.subscribe(() => {
-      this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats()
-        .then(() => {
-          this.filterService.filterGames(this.gameHistory);
-        })
-        .then(() => {
-          this.generateCharts();
-          this.statsValueChanged = [true, true, true];
-        })
-        .catch((error) => {
-          console.error('Error loading data and calculating stats:', error);
-        });
-    });
+    this.gameSubscriptions.add(
+      merge(this.storageService.newGameAdded, this.storageService.gameDeleted).subscribe(() => {
+        this.gameHistoryChanged = true;
+        this.loadDataAndCalculateStats()
+          .then(() => {
+            this.filterService.filterGames(this.gameHistory);
+          })
+          .then(() => {
+            this.generateCharts();
+            this.statsValueChanged = [true, true, true];
+          })
+          .catch((error) => {
+            console.error('Error loading data and calculating stats:', error);
+          });
+      })
+    );
 
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
       this.filteredGameHistory = games;
@@ -460,11 +388,141 @@ export class StatsPage implements OnInit, OnDestroy {
     });
   }
 
-  private getRate(converted: number, missed: number): number {
-    if (converted + missed === 0) {
-      return 0;
+  private generateScoreChart(isReload?: boolean): void {
+
+    if (!this.scoreChart) {
+      return;
     }
-    return (converted / (converted + missed)) * 100;
+
+    const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.chartDataService.calculateScoreChartData(this.gameHistory);
+
+    const ctx = this.scoreChart.nativeElement;
+
+    if (isReload) {
+      this.scoreChartInstance?.destroy();
+    }
+
+    if (this.scoreChartInstance && !isReload) {
+      this.scoreChartInstance.data.labels = gameLabels;
+      this.scoreChartInstance.data.datasets[0].data = overallAverages;
+      this.scoreChartInstance.data.datasets[1].data = differences;
+      this.scoreChartInstance.data.datasets[2].data = gamesPlayedDaily;
+      this.scoreChartInstance.update();
+    }
+
+    // Create a new chart instance with multiple datasets
+    else {
+      this.scoreChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: gameLabels,
+          datasets: [
+            {
+              label: 'Average',
+              data: overallAverages,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+              pointHitRadius: 10,
+            },
+            {
+              label: 'Difference from average',
+              data: differences,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1,
+              pointHitRadius: 10,
+            },
+            {
+              label: 'Games played',
+              data: gamesPlayedDaily,
+              type: 'bar',
+              backgroundColor: 'rgba(153, 102, 255, 0.1)',
+              borderColor: 'rgba(153, 102, 255, .5)',
+              borderWidth: 1,
+              yAxisID: 'y1', // Use a second y-axis for this dataset
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMax: 300,
+              ticks: {
+                font: {
+                  size: 14,
+                },
+              },
+            },
+            y1: {
+              beginAtZero: true,
+              position: 'right',
+              grid: {
+                drawOnChartArea: false, // Only draw grid lines for the first y-axis
+              },
+              ticks: {
+                font: {
+                  size: 14,
+                },
+              },
+            },
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: 'Score analysis',
+              color: 'white',
+              font: {
+                size: 20,
+              },
+            },
+            legend: {
+              display: true, // Show legend to differentiate datasets
+              labels: {
+                font: {
+                  size: 15,
+                },
+              },
+              onClick: (e, legendItem) => {
+                // Access the dataset index from the legend item
+                const index = legendItem.datasetIndex!;
+
+                // Ensure that chartInstance is defined and points to your chart
+                const ci = this.scoreChartInstance;
+                if (!ci) {
+                  console.error('Chart instance is not defined.');
+                  return;
+                }
+
+                // Get the metadata of the clicked dataset
+                const meta = ci.getDatasetMeta(index);
+
+                // Toggle the visibility of the dataset
+                meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : !meta.hidden;
+
+                // Find the index of the "Games Played" dataset
+                const gamesPlayedIndex = ci.data.datasets.findIndex((dataset) => dataset.label === 'Games played');
+
+                // Check if the "Games Played" dataset exists
+                if (gamesPlayedIndex !== -1) {
+                  const gamesPlayedMeta = ci.getDatasetMeta(gamesPlayedIndex);
+                  const isGamesPlayedHidden = gamesPlayedMeta.hidden;
+
+                  // Update the y1 axis visibility based on the "Games Played" dataset visibility
+                  if (ci.options.scales && ci.options.scales['y1']) {
+                    ci.options.scales['y1'].display = !isGamesPlayedHidden;
+                  }
+                }
+
+                // Update the chart to apply the changes
+                ci.update();
+              },
+            },
+          },
+        },
+      });
+    }
   }
 
   //TODO adjust look of this
@@ -473,7 +531,7 @@ export class StatsPage implements OnInit, OnDestroy {
       return;
     }
 
-    const { filteredSpareRates, filteredMissedCounts } = this.calculatePinChartData();
+    const { filteredSpareRates, filteredMissedCounts } = this.chartDataService.calculatePinChartData(this.stats);
 
     const ctx = this.pinChart.nativeElement;
 
@@ -598,149 +656,12 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  private generateScoreChart(isReload?: boolean): void {
-    if (!this.scoreChart) {
-      return;
-    }
-
-    const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData();
-
-    const ctx = this.scoreChart.nativeElement;
-
-    if (isReload) {
-      this.scoreChartInstance?.destroy();
-    }
-
-    if (this.scoreChartInstance && !isReload) {
-
-      this.scoreChartInstance.data.labels = gameLabels;
-      this.scoreChartInstance.data.datasets[0].data = overallAverages;
-      this.scoreChartInstance.data.datasets[1].data = differences;
-      this.scoreChartInstance.data.datasets[2].data = gamesPlayedDaily;
-      this.scoreChartInstance.update();
-    }
-
-    // Create a new chart instance with multiple datasets
-    else {
-      this.scoreChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: gameLabels,
-          datasets: [
-            {
-              label: 'Average',
-              data: overallAverages,
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-              pointHitRadius: 10,
-            },
-            {
-              label: 'Difference from average',
-              data: differences,
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1,
-              pointHitRadius: 10,
-            },
-            {
-              label: 'Games played',
-              data: gamesPlayedDaily,
-              type: 'bar',
-              backgroundColor: 'rgba(153, 102, 255, 0.1)',
-              borderColor: 'rgba(153, 102, 255, .5)',
-              borderWidth: 1,
-              yAxisID: 'y1', // Use a second y-axis for this dataset
-            },
-          ],
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-              suggestedMax: 300,
-              ticks: {
-                font: {
-                  size: 14,
-                },
-              },
-            },
-            y1: {
-              beginAtZero: true,
-              position: 'right',
-              grid: {
-                drawOnChartArea: false, // Only draw grid lines for the first y-axis
-              },
-              ticks: {
-                font: {
-                  size: 14,
-                },
-              },
-            },
-          },
-          plugins: {
-            title: {
-              display: true,
-              text: 'Score analysis',
-              color: 'white',
-              font: {
-                size: 20,
-              },
-            },
-            legend: {
-              display: true, // Show legend to differentiate datasets
-              labels: {
-                font: {
-                  size: 15,
-                },
-              },
-              onClick: (e, legendItem) => {
-                // Access the dataset index from the legend item
-                const index = legendItem.datasetIndex!;
-
-                // Ensure that chartInstance is defined and points to your chart
-                const ci = this.scoreChartInstance;
-                if (!ci) {
-                  console.error('Chart instance is not defined.');
-                  return;
-                }
-
-                // Get the metadata of the clicked dataset
-                const meta = ci.getDatasetMeta(index);
-
-                // Toggle the visibility of the dataset
-                meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : !meta.hidden;
-
-                // Find the index of the "Games Played" dataset
-                const gamesPlayedIndex = ci.data.datasets.findIndex((dataset) => dataset.label === 'Games played');
-
-                // Check if the "Games Played" dataset exists
-                if (gamesPlayedIndex !== -1) {
-                  const gamesPlayedMeta = ci.getDatasetMeta(gamesPlayedIndex);
-                  const isGamesPlayedHidden = gamesPlayedMeta.hidden;
-
-                  // Update the y1 axis visibility based on the "Games Played" dataset visibility
-                  if (ci.options.scales && ci.options.scales['y1']) {
-                    ci.options.scales['y1'].display = !isGamesPlayedHidden;
-                  }
-                }
-
-                // Update the chart to apply the changes
-                ci.update();
-              },
-            },
-          },
-        },
-      });
-    }
-  }
-
   private generateThrowChart(isReload?: boolean): void {
     if (!this.throwChart) {
       return;
     }
 
-    const { opens, spares, strikes } = this.calculateThrowChartData();
+    const { opens, spares, strikes } = this.chartDataService.calculateThrowChartData(this.stats);
 
     const ctx = this.throwChart.nativeElement;
 

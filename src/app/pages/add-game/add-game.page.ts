@@ -40,6 +40,7 @@ import Swiper from 'swiper';
 import { IonicSlides } from '@ionic/angular';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { SeriesMode } from './seriesModeEnum';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 
 defineCustomElements(window);
 
@@ -132,7 +133,8 @@ export class AddGamePage implements OnInit {
     private loadingService: LoadingService,
     private userService: UserService,
     private adService: AdService,
-    private hapticService: HapticService
+    private hapticService: HapticService,
+    private utilsService: UtilsService
   ) {
     addIcons({ cameraOutline, chevronDown, chevronUp, medalOutline, documentTextOutline, add });
   }
@@ -193,7 +195,7 @@ export class AddGamePage implements OnInit {
     });
   }
 
-  onisPracticeChange(isPractice: boolean): void {
+  onIsPracticeChange(isPractice: boolean): void {
     this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
       trackGrid.isPractice = isPractice;
     });
@@ -216,42 +218,7 @@ export class AddGamePage implements OnInit {
   }
 
   isGameValid(game: Game): boolean {
-    let isValid = true;
-
-    game.frames.forEach((frame: any, index: number) => {
-      const throws = frame.throws.map((t: { value: any }) => t.value);
-      if (index < 9) {
-        // For frames 1 to 9
-        const frameValid =
-          (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
-          (throws[0] !== 10 &&
-            throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 &&
-            throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
-        if (!frameValid) {
-          isValid = false;
-          frame.isInvalid = true;
-        } else {
-          frame.isInvalid = false;
-        }
-      } else {
-        // For frame 10
-        const frameValid =
-          (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
-          (throws.length === 2 && throws[0] + throws[1] < 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
-          (throws.length === 3 &&
-            throws[0] + throws[1] >= 10 &&
-            throws[1] !== undefined &&
-            throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
-        if (!frameValid) {
-          isValid = false;
-          frame.isInvalid = true;
-        } else {
-          frame.isInvalid = false;
-        }
-      }
-    });
-
-    return isValid;
+    return this.utilsService.isGameValid(undefined, game);
   }
 
   updateFrameScore(value: any, index: number): void {
@@ -466,83 +433,10 @@ export class AddGamePage implements OnInit {
     });
   }
 
+  // TODO outsource into service 
   private parseBowlingScores(input: string): void {
     try {
-      const lines = input.split('\n').filter((line) => line.trim() !== '');
-
-      const userIndex = lines.findIndex((line) => line.toLowerCase().includes(this.username!.toLowerCase()));
-
-      const linesAfterUsername = userIndex >= 0 ? lines.slice(userIndex + 1) : [];
-
-      const nextNonXLineIndex = linesAfterUsername.findIndex((line) => /^[a-wyz]/i.test(line));
-
-      const relevantLines = nextNonXLineIndex >= 0 ? linesAfterUsername.slice(0, nextNonXLineIndex) : linesAfterUsername;
-
-      if (relevantLines.length < 2) {
-        throw new Error(`Insufficient score data for user ${this.username}`);
-      }
-
-      let throwValues = relevantLines[0].split('');
-      let frameScores;
-
-      if (throwValues.length < 12) {
-        throwValues = throwValues.concat(relevantLines[1].split(''));
-        frameScores = relevantLines.slice(2).map((line) => line.split(' ').map(Number));
-      } else {
-        frameScores = relevantLines.slice(1).map((line) => line.split(' ').map(Number));
-      }
-
-      // Scores können doppelt vorkommen, endScore immer zweimal (erscheinen der höchsten Zahl immer unm 1 reduzieren)
-      frameScores = frameScores.flat().sort((a, b) => a - b);
-
-      if (frameScores[9] === frameScores[10]) {
-        frameScores.splice(frameScores.length - 1, 1);
-      }
-
-      throwValues = throwValues.filter((value) => value.trim() !== '');
-      let prevValue: number | undefined;
-
-      throwValues = throwValues.map((value) => {
-        if (value === 'X' || value === '×') {
-          prevValue = 10;
-          return '10';
-        } else if (value === '-') {
-          prevValue = 0;
-          return '0';
-        } else if (value === '/') {
-          if (prevValue !== undefined) {
-            return (10 - prevValue).toString();
-          }
-          return '';
-        } else {
-          prevValue = parseInt(value, 10);
-          return value;
-        }
-      });
-
-      const frames: any[] = [];
-      let currentFrame: any[] = [];
-
-      throwValues.forEach((value) => {
-        const isNinthFrame = frames.length === 9;
-        if (frames.length < 10) {
-          currentFrame.push(value);
-          if ((currentFrame.length === 2 && !isNinthFrame) || (isNinthFrame && currentFrame.length === 3)) {
-            frames.push([...currentFrame]);
-            currentFrame = [];
-          } else if (value === '10' && !isNinthFrame) {
-            frames.push([...currentFrame]);
-            currentFrame = [];
-          }
-        }
-      });
-
-      if (currentFrame.length > 0) {
-        frames.push([...currentFrame]);
-      }
-
-      const totalScore = frameScores[9];
-
+      const { frames, frameScores, totalScore } = this.utilsService.parseBowlingScores(input, this.username!);
       this.gameData = this.transformGameService.transformGameData(frames, frameScores, totalScore, false);
 
       if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {

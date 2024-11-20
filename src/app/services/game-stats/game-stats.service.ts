@@ -177,7 +177,7 @@ export class GameStatsService {
     this.updateSessionStats(this.sessionStats);
   }
 
-  private calculateBowlingStats(gameHistory: Game[]): Stats | SessionStats {
+  calculateBowlingStats(gameHistory: Game[]): Stats | SessionStats {
     let totalStrikes = 0;
     let totalSpares = 0;
     let totalSparesConverted = 0;
@@ -191,11 +191,11 @@ export class GameStatsService {
     let highestScore = -1;
 
     gameHistory.forEach((game: Game) => {
-      if (game.isPerfect) {
-        perfectGameCount++;
-      }
       if (game.isClean) {
         cleanGameCount++;
+        if (game.isPerfect) {
+          perfectGameCount++;
+        }
       }
 
       if (game.totalScore > highestScore) {

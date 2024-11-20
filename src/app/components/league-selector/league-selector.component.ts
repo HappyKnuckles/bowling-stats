@@ -2,11 +2,24 @@ import { NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertController, SelectChangeEventDetail } from '@ionic/angular';
-import { IonSelect, IonInput, IonButton, IonSelectOption, IonItem, IonIcon, IonModal, IonToolbar, IonButtons, IonHeader, IonTitle, IonContent, IonAlert } from '@ionic/angular/standalone';
+import {
+  IonSelect,
+  IonInput,
+  IonButton,
+  IonSelectOption,
+  IonItem,
+  IonIcon,
+  IonModal,
+  IonToolbar,
+  IonButtons,
+  IonHeader,
+  IonTitle,
+  IonContent,
+} from '@ionic/angular/standalone';
 import { IonSelectCustomEvent } from '@ionic/core';
 import { addIcons } from 'ionicons';
 import { addOutline, medalOutline, createOutline } from 'ionicons/icons';
-import { Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 
@@ -14,7 +27,24 @@ import { ToastService } from 'src/app/services/toast/toast.service';
   selector: 'app-league-selector',
   templateUrl: './league-selector.component.html',
   styleUrls: ['./league-selector.component.scss'],
-  imports: [IonAlert, IonContent, IonTitle, IonHeader, IonButtons, IonToolbar, IonModal, IonIcon, IonItem, IonButton, IonInput, IonSelect, NgIf, NgFor, FormsModule, ReactiveFormsModule, IonSelectOption],
+  imports: [
+    IonContent,
+    IonTitle,
+    IonHeader,
+    IonButtons,
+    IonToolbar,
+    IonModal,
+    IonIcon,
+    IonItem,
+    IonButton,
+    IonInput,
+    IonSelect,
+    NgIf,
+    NgFor,
+    FormsModule,
+    ReactiveFormsModule,
+    IonSelectOption,
+  ],
   standalone: true,
 })
 export class LeagueSelectorComponent implements OnInit, OnDestroy {
@@ -25,18 +55,20 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
   newLeague: string = '';
   leaguesToDelete: string[] = [];
   leagueToChange: string = '';
-  newLeagueSubscription: Subscription;
+  private leagueSubscriptions: Subscription = new Subscription();
   isModalOpen: boolean = false;
 
   constructor(private storageService: StorageService, private toastService: ToastService, private alertController: AlertController) {
-    this.newLeagueSubscription = this.storageService.newLeagueAdded.subscribe(() => {
-      this.getLeagues();
-    });
+    this.leagueSubscriptions.add(
+      merge(this.storageService.newLeagueAdded, this.storageService.leagueDeleted, this.storageService.leagueChanged).subscribe(() => {
+        this.getLeagues();
+      })
+    );
     addIcons({ medalOutline, addOutline, createOutline });
   }
 
   ngOnDestroy(): void {
-    this.newLeagueSubscription.unsubscribe();
+    this.leagueSubscriptions.unsubscribe();
   }
 
   async ngOnInit() {
@@ -46,72 +78,11 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
   async onLeagueChange(event: IonSelectCustomEvent<SelectChangeEventDetail>): Promise<void> {
     if (event.detail.value === 'new') {
       await this.openAddAlert();
-    } else if(event.detail.value === 'edit'){
+    } else if (event.detail.value === 'edit') {
       this.isModalOpen = true;
-    } else if(event.detail.value === 'delete'){
+    } else if (event.detail.value === 'delete') {
       await this.openDeleteAlert();
     }
-  }
-
-  async openDeleteAlert(){
-    await this.alertController.create({
-      header: 'Delete League',
-      message: 'Select the leagues to delete',
-      inputs: this.leagues.map(league => {
-        return {
-          name: league,
-          type: 'checkbox',
-          label: league,
-          value: league
-        };
-      }),
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        },
-        {
-          text: 'Delete',
-          handler: async (data: string[]) => {
-            this.leaguesToDelete = data;
-            await this.deleteLeague();
-          }
-        }
-      ]
-
-    }).then(alert => {
-      alert.present();
-    });
-  }
-
-  async openAddAlert(){
-    await this.alertController.create({
-      header: 'Add League',
-      message: 'Enter the league name',
-      inputs: [
-        {
-          name: 'league',
-          type: 'text',
-          placeholder: 'League name',
-          cssClass: 'league-alert-input'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        },
-        {
-          text: 'Add',
-          handler: async (data) => {
-            this.newLeague = data.league;
-            await this.saveLeague();
-          }
-        }
-      ]
-    }).then(alert => {
-      alert.present();
-    });
   }
 
   async saveLeague(): Promise<void> {
@@ -124,20 +95,8 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
     this.isModalOpen = false;
   }
 
-  async getLeagues(): Promise<void> {
-    this.leagues = await this.storageService.loadLeagues();
-  }
-
   cancel(): void {
     this.leaguesToDelete = [];
-    this.isModalOpen = false;
-  }
-
-  async deleteLeague(): Promise<void> {
-    for (const league of this.leaguesToDelete) {
-      await this.storageService.deleteLeague('league' + '_' + league);
-    }
-    this.toastService.showToast('League deleted sucessfully.', 'checkmark-outline');
     this.isModalOpen = false;
   }
 
@@ -148,5 +107,81 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
     this.leagueToChange = '';
     this.toastService.showToast('League edited sucessfully.', 'checkmark-outline');
     this.isModalOpen = false;
+  }
+
+  private async getLeagues(): Promise<void> {
+    this.leagues = await this.storageService.loadLeagues();
+  }
+
+  private async deleteLeague(): Promise<void> {
+    for (const league of this.leaguesToDelete) {
+      await this.storageService.deleteLeague('league' + '_' + league);
+    }
+    this.toastService.showToast('League deleted sucessfully.', 'checkmark-outline');
+    this.isModalOpen = false;
+  }
+
+  private async openDeleteAlert() {
+    await this.alertController
+      .create({
+        header: 'Delete League',
+        message: 'Select the leagues to delete',
+        inputs: this.leagues.map((league) => {
+          return {
+            name: league,
+            type: 'checkbox',
+            label: league,
+            value: league,
+          };
+        }),
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+          },
+          {
+            text: 'Delete',
+            handler: async (data: string[]) => {
+              this.leaguesToDelete = data;
+              await this.deleteLeague();
+            },
+          },
+        ],
+      })
+      .then((alert) => {
+        alert.present();
+      });
+  }
+
+  private async openAddAlert() {
+    await this.alertController
+      .create({
+        header: 'Add League',
+        message: 'Enter the league name',
+        inputs: [
+          {
+            name: 'league',
+            type: 'text',
+            placeholder: 'League name',
+            cssClass: 'league-alert-input',
+          },
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+          },
+          {
+            text: 'Add',
+            handler: async (data) => {
+              this.newLeague = data.league;
+              await this.saveLeague();
+            },
+          },
+        ],
+      })
+      .then((alert) => {
+        alert.present();
+      });
   }
 }

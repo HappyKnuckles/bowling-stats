@@ -11,6 +11,7 @@ import { addIcons } from 'ionicons';
 import { documentTextOutline } from 'ionicons/icons';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { LeagueSelectorComponent } from '../league-selector/league-selector.component';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
   selector: 'app-track-grid',
@@ -40,13 +41,13 @@ export class TrackGridComponent implements OnInit {
     private storageService: StorageService,
     private transformGameService: GameDataTransformerService,
     private toastService: ToastService,
-    private hapticService: HapticService
+    private hapticService: HapticService,
+    private utilsService: UtilsService
   ) {
     addIcons({ documentTextOutline });
   }
 
   ngOnInit(): void {
-    // Check if gameIndex exists in local storage
     this.maxScore = this.bowlingService.maxScore;
     this.totalScore = this.bowlingService.totalScore;
     this.maxScoreChanged.emit(this.maxScore);
@@ -111,31 +112,11 @@ export class TrackGridComponent implements OnInit {
   }
 
   isGameValid(): boolean {
-    const allInputsValid = this.bowlingService.frames.every((frame: any[], index: number) => {
-      if (index < 9) {
-        // For frames 1 to 9: Check if there are either 2 throws (unless it's a strike) or 1 throw (for strike)
-        return (
-          (frame[0] === 10 && frame.length === 1) ||
-          (frame.length === 2 && frame.reduce((acc, curr) => acc + curr, 0) <= 10 && frame.every((throwValue) => throwValue >= 0 && throwValue <= 10))
-        );
-      } else {
-        // For frame 10: Check if there are either 3 throws (if there's a strike or spare in the first two throws),
-        // or 2 throws (if there's no strike or spare in the first two throws)
-        return (
-          (frame[0] === 10 && frame.length === 3 && frame.every((throwValue) => throwValue >= 0 && throwValue <= 10)) ||
-          (frame.length === 2 && frame[0] + frame[1] < 10 && frame.every((throwValue) => throwValue >= 0 && throwValue <= 10)) ||
-          (frame.length === 3 &&
-            frame[0] + frame[1] >= 10 &&
-            frame[1] !== undefined &&
-            frame.every((throwValue) => throwValue >= 0 && throwValue <= 10))
-        );
-      }
-    });
-    return allInputsValid;
+    return this.utilsService.isGameValid(this.bowlingService);
   }
 
   isNumber(value: any): boolean {
-    return !isNaN(parseFloat(value)) && isFinite(value);
+    return this.utilsService.isNumber(value);
   }
 
   clearFrames(): void {
@@ -155,55 +136,7 @@ export class TrackGridComponent implements OnInit {
   }
 
   private parseInputValue(inputValue: string, frameIndex: number, inputIndex: number): number {
-    if (frameIndex < 9) {
-      // Frames 1-9
-      if (inputValue === 'X' || inputValue === 'x') {
-        return 10; // Strike
-      } else if (inputValue === '/') {
-        const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
-        return 10 - firstThrow; // Spare
-      }
-    } else {
-      // 10th Frame
-      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
-      const secondThrow = this.bowlingService.frames[frameIndex][1] || 0;
-
-      switch (inputIndex) {
-        case 0: // First throw of 10th frame
-          if (inputValue === 'X' || inputValue === 'x') {
-            return 10; // Strike
-          }
-          break;
-        case 1: // Second throw of 10th frame
-          if (firstThrow === 10) {
-            // First throw was a strike, any value (0-10) is valid
-            if (inputValue === 'X' || inputValue === 'x') {
-              return 10; // Strike
-            }
-          } else if (inputValue === '/') {
-            // First throw was not a strike, use spare notation
-            return 10 - firstThrow;
-          }
-          break;
-
-        case 2: // Third throw of 10th frame
-          if (firstThrow === 10) {
-            // If first throw is a strike, handle second throw conditions
-            if (secondThrow === 10 && (inputValue === 'X' || inputValue === 'x')) {
-              return 10; // Double strike
-            } else if (secondThrow !== 10 && inputValue === '/') {
-              return 10 - secondThrow; // Spare after a non-strike second throw
-            }
-          } else if (firstThrow + secondThrow === 10) {
-            // First two throws were a spare, any value (0-10) is valid
-            if (inputValue === 'X' || inputValue === 'x') {
-              return 10; // Strike
-            }
-          }
-          break;
-      }
-    }
-    return parseInt(inputValue, 10);
+    return this.utilsService.parseInputValue(inputValue, frameIndex, inputIndex, this.bowlingService);
   }
 
   private isValidNumber0to10(value: number): boolean {
@@ -211,53 +144,7 @@ export class TrackGridComponent implements OnInit {
   }
 
   private isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number): boolean {
-    if (inputIndex === 1) {
-      if (this.bowlingService.frames[frameIndex][0] === undefined) {
-        return false;
-      }
-    }
-    if (frameIndex < 9) {
-      // Regular frames (1-9)
-      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
-      const secondThrow = inputIndex === 1 ? inputValue : this.bowlingService.frames[frameIndex][1] || 0;
-      return firstThrow + secondThrow <= 10;
-    } else {
-      // 10th frame
-      const firstThrow = this.bowlingService.frames[frameIndex][0] || 0;
-      const secondThrow = this.bowlingService.frames[frameIndex][1] || 0;
-
-      switch (inputIndex) {
-        case 0:
-          return inputValue <= 10;
-        case 1:
-          if (firstThrow === 10) {
-            // First throw is a strike, second throw can be any value 0-10
-            return inputValue <= 10;
-          } else {
-            // First throw is not a strike, second throw + first throw must be <= 10
-            return firstThrow + inputValue <= 10;
-          }
-        case 2:
-          if (firstThrow === 10) {
-            // First throw is a strike
-            if (secondThrow === 10) {
-              // Second throw is also a strike, third throw can be any value 0-10
-              return inputValue <= 10;
-            } else {
-              // Second throw is not a strike, third throw can only be 10 - second throw
-              return inputValue <= 10 - secondThrow;
-            }
-          } else if (firstThrow + secondThrow === 10) {
-            // First two throws are a spare, third throw can be any value 0-10
-            return inputValue <= 10;
-          } else {
-            // First two throws are not a strike or spare, no third throw allowed
-            return false;
-          }
-        default:
-          return false;
-      }
-    }
+    return this.utilsService.isValidFrameScore(inputValue, frameIndex, inputIndex, this.bowlingService);
   }
 
   private handleInvalidInput(event: any): void {

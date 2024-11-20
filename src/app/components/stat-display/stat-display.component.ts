@@ -4,6 +4,7 @@ import { IonText, IonIcon } from '@ionic/angular/standalone';
 import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-number.pipe';
 import { addIcons } from 'ionicons';
 import { informationCircleOutline } from 'ionicons/icons';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
   selector: 'app-stat-display',
@@ -23,7 +24,7 @@ export class StatDisplayComponent implements OnChanges {
 
   statDifference: string = '0';
 
-  constructor() {
+  constructor(private utilsService: UtilsService) {
     addIcons({ informationCircleOutline });
   }
 
@@ -34,35 +35,14 @@ export class StatDisplayComponent implements OnChanges {
   }
 
   getArrowIcon(currentValue: number, previousValue?: number): string {
-    if (previousValue === undefined || currentValue === undefined) {
-      return '';
-    }
-    if (currentValue === previousValue) {
-      return '';
-    }
-    return currentValue > previousValue ? 'arrow-up' : 'arrow-down';
+    return this.utilsService.getArrowIcon(currentValue, previousValue);
   }
 
   getDiffColor(currentValue: number, previousValue?: number): string {
-    if (previousValue === undefined || currentValue === undefined) {
-      return '';
-    }
-    if (currentValue === previousValue) {
-      return '';
-    }
-    return currentValue > previousValue ? 'success' : 'danger';
+    return this.utilsService.getDiffColor(currentValue, previousValue);
   }
 
   private calculateStatDifference(currentValue: number, previousValue: number): string {
-    if (previousValue === undefined) {
-      return '0';
-    }
-    const difference = (currentValue - previousValue).toFixed(2);
-    if (Number(difference) === 0) {
-      return '0';
-    }
-    const percentageChange = previousValue === 0 ? '' : ((Number(difference) / previousValue) * 100).toFixed(2);
-    const differenceWithSign = Number(difference) > 0 ? `+${difference}` : difference;
-    return previousValue === 0 ? `${differenceWithSign}` : `${differenceWithSign} (${percentageChange}%)`;
+    return this.utilsService.calculateStatDifference(currentValue, previousValue);
   }
 }

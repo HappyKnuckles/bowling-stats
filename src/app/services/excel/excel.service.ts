@@ -18,7 +18,7 @@ export class ExcelService {
     private storageService: StorageService
   ) { }
 
-  async exportToExcel(gameHistory: Game[]): Promise<boolean | void> {
+  async exportToExcel(gameHistory: Game[]): Promise<boolean> {
     const gameData = this.getGameDataForExport(gameHistory);
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Game History');
@@ -70,6 +70,7 @@ export class ExcelService {
       existingFiles.push(`${fileName + suffix}.xlsx`);
       localStorage.setItem('savedFilenames', JSON.stringify(existingFiles));
     }
+    return true;
   }
 
   async readExcelData(file: File): Promise<any[]> {

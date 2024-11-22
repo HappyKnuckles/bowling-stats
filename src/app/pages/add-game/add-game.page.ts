@@ -433,7 +433,7 @@ export class AddGamePage implements OnInit {
     });
   }
 
-  // TODO outsource into service 
+  // TODO outsource into service
   private parseBowlingScores(input: string): void {
     try {
       const { frames, frameScores, totalScore } = this.utilsService.parseBowlingScores(input, this.username!);

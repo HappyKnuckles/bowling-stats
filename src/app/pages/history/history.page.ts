@@ -174,7 +174,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       this.loadingService.setLoading(false);
     }
   }
- 
+
   openExcelFileInput(): void {
     const fileInput = document.getElementById('excelUpload');
     if (fileInput) {
@@ -184,7 +184,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
   async exportToExcel(): Promise<void> {
     const gotPermission = await this.excelService.exportToExcel(this.gameHistory);
-    if(!gotPermission) {
+    if (!gotPermission) {
       this.showPermissionDeniedAlert();
     }
   }
@@ -235,8 +235,8 @@ export class HistoryPage implements OnInit, OnDestroy {
         this.getLeagues();
       })
     );
-  } 
-  
+  }
+
   private async showPermissionDeniedAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Permission Denied',

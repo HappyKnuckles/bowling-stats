@@ -32,7 +32,7 @@ export class SpareDisplayComponent {
   getDiffColor(currentValue: number, previousValue: number): string {
     return this.utilsService.getDiffColor(currentValue, previousValue);
   }
-  
+
   getLabel(i: number): string {
     if (i === 0) return 'Overall';
     if (i === 1) return `${i} Pin`;
@@ -52,6 +52,4 @@ export class SpareDisplayComponent {
       return '#FF0000';
     }
   }
-
-
 }

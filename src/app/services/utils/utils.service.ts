@@ -6,7 +6,7 @@ import { BowlingCalculatorService } from '../bowling-calculator/bowling-calculat
   providedIn: 'root',
 })
 export class UtilsService {
-  constructor() { }
+  constructor() {}
 
   sortGameHistoryByDate(gameHistory: Game[], up?: boolean): Game[] {
     return gameHistory.sort((a: { date: number }, b: { date: number }) => {
@@ -38,40 +38,40 @@ export class UtilsService {
   isGameValid(bowlingService?: BowlingCalculatorService, game?: Game): boolean {
     const frames = game ? game.frames : bowlingService!.frames;
     let isValid = true;
-     frames.forEach((frame: any, index: number) => {
-       const throws = Array.isArray(frame) ? frame : frame.throws.map((t: { value: any }) => t.value);
-        if (index < 9) {
-          // For frames 1 to 9
-          const frameValid =
-            (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
-            (throws[0] !== 10 &&
-              throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 &&
-              throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
-          if (!frameValid) {
-            isValid = false;
-            frame.isInvalid = true;
-          } else {
-            frame.isInvalid = false;
-          }
+    frames.forEach((frame: any, index: number) => {
+      const throws = Array.isArray(frame) ? frame : frame.throws.map((t: { value: any }) => t.value);
+      if (index < 9) {
+        // For frames 1 to 9
+        const frameValid =
+          (throws[0] === 10 && isNaN(parseInt(throws[1]))) ||
+          (throws[0] !== 10 &&
+            throws.reduce((acc: any, curr: any) => acc + curr, 0) <= 10 &&
+            throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        if (!frameValid) {
+          isValid = false;
+          frame.isInvalid = true;
         } else {
-          // For frame 10
-          const frameValid =
-            (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
-            (throws.length === 2 && throws[0] + throws[1] < 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
-            (throws.length === 3 &&
-              throws[0] + throws[1] >= 10 &&
-              throws[1] !== undefined &&
-              throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
-          if (!frameValid) {
-            isValid = false;
-            frame.isInvalid = true;
-          } else {
-            frame.isInvalid = false;
-          }
+          frame.isInvalid = false;
         }
-      });
+      } else {
+        // For frame 10
+        const frameValid =
+          (throws[0] === 10 && throws.length === 3 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
+          (throws.length === 2 && throws[0] + throws[1] < 10 && throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10)) ||
+          (throws.length === 3 &&
+            throws[0] + throws[1] >= 10 &&
+            throws[1] !== undefined &&
+            throws.every((throwValue: number) => throwValue >= 0 && throwValue <= 10));
+        if (!frameValid) {
+          isValid = false;
+          frame.isInvalid = true;
+        } else {
+          frame.isInvalid = false;
+        }
+      }
+    });
 
-      return isValid;
+    return isValid;
   }
 
   parseInputValue(inputValue: string, frameIndex: number, inputIndex: number, bowlingService: BowlingCalculatorService): number {
@@ -126,7 +126,7 @@ export class UtilsService {
     return parseInt(inputValue, 10);
   }
 
-  parseBowlingScores(input: string, username: string): { frames: any[], frameScores: number[], totalScore: number } {
+  parseBowlingScores(input: string, username: string): { frames: any[]; frameScores: number[]; totalScore: number } {
     const lines = input.split('\n').filter((line) => line.trim() !== '');
 
     const userIndex = lines.findIndex((line) => line.toLowerCase().includes(username.toLowerCase()));

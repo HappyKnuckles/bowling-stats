@@ -27,7 +27,7 @@
           </ion-item-option>
         </ion-item-options>
 
-        <ion-item [id]="league">
+        <ion-item [id]="league" class="ion-activatable ripple-parent rectangle">
           <ion-label class="game-info">
             <div class="title">{{ league }}</div>
             <div class="score">Games: {{getGamesByLeague(league).length}}</div>
@@ -51,7 +51,8 @@
           <ion-header [translucent]="true">
             <ion-toolbar>
               <ion-buttons slot="start">
-                <ion-button color="medium" (click)="cancel(league)">Cancel</ion-button>
+                <ion-icon name="chevron-back" color="medium"></ion-icon>
+                <ion-button color="medium" (click)="cancel(league)">Back</ion-button>
               </ion-buttons>
               <ion-title>{{league}}</ion-title>
             </ion-toolbar>

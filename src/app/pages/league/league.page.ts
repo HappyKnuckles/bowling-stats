@@ -21,6 +21,7 @@ import {
   IonModal,
   IonRefresher,
   IonAlert,
+  IonRippleEffect,
 } from '@ionic/angular/standalone';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { addIcons } from 'ionicons';
@@ -33,6 +34,7 @@ import {
   medalOutline,
   cameraOutline,
   addOutline,
+  chevronBack,
 } from 'ionicons/icons';
 import { Game } from 'src/app/models/game-model';
 import { GameComponent } from '../../components/game/game.component';
@@ -82,6 +84,7 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
     SpareDisplayComponent,
     IonSegmentButton,
     IonSegment,
+    IonRippleEffect,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -121,7 +124,17 @@ export class LeaguePage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private toastService: ToastService
   ) {
-    addIcons({ addOutline, trashOutline, createOutline, chevronForward, cameraOutline, shareOutline, documentTextOutline, medalOutline });
+    addIcons({
+      addOutline,
+      trashOutline,
+      createOutline,
+      chevronForward,
+      chevronBack,
+      cameraOutline,
+      shareOutline,
+      documentTextOutline,
+      medalOutline,
+    });
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
@@ -225,7 +238,7 @@ export class LeaguePage implements OnInit, OnDestroy {
   getLeagueKeys(): string[] {
     return Object.keys(this.gamesByLeague);
   }
-  
+
   async deleteLeague(league: string): Promise<void> {
     this.hapticService.vibrate(ImpactStyle.Heavy, 300);
     const alert = await this.alertController.create({
@@ -295,7 +308,7 @@ export class LeaguePage implements OnInit, OnDestroy {
   private getSegmentValue(index: number): string {
     return this.segments[index] || 'Overall';
   }
-  
+
   private async getGames(): Promise<void> {
     this.games = await this.storageService.loadGameHistory();
     this.gamesByLeague = this.utilsService.sortGamesByLeagues(this.games);

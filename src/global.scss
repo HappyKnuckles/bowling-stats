@@ -199,7 +199,7 @@ ion-toolbar {
 }
 
 ion-button {
-  --background-activated: none;
+  --background-activated: var(--ion-color-dark-rgb);
   --background-hover: none;
   --background-focused: none;
 }

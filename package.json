@@ -87,7 +87,7 @@
     "stylelint-config-standard-scss": "^13.1.0",
     "typescript": "^5.4.5"
   },
-  "description": "An Ionic project",
+  "description": "Lightning Bowl, a bowling score tracker.",
   "browserslist": [
     "Chrome >=79",
     "ChromeAndroid >=79",

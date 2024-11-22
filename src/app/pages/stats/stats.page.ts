@@ -389,7 +389,6 @@ export class StatsPage implements OnInit, OnDestroy {
   }
 
   private generateScoreChart(isReload?: boolean): void {
-
     if (!this.scoreChart) {
       return;
     }

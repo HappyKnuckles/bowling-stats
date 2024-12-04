@@ -111,6 +111,32 @@ export class LeaguePage implements OnInit, OnDestroy {
   private loadingSubscription: Subscription;
   private leagueSubscriptions: Subscription = new Subscription();
   statsByLeague: { [key: string]: Stats } = {};
+  overallStats: Stats = {
+    totalGames: 0,
+    totalPins: 0,
+    perfectGameCount: 0,
+    cleanGameCount: 0,
+    cleanGamePercentage: 0,
+    totalStrikes: 0,
+    totalSpares: 0,
+    totalSparesMissed: 0,
+    totalSparesConverted: 0,
+    pinCounts: Array(11).fill(0),
+    missedCounts: Array(11).fill(0),
+    averageStrikesPerGame: 0,
+    averageSparesPerGame: 0,
+    averageOpensPerGame: 0,
+    strikePercentage: 0,
+    sparePercentage: 0,
+    openPercentage: 0,
+    spareConversionPercentage: 0,
+    averageFirstCount: 0,
+    averageScore: 0,
+    highGame: 0,
+    spareRates: [],
+    overallSpareRate: 0,
+    overallMissedRate: 0,
+  };
   isLoading: boolean = false;
 
   constructor(
@@ -299,6 +325,10 @@ export class LeaguePage implements OnInit, OnDestroy {
   //   this.leagues = await this.storageService.loadLeagues();
   // }
 
+  private getOverallStats(): void {
+    this.overallStats = this.statService.calculateBowlingStats(this.games);
+  }
+
   private getSlideIndex(segment: string): number {
     const index = this.segments.indexOf(segment);
     return index !== -1 ? index : 0;
@@ -311,6 +341,7 @@ export class LeaguePage implements OnInit, OnDestroy {
   private async getGames(): Promise<void> {
     this.games = await this.storageService.loadGameHistory();
     this.gamesByLeague = this.utilsService.sortGamesByLeagues(this.games);
+    this.getOverallStats();
     this.calculateStatsForLeagues();
   }
 

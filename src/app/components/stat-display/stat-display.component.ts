@@ -3,7 +3,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnChanges, SimpleChanges } fr
 import { IonText, IonIcon } from '@ionic/angular/standalone';
 import { ConditionalNumberPipe } from '../../pipes/number-pipe/conditional-number.pipe';
 import { addIcons } from 'ionicons';
-import { informationCircleOutline } from 'ionicons/icons';
+import { arrowDown, arrowUp, informationCircleOutline } from 'ionicons/icons';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
@@ -25,7 +25,7 @@ export class StatDisplayComponent implements OnChanges {
   statDifference: string = '0';
 
   constructor(private utilsService: UtilsService) {
-    addIcons({ informationCircleOutline });
+    addIcons({ informationCircleOutline, arrowUp, arrowDown });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

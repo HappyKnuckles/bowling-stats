@@ -25,7 +25,7 @@ import { FormsModule } from '@angular/forms';
 import { Swiper } from 'swiper';
 import { IonicSlides } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowDown, arrowUp, calendarNumber, calendarNumberOutline, filterOutline } from 'ionicons/icons';
+import { calendarNumber, calendarNumberOutline, filterOutline } from 'ionicons/icons';
 import { StatDisplayComponent } from 'src/app/components/stat-display/stat-display.component';
 import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
 import { SpareDisplayComponent } from '../../components/spare-display/spare-display.component';
@@ -199,7 +199,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.sessionStats = stats;
     });
 
-    addIcons({ filterOutline, arrowUp, arrowDown, calendarNumberOutline, calendarNumber });
+    addIcons({ filterOutline, calendarNumberOutline, calendarNumber });
   }
   async ngOnInit(): Promise<void> {
     try {

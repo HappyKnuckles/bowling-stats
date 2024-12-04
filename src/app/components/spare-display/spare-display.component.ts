@@ -3,7 +3,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
 import { IonText, IonCol, IonRow, IonIcon, IonGrid } from '@ionic/angular/standalone';
 import { PrevStats, SessionStats, Stats } from 'src/app/models/stats-model';
 import { addIcons } from 'ionicons';
-import { informationCircleOutline } from 'ionicons/icons';
+import { arrowDown, arrowUp, informationCircleOutline } from 'ionicons/icons';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class SpareDisplayComponent {
   @Input() prevStats?: PrevStats;
   @Input() id?: string;
   constructor(private utilsService: UtilsService) {
-    addIcons({ informationCircleOutline });
+    addIcons({ informationCircleOutline, arrowUp, arrowDown });
   }
 
   calculateStatDifference(currentValue: number, previousValue: number): string {

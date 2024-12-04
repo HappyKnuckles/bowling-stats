@@ -228,11 +228,11 @@ export class AddGamePage implements OnInit {
   clearFrames(index?: number): void {
     if (index !== undefined && index >= 0 && index < this.trackGrids.length) {
       // Clear frames for the specified index
-      this.trackGrids.toArray()[index].clearFrames();
+      this.trackGrids.toArray()[index].clearFrames(false);
     } else {
       // Clear frames for all components
       this.trackGrids.forEach((trackGrid: TrackGridComponent) => {
-        trackGrid.clearFrames();
+        trackGrid.clearFrames(false);
       });
     }
     this.toastService.showToast('Game reset successfully.', 'refresh-outline');

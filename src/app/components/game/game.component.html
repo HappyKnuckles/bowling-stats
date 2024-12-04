@@ -1,6 +1,6 @@
 <ion-accordion-group color="dark" multiple="true" #accordionGroup>
   <!-- <ion-button (click)="deleteAll()"> Alles löschen</ion-button> -->
-  <ion-item-sliding *ngFor="let game of games; let i = index" class="sliding" #slidingItem>
+  <ion-item-sliding *ngFor="let game of showingGames; let i = index" class="sliding" #slidingItem>
     <ion-item-options side="end" (ionSwipe)="deleteGame(game.gameId); slidingItem.closeOpened()">
       <ion-item-option color="danger" expandable (click)="deleteGame(game.gameId); slidingItem.closeOpened()">
         <ion-icon class="title" style="transform: translateY(-2px)" name="trash-outline"></ion-icon>
@@ -208,3 +208,6 @@
     </ion-item>
   </ion-item-sliding>
 </ion-accordion-group>
+<ion-infinite-scroll threshold="100px" [disabled]="showingGames.length === games.length" (ionInfinite)="loadMoreGames($event)">
+  <ion-infinite-scroll-content loadingText="Loading more games..." loadingSpinner="bubbles"></ion-infinite-scroll-content>
+</ion-infinite-scroll>

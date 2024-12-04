@@ -11,8 +11,6 @@ import {
   IonRefresher,
   IonText,
   IonButtons,
-  IonInfiniteScroll,
-  IonInfiniteScrollContent,
   IonAccordionGroup,
 } from '@ionic/angular/standalone';
 import { Filesystem } from '@capacitor/filesystem';
@@ -35,7 +33,7 @@ import { LoadingService } from 'src/app/services/loader/loading.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { Game } from 'src/app/models/game-model';
 import { FilterComponent } from 'src/app/components/filter/filter.component';
-import { InfiniteScrollCustomEvent, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { FilterService } from 'src/app/services/filter/filter.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -50,8 +48,6 @@ import { ExcelService } from 'src/app/services/excel/excel.service';
   standalone: true,
   providers: [DatePipe, ModalController],
   imports: [
-    IonInfiniteScrollContent,
-    IonInfiniteScroll,
     IonButtons,
     IonHeader,
     IonToolbar,
@@ -72,9 +68,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   @ViewChild('accordionGroup') accordionGroup!: IonAccordionGroup;
   gameHistory: Game[] = [];
   filteredGameHistory: Game[] = [];
-  gameLength: Game[] = [];
   leagues: string[] = [];
-  filterGameLength: number = 0;
   arrayBuffer: any;
   file!: File;
   private gameSubscriptions: Subscription = new Subscription();
@@ -192,18 +186,10 @@ export class HistoryPage implements OnInit, OnDestroy {
   async loadGameHistory(): Promise<void> {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();
+      this.filteredGameHistory = this.gameHistory;
     } catch (error) {
       this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
     }
-  }
-
-  loadMoreGames(event: any): void {
-    const nextPage = this.filteredGameHistory.length + 15;
-
-    setTimeout(() => {
-      (event as InfiniteScrollCustomEvent).target.complete();
-      this.filteredGameHistory = this.gameLength.slice(0, nextPage);
-    }, 150);
   }
 
   private subscribeToDataEvents(): void {
@@ -223,10 +209,8 @@ export class HistoryPage implements OnInit, OnDestroy {
     );
 
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
-      this.gameLength = games;
-      this.utilsService.sortGameHistoryByDate(this.gameLength);
-      this.filterGameLength = this.gameLength.length;
-      this.filteredGameHistory = this.gameLength.slice(0, 20);
+      this.filteredGameHistory = games;
+      this.utilsService.sortGameHistoryByDate(this.filteredGameHistory);
       this.activeFilterCount = this.filterService.activeFilterCount;
     });
 

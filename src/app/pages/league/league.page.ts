@@ -21,7 +21,6 @@ import {
   IonModal,
   IonRefresher,
   IonAlert,
-  IonRippleEffect,
 } from '@ionic/angular/standalone';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { addIcons } from 'ionicons';
@@ -84,7 +83,6 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
     SpareDisplayComponent,
     IonSegmentButton,
     IonSegment,
-    IonRippleEffect,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -120,7 +118,7 @@ export class LeaguePage implements OnInit, OnDestroy {
     private utilsService: UtilsService,
     private hapticService: HapticService,
     private statService: GameStatsService,
-    private loadingService: LoadingService,
+    public loadingService: LoadingService,
     private alertController: AlertController,
     private toastService: ToastService
   ) {
@@ -208,6 +206,10 @@ export class LeaguePage implements OnInit, OnDestroy {
     return this.statsByLeague[league] || [];
   }
 
+  getLeagueKeys(): string[] {
+    return Object.keys(this.gamesByLeague);
+  }
+
   async addLeague() {
     const alert = await this.alertController.create({
       header: 'Add League',
@@ -234,9 +236,6 @@ export class LeaguePage implements OnInit, OnDestroy {
       ],
     });
     await alert.present();
-  }
-  getLeagueKeys(): string[] {
-    return Object.keys(this.gamesByLeague);
   }
 
   async deleteLeague(league: string): Promise<void> {

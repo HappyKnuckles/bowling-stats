@@ -105,7 +105,7 @@ export class TrackGridComponent implements OnInit {
 
       await this.storageService.saveGameToLocalStorage(gameData);
       this.toastService.showToast('Game saved succesfully.', 'add');
-      this.clearFrames();
+      this.clearFrames(true);
     } catch (error) {
       this.toastService.showToast(`Error saving game data to local storage: ${error}`, 'bug', true);
     }
@@ -119,14 +119,16 @@ export class TrackGridComponent implements OnInit {
     return this.utilsService.isNumber(value);
   }
 
-  clearFrames(): void {
+  clearFrames(isSave: boolean): void {
     this.bowlingService.clearRolls();
     this.inputs.forEach((input) => {
       input.value = '';
     });
-    this.note = '';
-    this.selectedLeague = '';
-    this.leagueSelector.selectedLeague = '';
+    if (isSave) {
+      this.note = '';
+      this.selectedLeague = '';
+      this.leagueSelector.selectedLeague = '';
+    }
     this.frames = this.bowlingService.frames;
     this.frameScores = this.bowlingService.frameScores;
     this.maxScore = this.bowlingService.maxScore;
@@ -161,7 +163,6 @@ export class TrackGridComponent implements OnInit {
 
   private async focusNextInput(frameIndex: number, inputIndex: number) {
     await new Promise((resolve) => setTimeout(resolve, 50));
-    // Convert QueryList to an array
     const inputArray = this.inputs.toArray();
     // Calculate the current index in the linear array of inputs
     const currentInputPosition = frameIndex * 2 + inputIndex;

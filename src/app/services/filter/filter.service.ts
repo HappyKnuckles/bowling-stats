@@ -65,7 +65,11 @@ export class FilterService {
   }
 
   setDefaultFilters(games: Game[]): void {
-    this.defaultFilters.startDate = new Date(games[games.length - 1].date).toISOString();
+    if (games.length > 0) {
+      this.defaultFilters.startDate = new Date(games[games.length - 1].date).toISOString();
+    } else {
+      this.defaultFilters.startDate = new Date().toISOString();
+    }
     const currentDate = new Date();
     const oneWeekLater = new Date(currentDate.setDate(currentDate.getDate() + 7));
     this.defaultFilters.endDate = oneWeekLater.toISOString();

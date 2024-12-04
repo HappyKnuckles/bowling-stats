@@ -1,10 +1,10 @@
 import { NgIf, NgFor, NgClass, DatePipe } from '@angular/common';
-import { Component, Input, Renderer2, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ImpactStyle } from '@capacitor/haptics';
 import { Share } from '@capacitor/share';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, InfiniteScrollCustomEvent, ModalController } from '@ionic/angular';
 import {
   IonButton,
   IonSelect,
@@ -21,6 +21,8 @@ import {
   IonRow,
   IonCol,
   IonInput,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from '@ionic/angular/standalone';
 import { toPng } from 'html-to-image';
 import { addIcons } from 'ionicons';
@@ -47,6 +49,8 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
   styleUrls: ['./game.component.scss'],
   providers: [DatePipe, ModalController],
   imports: [
+    IonInfiniteScrollContent,
+    IonInfiniteScroll,
     IonInput,
     IonCol,
     IonRow,
@@ -77,8 +81,9 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
   ],
   standalone: true,
 })
-export class GameComponent {
+export class GameComponent implements OnInit {
   @Input() games!: Game[];
+  showingGames: Game[] = [];
   @Input() leagues!: string[];
   @Input() isLeaguePage?: boolean = false;
   @Input() gameCount?: number;
@@ -107,6 +112,10 @@ export class GameComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.showingGames = this.games.slice(0, 15);
+  }
+
   async deleteGame(gameId: string): Promise<void> {
     this.hapticService.vibrate(ImpactStyle.Heavy, 300);
     const alert = await this.alertController.create({
@@ -131,6 +140,15 @@ export class GameComponent {
 
     await alert.present();
   }
+
+  loadMoreGames(event: any): void {
+    const nextPage = this.showingGames.length + 15;
+    setTimeout(() => {
+      (event as InfiniteScrollCustomEvent).target.complete();
+      this.showingGames = this.games.slice(0, nextPage);
+    }, 150);
+  }
+
   parseIntValue(value: any): any {
     return this.utilsService.parseIntValue(value);
   }

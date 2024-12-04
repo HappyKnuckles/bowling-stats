@@ -18,12 +18,11 @@ export class UtilsService {
 
   sortGamesByLeagues(games: Game[]): { [key: string]: Game[] } {
     const gamesByLeague = games.reduce((acc: { [key: string]: Game[] }, game: Game) => {
-      if (game.league) {
-        if (!acc[game.league]) {
-          acc[game.league] = [];
-        }
-        acc[game.league].push(game);
+      const league = game.league || 'Practice';
+      if (!acc[league]) {
+        acc[league] = [];
       }
+      acc[league].push(game);
       return acc;
     }, {});
 
@@ -214,6 +213,9 @@ export class UtilsService {
       // Regular frames (1-9)
       const firstThrow = bowlingService.frames[frameIndex][0] || 0;
       const secondThrow = inputIndex === 1 ? inputValue : bowlingService.frames[frameIndex][1] || 0;
+      if (inputIndex === 0 && secondThrow !== undefined) {
+        return inputValue + secondThrow <= 10;
+      }
       return firstThrow + secondThrow <= 10;
     } else {
       // 10th frame
@@ -226,7 +228,7 @@ export class UtilsService {
         case 1:
           if (firstThrow === 10) {
             // First throw is a strike, second throw can be any value 0-10
-            return inputValue <= 10;
+            return inputValue === 0;
           } else {
             // First throw is not a strike, second throw + first throw must be <= 10
             return firstThrow + inputValue <= 10;

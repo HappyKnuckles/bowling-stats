@@ -11,7 +11,7 @@
     <input type="file" id="excelUpload" class="ion-hide" (input)="handleFileUpload($event)" placeholder="Upload file" accept=".xlsx" />
     <ion-title>
       History
-      <ion-badge>{{filterGameLength }}</ion-badge>
+      <ion-badge>{{filteredGameHistory.length }}</ion-badge>
     </ion-title>
     <ion-buttons slot="end" class="actionSheet">
       <ion-button fill="clear" (click)="openFilterModal()" [disabled]="(gameHistory.length <= 0 && !isLoading)">
@@ -32,9 +32,6 @@
   </ng-container>
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
-    <app-game [games]="filteredGameHistory" [gameCount]="filterGameLength" [leagues]="leagues"></app-game>
+    <app-game *ngIf="!isLoading" [games]="gameHistory" [gameCount]="filteredGameHistory.length" [leagues]="leagues"></app-game>
   </ng-template>
-  <ion-infinite-scroll threshold="100px" [disabled]="filterGameLength === filteredGameHistory.length" (ionInfinite)="loadMoreGames($event)">
-    <ion-infinite-scroll-content loadingText="Loading more games..." loadingSpinner="bubbles"></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
 </ion-content>

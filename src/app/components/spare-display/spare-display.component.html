@@ -7,7 +7,6 @@
       <ion-text class="tooltip">This is the pin count you left standing after your first throw.</ion-text>
     </ion-popover>
     <ion-col><ion-text>Missed</ion-text></ion-col>
-
     <ion-col><ion-text>Converted</ion-text></ion-col>
     <ion-col><ion-text>Rate</ion-text></ion-col>
   </ion-row>
@@ -51,7 +50,7 @@
       <ion-text>{{ stats.totalSparesConverted }}</ion-text>
     </ion-col>
     @if (stats.totalSparesMissed + stats.totalSparesConverted !== 0) {
-    <ion-col id="overallSpareRate" [ngStyle]="{ color: getRateColor(stats.overallSpareRate) }">
+    <ion-col [id]="'overall' + id!" [ngStyle]="{ color: getRateColor(stats.overallSpareRate) }">
       <ion-text class="spare-rates-content">
         {{ stats.overallSpareRate | number : "1.2-2" }}% @if (prevStats && getArrowIcon(stats.overallSpareRate, prevStats.overallSpareRate)) {
         <ion-icon
@@ -62,7 +61,7 @@
         >}
       </ion-text>
       @if (prevStats && calculateStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) !== '0') {
-      <ion-popover class="diffPopover" trigger="overallSpareRate">
+      <ion-popover class="diffPopover" [trigger]="'overall' + id!">
         <ion-text [color]="getDiffColor(stats.overallSpareRate, prevStats.overallSpareRate)">
           {{ calculateStatDifference(stats.overallSpareRate, prevStats.overallSpareRate) }}
         </ion-text> </ion-popover

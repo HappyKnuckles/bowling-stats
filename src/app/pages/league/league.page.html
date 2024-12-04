@@ -92,7 +92,11 @@
                 [toolTip]="'The percentage of how many games were clean games.'"
                 [id]="'league-cleanGamePercentage'"
                 [isPercentage]="true"></app-stat-display>
-              <app-stat-display label="Average" [prevStat]="overallStats.cleanGamePercentage" [currentStat]="statsByLeague[league].averageScore" [id]="'league-averageScore'"></app-stat-display>
+              <app-stat-display
+                label="Average"
+                [prevStat]="overallStats.averageScore"
+                [currentStat]="statsByLeague[league].averageScore"
+                [id]="'league-averageScore'"></app-stat-display>
               <app-stat-display label="High game" [currentStat]="statsByLeague[league].highGame" id="league-highGame"></app-stat-display>
               <app-stat-display label="Total pins" [currentStat]="statsByLeague[league].totalPins" id="league-totalPins"></app-stat-display>
               <app-stat-display
@@ -121,7 +125,7 @@
                 [id]="'league-averageSparesPerGame'"></app-stat-display>
               <app-stat-display
                 label="Spare-percentage"
-                [prevStat]="overallStats.sparePercentage"
+                [prevStat]="overallStats.overallSpareRate"
                 [currentStat]="statsByLeague[league].overallSpareRate"
                 [id]="'league-sparePercentage'"
                 [toolTip]="'This is the probability of how likely you hit a spare if your first throw was not a strike.'"
@@ -134,7 +138,7 @@
                 [id]="'league-averageOpensPerGame'"></app-stat-display>
               <app-stat-display
                 label="Open-percentage"
-                [prevStat]="overallStats.openPercentage"
+                [prevStat]="overallStats.overallMissedRate"
                 [currentStat]="statsByLeague[league].overallMissedRate"
                 [id]="'league-openPercentage'"
                 [toolTip]="'This is the probability of how likely you miss a spare if your first throw was not a strike.'"

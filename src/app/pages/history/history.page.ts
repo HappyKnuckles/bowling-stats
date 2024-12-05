@@ -76,6 +76,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   private loadingSubscription: Subscription;
   private leagueSubscriptions: Subscription = new Subscription();
   isLoading: boolean = false;
+  isInit: boolean = true;
   activeFilterCount = this.filterService.activeFilterCount;
 
   constructor(
@@ -111,6 +112,7 @@ export class HistoryPage implements OnInit, OnDestroy {
       await this.loadGameHistory();
       await this.getLeagues();
       this.subscribeToDataEvents();
+      this.isInit = false;
     } catch (error) {
       console.error(error);
     } finally {
@@ -186,7 +188,6 @@ export class HistoryPage implements OnInit, OnDestroy {
   async loadGameHistory(): Promise<void> {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();
-      this.filteredGameHistory = this.gameHistory;
     } catch (error) {
       this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
     }

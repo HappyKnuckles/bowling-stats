@@ -37,6 +37,7 @@ import {
   medalOutline,
 } from 'ionicons/icons';
 import { Game } from 'src/app/models/game-model';
+import { GameUtilsService } from 'src/app/services/game-utils/game-utils.service';
 import { HapticService } from 'src/app/services/haptic/haptic.service';
 import { LoadingService } from 'src/app/services/loader/loading.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
@@ -98,6 +99,7 @@ export class GameComponent implements OnInit {
     private datePipe: DatePipe,
     private hapticService: HapticService,
     private renderer: Renderer2,
+    private gameUtilsService: GameUtilsService,
     private utilsService: UtilsService
   ) {
     addIcons({
@@ -209,7 +211,7 @@ export class GameComponent implements OnInit {
     }
   }
   isGameValid(game: Game): boolean {
-    return this.utilsService.isGameValid(undefined, game);
+    return this.gameUtilsService.isGameValid(undefined, game);
   }
 
   async takeScreenshotAndShare(game: Game): Promise<void> {

@@ -40,7 +40,7 @@ import Swiper from 'swiper';
 import { IonicSlides } from '@ionic/angular';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { SeriesMode } from './seriesModeEnum';
-import { UtilsService } from 'src/app/services/utils/utils.service';
+import { GameUtilsService } from 'src/app/services/game-utils/game-utils.service';
 
 defineCustomElements(window);
 
@@ -134,7 +134,7 @@ export class AddGamePage implements OnInit {
     private userService: UserService,
     private adService: AdService,
     private hapticService: HapticService,
-    private utilsService: UtilsService
+    private gameUtilsService: GameUtilsService
   ) {
     addIcons({ cameraOutline, chevronDown, chevronUp, medalOutline, documentTextOutline, add });
   }
@@ -218,7 +218,7 @@ export class AddGamePage implements OnInit {
   }
 
   isGameValid(game: Game): boolean {
-    return this.utilsService.isGameValid(undefined, game);
+    return this.gameUtilsService.isGameValid(undefined, game);
   }
 
   updateFrameScore(value: any, index: number): void {
@@ -436,7 +436,7 @@ export class AddGamePage implements OnInit {
   // TODO outsource into service
   private parseBowlingScores(input: string): void {
     try {
-      const { frames, frameScores, totalScore } = this.utilsService.parseBowlingScores(input, this.username!);
+      const { frames, frameScores, totalScore } = this.gameUtilsService.parseBowlingScores(input, this.username!);
       this.gameData = this.transformGameService.transformGameData(frames, frameScores, totalScore, false);
 
       if (this.gameData.frames.length === 10 && this.gameData.frameScores.length === 10 && this.gameData.totalScore <= 300) {

@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Game } from 'src/app/models/game-model';
 import { Storage } from '@ionic/storage-angular';
-import { UtilsService } from '../utils/utils.service';
+import { SortUtilsService } from '../sort-utils/sort-utils.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class StorageService {
   leagueDeleted = new EventEmitter<void>();
   leagueChanged = new EventEmitter<void>();
 
-  constructor(private storage: Storage, private utilsService: UtilsService) {
+  constructor(private storage: Storage, private sortUtilsService: SortUtilsService) {
     this.init();
   }
 
@@ -100,7 +100,7 @@ export class StorageService {
       isRenewed = true;
       localStorage.setItem('isRenewedAgainAgain', JSON.stringify(isRenewed));
     }
-    this.utilsService.sortGameHistoryByDate(gameHistory);
+    this.sortUtilsService.sortGameHistoryByDate(gameHistory);
 
     return gameHistory;
   }

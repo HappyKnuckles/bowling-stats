@@ -38,8 +38,8 @@ import { FilterService } from 'src/app/services/filter/filter.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GameComponent } from 'src/app/components/game/game.component';
-import { UtilsService } from 'src/app/services/utils/utils.service';
 import { ExcelService } from 'src/app/services/excel/excel.service';
+import { SortUtilsService } from 'src/app/services/sort-utils/sort-utils.service';
 
 @Component({
   selector: 'app-history',
@@ -87,7 +87,7 @@ export class HistoryPage implements OnInit, OnDestroy {
     private hapticService: HapticService,
     private modalCtrl: ModalController,
     private filterService: FilterService,
-    private utilsService: UtilsService,
+    private sortUtilsService: SortUtilsService,
     private excelService: ExcelService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
@@ -201,7 +201,7 @@ export class HistoryPage implements OnInit, OnDestroy {
             this.filterService.filterGames(this.gameHistory);
           })
           .then(() => {
-            this.utilsService.sortGameHistoryByDate(this.gameHistory);
+            this.sortUtilsService.sortGameHistoryByDate(this.gameHistory);
           })
           .catch((error) => {
             console.error('Error loading game history:', error);
@@ -211,7 +211,7 @@ export class HistoryPage implements OnInit, OnDestroy {
 
     this.filteredGamesSubscription = this.filterService.filteredGames$.subscribe((games) => {
       this.filteredGameHistory = games;
-      this.utilsService.sortGameHistoryByDate(this.filteredGameHistory);
+      this.sortUtilsService.sortGameHistoryByDate(this.filteredGameHistory);
       this.activeFilterCount = this.filterService.activeFilterCount;
     });
 

@@ -12,6 +12,7 @@ import { documentTextOutline } from 'ionicons/icons';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { LeagueSelectorComponent } from '../league-selector/league-selector.component';
 import { UtilsService } from 'src/app/services/utils/utils.service';
+import { GameUtilsService } from 'src/app/services/game-utils/game-utils.service';
 
 @Component({
   selector: 'app-track-grid',
@@ -42,6 +43,7 @@ export class TrackGridComponent implements OnInit {
     private transformGameService: GameDataTransformerService,
     private toastService: ToastService,
     private hapticService: HapticService,
+    private gameUtilsService: GameUtilsService,
     private utilsService: UtilsService
   ) {
     addIcons({ documentTextOutline });
@@ -112,7 +114,7 @@ export class TrackGridComponent implements OnInit {
   }
 
   isGameValid(): boolean {
-    return this.utilsService.isGameValid(this.bowlingService);
+    return this.gameUtilsService.isGameValid(this.bowlingService);
   }
 
   isNumber(value: any): boolean {
@@ -138,7 +140,7 @@ export class TrackGridComponent implements OnInit {
   }
 
   private parseInputValue(inputValue: string, frameIndex: number, inputIndex: number): number {
-    return this.utilsService.parseInputValue(inputValue, frameIndex, inputIndex, this.bowlingService);
+    return this.gameUtilsService.parseInputValue(inputValue, frameIndex, inputIndex, this.bowlingService);
   }
 
   private isValidNumber0to10(value: number): boolean {
@@ -146,7 +148,7 @@ export class TrackGridComponent implements OnInit {
   }
 
   private isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number): boolean {
-    return this.utilsService.isValidFrameScore(inputValue, frameIndex, inputIndex, this.bowlingService);
+    return this.gameUtilsService.isValidFrameScore(inputValue, frameIndex, inputIndex, this.bowlingService);
   }
 
   private handleInvalidInput(event: any): void {

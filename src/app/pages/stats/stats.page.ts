@@ -33,8 +33,8 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 import { FilterComponent } from 'src/app/components/filter/filter.component';
 import { ModalController } from '@ionic/angular';
 import { FilterService } from 'src/app/services/filter/filter.service';
-import { UtilsService } from 'src/app/services/utils/utils.service';
 import { ChartDataService } from 'src/app/services/chart/chart-data.service';
+import { SortUtilsService } from 'src/app/services/sort-utils/sort-utils.service';
 
 @Component({
   selector: 'app-stats',
@@ -184,7 +184,7 @@ export class StatsPage implements OnInit, OnDestroy {
     private hapticService: HapticService,
     private modalCtrl: ModalController,
     private filterService: FilterService,
-    private utilsService: UtilsService,
+    private sortUtilsService: SortUtilsService,
     private chartDataService: ChartDataService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
@@ -282,7 +282,7 @@ export class StatsPage implements OnInit, OnDestroy {
     if (this.gameHistoryChanged || isRefresh) {
       try {
         await this.loadGameHistory();
-        this.utilsService.sortGameHistoryByDate(this.gameHistory, true);
+        this.sortUtilsService.sortGameHistoryByDate(this.gameHistory, true);
         this.loadStats();
 
         if (this.selectedDate) {

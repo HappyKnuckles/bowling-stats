@@ -186,7 +186,6 @@ export class GameUtilsService {
     }
 
     if (frameIndex < 9) {
-      console.log("frame < 9")
       // Regular frames (1-9)
       const firstThrow = bowlingService.frames[frameIndex][0] || 0;
       const secondThrow = inputIndex === 1 ? inputValue : bowlingService.frames[frameIndex][1] || 0;

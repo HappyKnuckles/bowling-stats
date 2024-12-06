@@ -48,7 +48,7 @@ import { ImpactStyle } from '@capacitor/haptics';
 import { StatDisplayComponent } from 'src/app/components/stat-display/stat-display.component';
 import { SpareDisplayComponent } from 'src/app/components/spare-display/spare-display.component';
 import Swiper from 'swiper';
-import { UtilsService } from 'src/app/services/utils/utils.service';
+import { SortUtilsService } from 'src/app/services/sort-utils/sort-utils.service';
 
 @Component({
   selector: 'app-league',
@@ -141,7 +141,7 @@ export class LeaguePage implements OnInit, OnDestroy {
 
   constructor(
     private storageService: StorageService,
-    private utilsService: UtilsService,
+    private sortUtilsService: SortUtilsService,
     private hapticService: HapticService,
     private statService: GameStatsService,
     public loadingService: LoadingService,
@@ -340,7 +340,7 @@ export class LeaguePage implements OnInit, OnDestroy {
 
   private async getGames(): Promise<void> {
     this.games = await this.storageService.loadGameHistory();
-    this.gamesByLeague = this.utilsService.sortGamesByLeagues(this.games);
+    this.gamesByLeague = this.sortUtilsService.sortGamesByLeagues(this.games);
     this.getOverallStats();
     this.calculateStatsForLeagues();
   }
@@ -366,7 +366,7 @@ export class LeaguePage implements OnInit, OnDestroy {
       merge(this.storageService.newGameAdded, this.storageService.gameDeleted).subscribe(() => {
         this.getGames()
           .then(() => {
-            this.utilsService.sortGameHistoryByDate(this.games);
+            this.sortUtilsService.sortGameHistoryByDate(this.games);
           })
           .catch((error: Error) => {
             console.error('Error loading game history:', error);

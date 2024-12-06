@@ -179,12 +179,14 @@ export class GameUtilsService {
   }
 
   isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number, bowlingService: BowlingCalculatorService): boolean {
-    if (frameIndex < 9) {
-      if (inputIndex === 1) {
-        if (bowlingService.frames[frameIndex][0] === undefined) {
-          return false;
-        }
+    if (inputIndex === 1) {
+      if (bowlingService.frames[frameIndex][0] === undefined) {
+        return false;
       }
+    }
+
+    if (frameIndex < 9) {
+      console.log("frame < 9")
       // Regular frames (1-9)
       const firstThrow = bowlingService.frames[frameIndex][0] || 0;
       const secondThrow = inputIndex === 1 ? inputValue : bowlingService.frames[frameIndex][1] || 0;
@@ -196,14 +198,13 @@ export class GameUtilsService {
       // 10th frame
       const firstThrow = bowlingService.frames[frameIndex][0] || 0;
       const secondThrow = bowlingService.frames[frameIndex][1] || 0;
-
       switch (inputIndex) {
         case 0:
           return inputValue <= 10;
         case 1:
           if (firstThrow === 10) {
             // First throw is a strike, second throw can be any value 0-10
-            return inputValue === 0;
+            return inputValue <= 10;
           } else {
             // First throw is not a strike, second throw + first throw must be <= 10
             return firstThrow + inputValue <= 10;

@@ -204,12 +204,12 @@ export class UtilsService {
   }
 
   isValidFrameScore(inputValue: number, frameIndex: number, inputIndex: number, bowlingService: BowlingCalculatorService): boolean {
-    if (inputIndex === 1) {
-      if (bowlingService.frames[frameIndex][0] === undefined) {
-        return false;
-      }
-    }
     if (frameIndex < 9) {
+      if (inputIndex === 1) {
+        if (bowlingService.frames[frameIndex][0] === undefined) {
+          return false;
+        }
+      }
       // Regular frames (1-9)
       const firstThrow = bowlingService.frames[frameIndex][0] || 0;
       const secondThrow = inputIndex === 1 ? inputValue : bowlingService.frames[frameIndex][1] || 0;

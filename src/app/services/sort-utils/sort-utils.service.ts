@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { Game } from 'src/app/models/game-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SortUtilsService {
-
-  constructor() { }
+  constructor() {}
 
   sortGameHistoryByDate(gameHistory: Game[], up?: boolean): Game[] {
     return gameHistory.sort((a: { date: number }, b: { date: number }) => {

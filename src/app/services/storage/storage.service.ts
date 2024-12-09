@@ -9,6 +9,8 @@ import { SortUtilsService } from '../sort-utils/sort-utils.service';
 export class StorageService {
   newGameAdded = new EventEmitter<void>();
   gameDeleted = new EventEmitter<void>();
+  gameEditLeague = new EventEmitter<void>();
+  gameEditHistory = new EventEmitter<void>();
   newLeagueAdded = new EventEmitter<void>();
   leagueDeleted = new EventEmitter<void>();
   leagueChanged = new EventEmitter<void>();

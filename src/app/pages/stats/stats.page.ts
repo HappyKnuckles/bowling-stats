@@ -207,6 +207,7 @@ export class StatsPage implements OnInit, OnDestroy {
       await this.loadDataAndCalculateStats();
       this.subscribeToDataEvents();
       this.generateCharts();
+      this.filteredGameHistory = this.gameHistory;
     } catch (error) {
       console.error(error);
     } finally {

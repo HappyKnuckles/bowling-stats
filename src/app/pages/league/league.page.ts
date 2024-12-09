@@ -17,10 +17,8 @@ import {
   IonItemSliding,
   IonItemOption,
   IonItemOptions,
-  IonInput,
   IonModal,
   IonRefresher,
-  IonAlert,
 } from '@ionic/angular/standalone';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { addIcons } from 'ionicons';
@@ -56,11 +54,9 @@ import { SortUtilsService } from 'src/app/services/sort-utils/sort-utils.service
   styleUrls: ['./league.page.scss'],
   standalone: true,
   imports: [
-    IonAlert,
     IonRefresher,
     IonModal,
     IonText,
-    IonInput,
     IonItemOptions,
     IonItemOption,
     IonItemSliding,
@@ -186,7 +182,7 @@ export class LeaguePage implements OnInit, OnDestroy {
     try {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
-      await this.ngOnInit();
+      await this.getGames();
     } catch (error) {
       console.error(error);
     } finally {
@@ -194,6 +190,7 @@ export class LeaguePage implements OnInit, OnDestroy {
       this.loadingService.setLoading(false);
     }
   }
+
   cancel(league: string) {
     this.selectedSegment = 'Overall';
     const modalToDismiss = this.modals.find((modal) => modal.trigger === league);
@@ -363,7 +360,7 @@ export class LeaguePage implements OnInit, OnDestroy {
     );
 
     this.gameSubscriptions.add(
-      merge(this.storageService.newGameAdded, this.storageService.gameDeleted).subscribe(() => {
+      merge(this.storageService.newGameAdded, this.storageService.gameDeleted, this.storageService.gameEditHistory).subscribe(() => {
         this.getGames()
           .then(() => {
             this.sortUtilsService.sortGameHistoryByDate(this.games);

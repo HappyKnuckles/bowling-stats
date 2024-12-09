@@ -59,7 +59,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.filterService.setDefaultFilters(gameHistory);
     this.filterService.filterGames(gameHistory);
     this.gameStatsService.calculateStats(gameHistory);
-
     this.greetUser();
   }
 

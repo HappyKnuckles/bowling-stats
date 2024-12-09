@@ -3,11 +3,10 @@ import { Game } from 'src/app/models/game-model';
 import { BowlingCalculatorService } from '../bowling-calculator/bowling-calculator.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GameUtilsService {
-
-  constructor() { }
+  constructor() {}
 
   isGameValid(bowlingService?: BowlingCalculatorService, game?: Game): boolean {
     const frames = game ? game.frames : bowlingService!.frames;

@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { SortUtilsService } from './sort-utils.service';
 
-
 describe('SortUtilsService', () => {
   let service: SortUtilsService;
 

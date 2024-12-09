@@ -15,6 +15,7 @@
   </ng-container>
   <ng-template #content>
     <ng-container *ngFor="let league of getLeagueKeys(); let i = index;">
+      @if(league !== 'Practice'){
       <ion-item-sliding class="sliding" #slidingItem>
         <ion-item-options side="end" (ionSwipe)="deleteLeague(league); slidingItem.closeOpened();">
           <ion-item-option color="danger" expandable (click)="deleteLeague(league); slidingItem.closeOpened();">
@@ -34,17 +35,26 @@
             <div class="score">Avg: {{getStatsByLeague(league).averageScore | number: '1.1-2' }}</div>
             <div class="score">High: {{getStatsByLeague(league).highGame}}</div>
           </ion-label>
-          <ion-alert>
-            <ion-input label="League name:" [(ngModel)]="leagues[i]">
-              <ion-button (ionClick)="saveLeague(league)">Save</ion-button>
-            </ion-input>
-          </ion-alert>
-
           <ion-button fill="clear" slot="end" [disabled]="isEditMode[league]">
             <ion-icon name="chevron-forward" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-item>
       </ion-item-sliding>
+      } @else {
+      <div class="sliding">
+        <ion-item (click)="loadingService.setLoading(true)" [id]="league" class="ion-activatable ripple-parent rectangle">
+          <ion-label class="game-info">
+            <div class="title">{{ league }}</div>
+            <div class="score">Games: {{getGamesByLeague(league).length}}</div>
+            <div class="score">Avg: {{getStatsByLeague(league).averageScore | number: '1.1-2' }}</div>
+            <div class="score">High: {{getStatsByLeague(league).highGame}}</div>
+          </ion-label>
+          <ion-button fill="clear" slot="end" [disabled]="isEditMode[league]">
+            <ion-icon name="chevron-forward" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </div>
+      }
     </ng-container>
   </ng-template>
 

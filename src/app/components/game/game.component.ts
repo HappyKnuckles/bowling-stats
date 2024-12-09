@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe } from '@angular/common';
-import { Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, Input, Renderer2, ViewChild, OnChanges } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ImpactStyle } from '@capacitor/haptics';
@@ -82,7 +82,7 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
   ],
   standalone: true,
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnChanges {
   @Input() games!: Game[];
   showingGames: Game[] = [];
   @Input() leagues!: string[];
@@ -114,8 +114,10 @@ export class GameComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.showingGames = this.games.slice(0, 15);
+  ngOnChanges(): void {
+    if (this.games) {
+      this.showingGames = this.games.slice(0, 15);
+    }
   }
 
   async deleteGame(gameId: string): Promise<void> {
@@ -203,6 +205,7 @@ export class GameComponent implements OnInit {
         } else game.isPractice = false;
 
         await this.storageService.saveGameToLocalStorage(game, true);
+        this.isLeaguePage ? this.storageService.gameEditLeague.emit() : this.storageService.gameEditHistory.emit();
         this.toastService.showToast('Game edit saved sucessfully!', 'refresh-outline');
         this.enableEdit(game);
       }

@@ -204,7 +204,8 @@ export class StatsPage implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     try {
       this.loadingService.setLoading(true);
-      await this.loadDataAndCalculateStats();
+      await this.loadGameHistory();
+      await this.calculateStats();
       this.subscribeToDataEvents();
       this.generateCharts();
     } catch (error) {
@@ -237,7 +238,8 @@ export class StatsPage implements OnInit, OnDestroy {
     try {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
-      await this.loadDataAndCalculateStats(true);
+      await this.loadGameHistory();
+      await this.calculateStats(true);
       this.generateCharts(undefined, true);
     } catch (error) {
       console.error(error);
@@ -278,11 +280,11 @@ export class StatsPage implements OnInit, OnDestroy {
     return this.segments[index] || 'Overall';
   }
 
-  private async loadDataAndCalculateStats(isRefresh?: boolean): Promise<void> {
+  private calculateStats(isRefresh?: boolean): void {
     if (this.gameHistoryChanged || isRefresh) {
       try {
-        await this.loadGameHistory();
-        this.sortUtilsService.sortGameHistoryByDate(this.gameHistory, true);
+        // await this.loadGameHistory();
+        // this.sortUtilsService.sortGameHistoryByDate(this.gameHistory, true);
         this.loadStats();
 
         if (this.selectedDate) {
@@ -299,6 +301,7 @@ export class StatsPage implements OnInit, OnDestroy {
   private async loadGameHistory() {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();
+      this.sortUtilsService.sortGameHistoryByDate(this.gameHistory, true);
       this.filterService.filterGames(this.gameHistory);
     } catch (error) {
       this.toastService.showToast(`Error loading history: ${error}`, 'bug', true);
@@ -360,14 +363,15 @@ export class StatsPage implements OnInit, OnDestroy {
     this.gameSubscriptions.add(
       merge(this.storageService.newGameAdded, this.storageService.gameDeleted).subscribe(() => {
         this.gameHistoryChanged = true;
-        this.loadDataAndCalculateStats()
-          .then(() => {
-            this.generateCharts();
-            this.statsValueChanged = [true, true, true];
-          })
-          .catch((error) => {
-            console.error('Error loading data and calculating stats:', error);
-          });
+        this.loadGameHistory();
+        // this.calculateStats()
+        //   .then(() => {
+        //     this.generateCharts();
+        //     this.statsValueChanged = [true, true, true];
+        //   })
+        //   .catch((error) => {
+        //     console.error('Error loading data and calculating stats:', error);
+        //   });
       })
     );
 
@@ -375,14 +379,9 @@ export class StatsPage implements OnInit, OnDestroy {
       this.filteredGameHistory = games;
       this.activeFilterCount = this.filterService.activeFilterCount;
       this.gameHistoryChanged = true;
-      this.loadDataAndCalculateStats()
-        .then(() => {
-          this.generateCharts(undefined, true);
-          this.statsValueChanged = [true, true, true];
-        })
-        .catch((error) => {
-          console.error('Error loading data and calculating stats:', error);
-        });
+      this.calculateStats();
+      this.generateCharts(undefined, true);
+      this.statsValueChanged = [true, true, true];
     });
   }
 

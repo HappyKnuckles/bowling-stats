@@ -169,7 +169,7 @@
                 [games]="getGamesByLeague(league)"
                 [gameCount]="getGamesByLeague(league).length"
                 [isLeaguePage]="true"
-                [leagues]="leagues"></app-game>
+                [leagues]="getLeagueKeys(true)"></app-game>
             </div>
           </swiper-slide>
         </swiper-container>

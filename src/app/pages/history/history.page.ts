@@ -111,7 +111,6 @@ export class HistoryPage implements OnInit, OnDestroy {
       await this.loadGameHistory();
       await this.getLeagues();
       this.subscribeToDataEvents();
-      this.filteredGameHistory = this.gameHistory;
     } catch (error) {
       console.error(error);
     } finally {
@@ -187,6 +186,7 @@ export class HistoryPage implements OnInit, OnDestroy {
   async loadGameHistory(): Promise<void> {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();
+      this.filterService.filterGames(this.gameHistory);
     } catch (error) {
       this.toastService.showToast(`Error loading history! ${error}`, 'bug', true);
     }
@@ -196,9 +196,6 @@ export class HistoryPage implements OnInit, OnDestroy {
     this.gameSubscriptions.add(
       merge(this.storageService.newGameAdded, this.storageService.gameDeleted, this.storageService.gameEditLeague).subscribe(() => {
         this.loadGameHistory()
-          .then(() => {
-            this.filterService.filterGames(this.gameHistory);
-          })
           .then(() => {
             this.sortUtilsService.sortGameHistoryByDate(this.gameHistory);
           })

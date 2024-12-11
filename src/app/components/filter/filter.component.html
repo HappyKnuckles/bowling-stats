@@ -104,13 +104,19 @@
       <ion-toggle [(ngModel)]="filters.isClean" name="isClean">Only clean games</ion-toggle>
     </ion-item>
     <ion-item>
-      <ion-select name="league" [(ngModel)]="filters.league" label="League" [value]="filters.league">
+      <ion-select
+        name="league"
+        [(ngModel)]="filters.league"
+        [value]="filters.league"
+        label="League"
+        multiple="true"
+        (ionChange)="handleSelect($event)">
         <ion-select-option value="all">All</ion-select-option>
         <ion-select-option value="">None</ion-select-option>
         <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
       </ion-select>
-    </ion-item></ion-list
-  >
+    </ion-item>
+  </ion-list>
 </ion-content>
 <ion-footer style="display: flex" class="ion-justify-content-center">
   <ion-button class="confirmBtn" (click)="confirm()">Confirm</ion-button>

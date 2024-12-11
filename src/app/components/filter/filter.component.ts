@@ -21,11 +21,13 @@ import {
   IonSelect,
   IonList,
 } from '@ionic/angular/standalone';
-import { merge, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Filter, TimeRange } from 'src/app/models/filter-model';
 import { Game } from 'src/app/models/game-model';
 import { FilterService } from 'src/app/services/filter/filter.service';
+import { SortUtilsService } from 'src/app/services/sort-utils/sort-utils.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
   selector: 'app-filter',
@@ -66,22 +68,38 @@ export class FilterComponent implements OnInit, OnDestroy {
   private leagueSubscriptions: Subscription = new Subscription();
   private filterSubscription: Subscription;
 
-  constructor(private modalCtrl: ModalController, private filterService: FilterService, private storageService: StorageService) {
+  constructor(
+    private modalCtrl: ModalController,
+    private filterService: FilterService,
+    private sortUtilsService: SortUtilsService,
+    private storageService: StorageService,
+    private utilsService: UtilsService
+  ) {
     this.filterSubscription = this.filterService.filters$.subscribe((filters: Filter) => {
       this.filters = filters;
     });
-    this.leagueSubscriptions.add(
-      merge(this.storageService.newLeagueAdded, this.storageService.leagueDeleted, this.storageService.leagueChanged).subscribe(() => {
-        this.storageService.loadLeagues().then((leagues) => {
-          this.leagues = leagues;
-        });
-      })
-    );
+    // this.leagueSubscriptions.add(
+    //   merge(this.storageService.newLeagueAdded, this.storageService.leagueDeleted, this.storageService.leagueChanged).subscribe(() => {
+    //     this.storageService.loadLeagues().then((leagues) => {
+    //       this.leagues = leagues;
+    //     });
+    //   })
+    // );
   }
 
   ngOnDestroy(): void {
     this.filterSubscription.unsubscribe();
     this.leagueSubscriptions.unsubscribe();
+  }
+
+  ngOnInit(): void {
+    if (!this.filterService.filters.startDate && !this.filterService.filters.endDate) {
+      this.filterService.filters.startDate = new Date(this.games[this.games.length - 1].date).toISOString() || Date.now().toString();
+      this.filterService.filters.endDate = new Date(this.games[0].date).toISOString() || Date.now().toString();
+    }
+    // this.leagues = await this.storageService.loadLeagues();
+    this.getHighlightedDates();
+    this.getLeagues();
   }
 
   startDateChange(event: CustomEvent) {
@@ -112,6 +130,14 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
+  handleSelect(event: CustomEvent) {
+    if (event.detail.value.includes('all')) {
+      this.filters.league = ['all'];
+    } else if (event.detail.value.includes('')) {
+      this.filters.league = [''];
+    }
+  }
+
   cancel() {
     this.filterService.filters = localStorage.getItem('filter') ? JSON.parse(localStorage.getItem('filter')!) : this.filterService.filters;
     return this.modalCtrl.dismiss(null, 'cancel');
@@ -135,13 +161,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.filterService.filters.endDate = event.detail.value!;
   }
 
-  async ngOnInit(): Promise<void> {
-    if (!this.filterService.filters.startDate && !this.filterService.filters.endDate) {
-      this.filterService.filters.startDate = new Date(this.games[this.games.length - 1].date).toISOString() || Date.now().toString();
-      this.filterService.filters.endDate = new Date(this.games[0].date).toISOString() || Date.now().toString();
-    }
-    this.leagues = await this.storageService.loadLeagues();
-    this.getHighlightedDates();
+  private getLeagues() {
+    const gamesByLeague = this.sortUtilsService.sortGamesByLeagues(this.games, false);
+    this.leagues = Object.keys(gamesByLeague);
   }
 
   private getHighlightedDates() {
@@ -152,19 +174,12 @@ export class FilterComponent implements OnInit, OnDestroy {
     // maybe make days that are in current filter a different color as well
     this.highlightedDates = this.games.map((game) => {
       const date = new Date(game.date);
-      const formattedDate = this.transformDate(date);
+      const formattedDate = this.utilsService.transformDate(date);
       return {
         date: formattedDate,
         textColor: textColor,
         backgroundColor: backgroundColor,
       };
     });
-  }
-
-  private transformDate(date: Date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 }

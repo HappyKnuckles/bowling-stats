@@ -2,19 +2,20 @@ import { Injectable } from '@angular/core';
 import { Filter, TimeRange } from 'src/app/models/filter-model';
 import { Game } from 'src/app/models/game-model';
 import { BehaviorSubject } from 'rxjs';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FilterService {
-  filters: Filter;
+  filters!: Filter;
   defaultFilters: Filter = {
     excludePractice: false,
     minScore: 0,
     maxScore: 300,
     isClean: false,
     isPerfect: false,
-    league: 'all',
+    league: ['all'],
     timeRange: TimeRange.ALL,
     startDate: '',
     endDate: '',
@@ -23,11 +24,9 @@ export class FilterService {
   activeFilterCount: number = 0;
   private filteredGamesSubject = new BehaviorSubject<Game[]>([]);
   filteredGames$ = this.filteredGamesSubject.asObservable();
-  private filtersSubject = new BehaviorSubject<Filter>(this.loadInitialFilters());
+  private filtersSubject = new BehaviorSubject<Filter>(this.defaultFilters);
   filters$ = this.filtersSubject.asObservable();
-  constructor() {
-    this.filters = this.loadInitialFilters();
-  }
+  constructor(private utilsService: UtilsService) {}
 
   filterGames(games: Game[]): void {
     localStorage.setItem('filter', JSON.stringify(this.filters));
@@ -45,10 +44,10 @@ export class FilterService {
       const matchesCleanFilter = !this.filters.isClean || game.isClean;
 
       let matchesLeagueFilter = true;
-      if (this.filters.league !== 'all') {
-        matchesLeagueFilter = this.filters.league === game.league;
+      if (!this.filters.league.includes('all')) {
+        matchesLeagueFilter = this.filters.league.includes(game.league!);
       }
-      if (this.filters.league === '') {
+      if (this.filters.league.includes('')) {
         matchesLeagueFilter = game.league === '' || game.league === undefined;
       }
 
@@ -73,14 +72,24 @@ export class FilterService {
     const currentDate = new Date();
     const oneWeekLater = new Date(currentDate.setDate(currentDate.getDate() + 7));
     this.defaultFilters.endDate = oneWeekLater.toISOString();
-    this.filters.startDate = this.defaultFilters.startDate;
-    this.filters.endDate = this.defaultFilters.endDate;
+    this.filters = this.loadInitialFilters();
     this.filtersSubject.next(this.filters);
   }
 
-  updateActiveFilterCount(): void {
+  private updateActiveFilterCount(): void {
     this.activeFilterCount = Object.keys(this.filters).reduce((count, key) => {
-      if (this.filters[key as keyof Filter] !== this.defaultFilters[key as keyof Filter]) {
+      const filterValue = this.filters[key as keyof Filter];
+      const defaultValue = this.defaultFilters[key as keyof Filter];
+
+      if (key === 'startDate' || key === 'endDate') {
+        if (!this.utilsService.areDatesEqual(filterValue as string, defaultValue as string)) {
+          return count + 1;
+        }
+      } else if (Array.isArray(filterValue) && Array.isArray(defaultValue)) {
+        if (!this.utilsService.areArraysEqual(filterValue, defaultValue)) {
+          return count + 1;
+        }
+      } else if (filterValue !== defaultValue) {
         return count + 1;
       }
       return count;

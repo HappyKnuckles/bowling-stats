@@ -15,9 +15,10 @@ export class SortUtilsService {
     });
   }
 
-  sortGamesByLeagues(games: Game[]): { [key: string]: Game[] } {
+  sortGamesByLeagues(games: Game[], includePractice?: boolean): { [key: string]: Game[] } {
     const gamesByLeague = games.reduce((acc: { [key: string]: Game[] }, game: Game) => {
-      const league = game.league || 'Practice';
+      const league = game.league || (includePractice ? 'Practice' : '');
+      if (!league) return acc;
       if (!acc[league]) {
         acc[league] = [];
       }

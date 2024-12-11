@@ -207,7 +207,6 @@ export class StatsPage implements OnInit, OnDestroy {
       await this.loadDataAndCalculateStats();
       this.subscribeToDataEvents();
       this.generateCharts();
-      this.filteredGameHistory = this.gameHistory;
     } catch (error) {
       console.error(error);
     } finally {
@@ -300,6 +299,7 @@ export class StatsPage implements OnInit, OnDestroy {
   private async loadGameHistory() {
     try {
       this.gameHistory = await this.storageService.loadGameHistory();
+      this.filterService.filterGames(this.gameHistory);
     } catch (error) {
       this.toastService.showToast(`Error loading history: ${error}`, 'bug', true);
     }
@@ -361,9 +361,6 @@ export class StatsPage implements OnInit, OnDestroy {
       merge(this.storageService.newGameAdded, this.storageService.gameDeleted).subscribe(() => {
         this.gameHistoryChanged = true;
         this.loadDataAndCalculateStats()
-          .then(() => {
-            this.filterService.filterGames(this.gameHistory);
-          })
           .then(() => {
             this.generateCharts();
             this.statsValueChanged = [true, true, true];

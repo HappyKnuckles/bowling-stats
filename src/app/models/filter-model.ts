@@ -4,7 +4,7 @@ export interface Filter {
   maxScore: number;
   isClean: boolean;
   isPerfect: boolean;
-  league: string;
+  league: string[];
   timeRange: TimeRange;
   startDate?: string;
   endDate?: string;

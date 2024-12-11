@@ -99,7 +99,7 @@ export class LeaguePage implements OnInit, OnDestroy {
   @ViewChildren('modal') modals!: QueryList<IonModal>;
   selectedSegment: string = 'Overall';
   segments: string[] = ['Overall', 'Spares', 'Games'];
-  leagues: string[] = [];
+  // leagues: string[] = [];
   games: Game[] = [];
   isEditMode: { [key: string]: boolean } = {};
   gamesByLeague: { [key: string]: Game[] } = {};
@@ -229,7 +229,10 @@ export class LeaguePage implements OnInit, OnDestroy {
     return this.statsByLeague[league] || [];
   }
 
-  getLeagueKeys(): string[] {
+  getLeagueKeys(excludePractice: boolean = false): string[] {
+    if (excludePractice) {
+      return Object.keys(this.gamesByLeague).filter((league) => league !== 'Practice');
+    }
     return Object.keys(this.gamesByLeague);
   }
 
@@ -337,7 +340,7 @@ export class LeaguePage implements OnInit, OnDestroy {
 
   private async getGames(): Promise<void> {
     this.games = await this.storageService.loadGameHistory();
-    this.gamesByLeague = this.sortUtilsService.sortGamesByLeagues(this.games);
+    this.gamesByLeague = this.sortUtilsService.sortGamesByLeagues(this.games, true);
     this.getOverallStats();
     this.calculateStatsForLeagues();
   }

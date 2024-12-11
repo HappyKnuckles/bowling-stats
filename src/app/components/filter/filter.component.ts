@@ -133,9 +133,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   handleSelect(event: CustomEvent) {
     if (event.detail.value.includes('all')) {
       this.filters.league = ['all'];
-    } else if (event.detail.value.includes('')) {
-      this.filters.league = [''];
-    }
+    } 
+    // else if (event.detail.value.includes('')) {
+    //   this.filters.league = [''];
+    // }
   }
 
   cancel() {

@@ -48,7 +48,7 @@ export class FilterService {
         matchesLeagueFilter = this.filters.league.includes(game.league!);
       }
       if (this.filters.league.includes('')) {
-        matchesLeagueFilter = game.league === '' || game.league === undefined;
+        matchesLeagueFilter = game.league === '' || game.league === undefined || this.filters.league.includes(game.league);
       }
 
       return isWithinDateRange && isWithinScoreRange && matchesPracticeFilter && matchesPerfectFilter && matchesCleanFilter && matchesLeagueFilter;

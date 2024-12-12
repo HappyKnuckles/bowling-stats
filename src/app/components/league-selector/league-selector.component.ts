@@ -170,6 +170,10 @@ export class LeagueSelectorComponent implements OnInit, OnDestroy {
           {
             text: 'Cancel',
             role: 'cancel',
+            handler: () => {
+              this.selectedLeague = '';
+              this.leagueChanged.emit(this.selectedLeague);
+            },
           },
           {
             text: 'Add',

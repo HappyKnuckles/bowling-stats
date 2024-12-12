@@ -10,11 +10,11 @@
 <ion-content [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> </ion-refresher>
   <!-- Show this message if there are no game history items and it's not loading -->
-  <ng-container *ngIf="(getLeagueKeys().length <= 0) && !isLoading; else content">
+  <ng-container *ngIf="(leagueKeys.length <= 0) && !isLoading; else content">
     <ion-text class="no-game-text"> No leagues saved</ion-text>
   </ng-container>
   <ng-template #content>
-    <ng-container *ngFor="let league of getLeagueKeys(); let i = index;">
+    <ng-container *ngFor="let league of leagueKeys; let i = index;">
       @if(league !== 'Practice'){
       <ion-item-sliding class="sliding" #slidingItem>
         <ion-item-options side="end" (ionSwipe)="deleteLeague(league); slidingItem.closeOpened();">
@@ -58,7 +58,7 @@
     </ng-container>
   </ng-template>
 
-  <ion-modal *ngFor="let league of getLeagueKeys()" [trigger]="league" #modal (didPresent)="loadingService.setLoading(false)">
+  <ion-modal *ngFor="let league of leagueKeys" [trigger]="league" #modal (didPresent)="loadingService.setLoading(false)">
     <ng-template>
       <ion-header [translucent]="true">
         <ion-toolbar>
@@ -75,84 +75,27 @@
       </ion-header>
       <ion-content>
         <swiper-container
+          [rewind]="true"
+          [spaceBetween]="8"
           [modules]="swiperModules"
           [slidesPerView]="1"
           #swiper
           (swiperslidechange)="onSlideChanged()"
-          [autoheight]="true"
+          [autoHeight]="true"
           style="background: var(--ion-item-background)">
           <!-- Overall Segment -->
           <swiper-slide>
             <div class="tab">
-              <app-stat-display label="Games" [currentStat]="statsByLeague[league].totalGames" id="league-totalGames"></app-stat-display>
-              <app-stat-display
-                label="Perfect games"
-                [currentStat]="statsByLeague[league].perfectGameCount"
-                [toolTip]="'A perfect game means every frame is filled with strikes.'"
-                [id]="'league-perfectGameCount'"></app-stat-display>
-              <app-stat-display
-                label="Clean games"
-                [currentStat]="statsByLeague[league].cleanGameCount"
-                [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"
-                [id]="'league-cleanGameCount'"></app-stat-display>
-              <app-stat-display
-                label="Clean game percentage"
-                [prevStat]="overallStats.cleanGamePercentage"
-                [currentStat]="statsByLeague[league].cleanGamePercentage"
-                [toolTip]="'The percentage of how many games were clean games.'"
-                [id]="'league-cleanGamePercentage'"
-                [isPercentage]="true"></app-stat-display>
-              <app-stat-display
-                label="Average"
-                [prevStat]="overallStats.averageScore"
-                [currentStat]="statsByLeague[league].averageScore"
-                [id]="'league-averageScore'"></app-stat-display>
-              <app-stat-display label="High game" [currentStat]="statsByLeague[league].highGame" id="league-highGame"></app-stat-display>
-              <app-stat-display label="Total pins" [currentStat]="statsByLeague[league].totalPins" id="league-totalPins"></app-stat-display>
-              <app-stat-display
-                label="First ball average"
-                [prevStat]="overallStats.averageFirstCount"
-                [currentStat]="statsByLeague[league].averageFirstCount"
-                [id]="'league-averageFirstCount'"></app-stat-display>
-              <app-stat-display label="Total strikes" [currentStat]="statsByLeague[league].totalStrikes" id="league-totalStrikes"></app-stat-display>
-              <app-stat-display
-                label="Strikes per game"
-                [prevStat]="overallStats.averageStrikesPerGame"
-                [currentStat]="statsByLeague[league].averageStrikesPerGame"
-                [id]="'league-averageStrikesPerGame'"></app-stat-display>
-              <app-stat-display
-                label="Strike-percentage"
-                [prevStat]="overallStats.strikePercentage"
-                [currentStat]="statsByLeague[league].strikePercentage"
-                [id]="'league-strikePercentage'"
-                [toolTip]="'This shows your strike probability, calculated as the percentage of strikes you achieve out of a maximum of 12 per game.'"
-                [isPercentage]="true"></app-stat-display>
-              <app-stat-display label="Total spares" [currentStat]="statsByLeague[league].totalSpares" id="league-totalSpares"></app-stat-display>
-              <app-stat-display
-                label="Spares per game"
-                [prevStat]="overallStats.averageSparesPerGame"
-                [currentStat]="statsByLeague[league].averageSparesPerGame"
-                [id]="'league-averageSparesPerGame'"></app-stat-display>
-              <app-stat-display
-                label="Spare-percentage"
-                [prevStat]="overallStats.overallSpareRate"
-                [currentStat]="statsByLeague[league].overallSpareRate"
-                [id]="'league-sparePercentage'"
-                [toolTip]="'This is the probability of how likely you hit a spare if your first throw was not a strike.'"
-                [isPercentage]="true"></app-stat-display>
-              <app-stat-display label="Total opens" [currentStat]="statsByLeague[league].totalSparesMissed" id="totalSparesMissed"></app-stat-display>
-              <app-stat-display
-                label="Opens per game"
-                [prevStat]="overallStats.averageOpensPerGame"
-                [currentStat]="statsByLeague[league].averageOpensPerGame"
-                [id]="'league-averageOpensPerGame'"></app-stat-display>
-              <app-stat-display
-                label="Open-percentage"
-                [prevStat]="overallStats.overallMissedRate"
-                [currentStat]="statsByLeague[league].overallMissedRate"
-                [id]="'league-openPercentage'"
-                [toolTip]="'This is the probability of how likely you miss a spare if your first throw was not a strike.'"
-                [isPercentage]="true"></app-stat-display>
+              <ng-container *ngFor="let stat of statDefinitions">
+                <app-stat-display
+                  [label]="stat.label"
+                  [currentStat]="statsByLeague[league][stat.key]"
+                  [prevStat]="stat.prevKey ? overallStats[stat.prevKey] : undefined"
+                  [toolTip]="stat.toolTip"
+                  [id]="stat.id"
+                  [isPercentage]="stat.isPercentage || false">
+                </app-stat-display>
+              </ng-container>
             </div>
           </swiper-slide>
 
@@ -169,7 +112,8 @@
                 [games]="getGamesByLeague(league)"
                 [gameCount]="getGamesByLeague(league).length"
                 [isLeaguePage]="true"
-                [leagues]="getLeagueKeys(true)"></app-game>
+                [leagues]="leagueKeys"
+                (resizeSwiperEvent)="resize()"></app-game>
             </div>
           </swiper-slide>
         </swiper-container>

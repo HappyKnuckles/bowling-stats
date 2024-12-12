@@ -34,6 +34,10 @@ swiper-container {
   height: auto;
 }
 
+.tab {
+  padding: 8px 0 16px;
+}
+
 swiper-slide {
   width: 100%;
   height: auto;
@@ -78,10 +82,12 @@ ion-app {
 .tooltip {
   padding: 8px;
 }
+
 .tooltipPopover {
   --min-width: 200px;
   --max-width: fit-content;
 }
+
 .blue .tooltip {
   color: black;
 }

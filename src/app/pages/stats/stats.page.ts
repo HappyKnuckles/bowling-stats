@@ -140,6 +140,123 @@ export class StatsPage implements OnInit, OnDestroy {
     overallSpareRate: 0,
     overallMissedRate: 0,
   };
+  statDefinitions = [
+    { label: 'Games', key: 'totalGames', id: 'totalGames' },
+    {
+      label: 'Perfect games',
+      key: 'perfectGameCount',
+      id: 'perfectGameCount',
+      toolTip: 'A perfect game means every frame is filled with strikes.',
+      prevKey: 'perfectGameCount',
+    },
+    {
+      label: 'Clean games',
+      key: 'cleanGameCount',
+      id: 'cleanGameCount',
+      toolTip: 'A clean game means every frame is filled with either a strike or a spare.',
+      prevKey: 'cleanGameCount',
+    },
+    {
+      label: 'Clean game percentage',
+      key: 'cleanGamePercentage',
+      id: 'cleanGamePercentage',
+      isPercentage: true,
+      toolTip: 'The percentage of how many games were clean games.',
+      prevKey: 'cleanGamePercentage',
+    },
+    { label: 'Average', key: 'averageScore', id: 'averageScore', prevKey: 'averageScore' },
+    { label: 'High game', key: 'highGame', id: 'highGame' },
+    { label: 'Total pins', key: 'totalPins', id: 'totalPins' },
+    { label: 'First ball average', key: 'averageFirstCount', id: 'averageFirstCount', prevKey: 'averageFirstCount' },
+    { label: 'Total strikes', key: 'totalStrikes', id: 'totalStrikes' },
+    { label: 'Strikes per game', key: 'averageStrikesPerGame', id: 'averageStrikesPerGame', prevKey: 'averageStrikesPerGame' },
+    {
+      label: 'Strike-percentage',
+      key: 'strikePercentage',
+      id: 'strikePercentage',
+      isPercentage: true,
+      toolTip: 'This is the strike probability, calculated as the percentage of strikes you achieve out of a maximum of 12 per game.',
+      prevKey: 'strikePercentage',
+    },
+    { label: 'Total spares', key: 'totalSpares', id: 'totalSpares' },
+    { label: 'Spares per game', key: 'averageSparesPerGame', id: 'averageSparesPerGame', prevKey: 'averageSparesPerGame' },
+    {
+      label: 'Spare-percentage',
+      key: 'overallSpareRate',
+      id: 'sparePercentage',
+      isPercentage: true,
+      toolTip: 'This is the probability of how likely you hit a spare if your first throw was not a strike.',
+      prevKey: 'overallSpareRate',
+    },
+    { label: 'Total opens', key: 'totalSparesMissed', id: 'totalSparesMissed' },
+    { label: 'Opens per game', key: 'averageOpensPerGame', id: 'averageOpensPerGame', prevKey: 'averageOpensPerGame' },
+    {
+      label: 'Open-percentage',
+      key: 'overallMissedRate',
+      id: 'openPercentage',
+      isPercentage: true,
+      toolTip: 'This is the probability of how likely you miss a spare if your first throw was not a strike.',
+      prevKey: 'overallMissedRate',
+    },
+  ];
+  sessionStatDefinitions = [
+    { label: 'Games', key: 'totalGames', id: 'sessionTotalGames' },
+    {
+      label: 'Perfect games',
+      key: 'perfectGameCount',
+      id: 'sessionPerfectGameCount',
+      toolTip: 'A perfect game means every frame is filled with strikes.',
+    },
+    {
+      label: 'Clean games',
+      key: 'cleanGameCount',
+      id: 'sessionCleanGameCount',
+      toolTip: 'A clean game means every frame is filled with either a strike or a spare.',
+    },
+    {
+      label: 'Clean game percentage',
+      key: 'cleanGamePercentage',
+      id: 'sessionCleanGamePercentage',
+      isPercentage: true,
+      toolTip: 'The percentage of how many games were clean games.',
+      prevKey: 'cleanGamePercentage',
+    },
+    { label: 'Average', key: 'averageScore', id: 'sessionAverage', prevKey: 'averageScore' },
+    { label: 'High game', key: 'highGame', id: 'sessionHighGame' },
+    { label: 'Low game', key: 'lowGame', id: 'sessionLowGame' },
+    { label: 'Total pins', key: 'totalPins', id: 'sessionTotalPins' },
+    { label: 'First ball average', key: 'averageFirstCount', id: 'sessionAverageFirstCount', prevKey: 'averageFirstCount' },
+    { label: 'Total strikes', key: 'totalStrikes', id: 'sessionTotalStrikes' },
+    { label: 'Strikes per game', key: 'averageStrikesPerGame', id: 'sessionAverageStrikesPerGame', prevKey: 'averageStrikesPerGame' },
+    {
+      label: 'Strike-percentage',
+      key: 'strikePercentage',
+      id: 'sessionStrikePercentage',
+      isPercentage: true,
+      toolTip: 'This shows your strike probability, calculated as the percentage of strikes you achieve out of a maximum of 12 per game.',
+      prevKey: 'strikePercentage',
+    },
+    { label: 'Total spares', key: 'totalSpares', id: 'sessionTotalSpares' },
+    { label: 'Spares per game', key: 'averageSparesPerGame', id: 'sessionAverageSparesPerGame', prevKey: 'averageSparesPerGame' },
+    {
+      label: 'Spare-percentage',
+      key: 'overallSpareRate',
+      id: 'sessionSparePercentage',
+      isPercentage: true,
+      toolTip: 'This is the probability of how likely you hit a spare if your first throw was not a strike.',
+      prevKey: 'overallSpareRate',
+    },
+    { label: 'Total opens', key: 'totalSparesMissed', id: 'sessionTotalSparesMissed' },
+    { label: 'Opens per game', key: 'averageOpensPerGame', id: 'sessionAverageOpensPerGame', prevKey: 'averageOpensPerGame' },
+    {
+      label: 'Open-percentage',
+      key: 'overallMissedRate',
+      id: 'sessionOpenPercentage',
+      isPercentage: true,
+      toolTip: 'This is the probability of how likely you miss a spare if your first throw was not a strike.',
+      prevKey: 'overallMissedRate',
+    },
+  ];
   selectedDate: number = 0;
   uniqueSortedDates: number[] = [];
   // Game Data
@@ -205,9 +322,10 @@ export class StatsPage implements OnInit, OnDestroy {
     try {
       this.loadingService.setLoading(true);
       await this.loadGameHistory();
-      await this.calculateStats();
+      this.calculateStats();
       this.subscribeToDataEvents();
       this.generateCharts();
+      this.swiperInstance?.updateAutoHeight();
     } catch (error) {
       console.error(error);
     } finally {
@@ -239,7 +357,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.hapticService.vibrate(ImpactStyle.Medium, 200);
       this.loadingService.setLoading(true);
       await this.loadGameHistory();
-      await this.calculateStats(true);
+      this.calculateStats(true);
       this.generateCharts(undefined, true);
     } catch (error) {
       console.error(error);

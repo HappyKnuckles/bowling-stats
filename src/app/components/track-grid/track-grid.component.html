@@ -68,18 +68,20 @@
   </ion-grid>
 </div>
 <div style="margin: 0 5px">
-  <ion-item style="border-radius: 7px">
-    <ion-checkbox [(ngModel)]="isPractice" name="isPractice" #checkbox (ionChange)="isPracticeChanged.emit(isPractice)">Practice</ion-checkbox>
-  </ion-item>
-  <!-- TODO make this reset on save-->
-  <app-league-selector [isAddPage]="true" (leagueChanged)="onLeagueChanged($event)" #leagueSelector></app-league-selector>
-  <ion-item style="border-radius: 7px">
-    <ion-textarea
-      label="Note"
-      type="text"
-      [(ngModel)]="note"
-      name="note"
-      [autoGrow]="true"
-      placeholder="today knee pain, used Ion Pro Max"></ion-textarea>
-  </ion-item>
+  <ion-list lines="full" style="border-radius: 7px">
+    <ion-item>
+      <ion-checkbox [(ngModel)]="isPractice" name="isPractice" #checkbox (ionChange)="isPracticeChanged.emit(isPractice)">Practice</ion-checkbox>
+    </ion-item>
+    <!-- TODO make this reset on save-->
+    <app-league-selector [isAddPage]="true" (leagueChanged)="onLeagueChanged($event)" #leagueSelector></app-league-selector>
+    <ion-item>
+      <ion-textarea
+        label="Note"
+        type="text"
+        [(ngModel)]="note"
+        name="note"
+        [autoGrow]="true"
+        placeholder="today knee pain, used Ion Pro Max"></ion-textarea>
+    </ion-item>
+  </ion-list>
 </div>

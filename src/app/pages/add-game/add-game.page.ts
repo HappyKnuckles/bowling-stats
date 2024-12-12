@@ -41,6 +41,7 @@ import { IonicSlides } from '@ionic/angular';
 import { StorageService } from 'src/app/services/storage/storage.service';
 import { SeriesMode } from './seriesModeEnum';
 import { GameUtilsService } from 'src/app/services/game-utils/game-utils.service';
+import { LeagueSelectorComponent } from 'src/app/components/league-selector/league-selector.component';
 
 defineCustomElements(window);
 
@@ -68,6 +69,7 @@ defineCustomElements(window);
     NgIf,
     NgFor,
     TrackGridComponent,
+    LeagueSelectorComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

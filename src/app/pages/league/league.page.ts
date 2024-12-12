@@ -103,6 +103,7 @@ export class LeaguePage implements OnInit, OnDestroy {
   games: Game[] = [];
   isEditMode: { [key: string]: boolean } = {};
   gamesByLeague: { [key: string]: Game[] } = {};
+  leagueKeys: string[] = [];
   private gameSubscriptions: Subscription = new Subscription();
   private loadingSubscription: Subscription;
   private leagueSubscriptions: Subscription = new Subscription();
@@ -133,6 +134,63 @@ export class LeaguePage implements OnInit, OnDestroy {
     overallSpareRate: 0,
     overallMissedRate: 0,
   };
+  statDefinitions = [
+    { label: 'Games', key: 'totalGames', id: 'league-totalGames' },
+    {
+      label: 'Perfect games',
+      key: 'perfectGameCount',
+      id: 'league-perfectGameCount',
+      toolTip: 'A perfect game means every frame is filled with strikes.',
+    },
+    {
+      label: 'Clean games',
+      key: 'cleanGameCount',
+      id: 'league-cleanGameCount',
+      toolTip: 'A clean game means every frame is filled with either a strike or a spare.',
+    },
+    {
+      label: 'Clean game percentage',
+      key: 'cleanGamePercentage',
+      id: 'league-cleanGamePercentage',
+      isPercentage: true,
+      toolTip: 'The percentage of how many games were clean games.',
+      prevKey: 'cleanGamePercentage',
+    },
+    { label: 'Average', key: 'averageScore', id: 'league-averageScore', prevKey: 'averageScore' },
+    { label: 'High game', key: 'highGame', id: 'league-highGame' },
+    { label: 'Total pins', key: 'totalPins', id: 'league-totalPins' },
+    { label: 'First ball average', key: 'averageFirstCount', id: 'league-averageFirstCount', prevKey: 'averageFirstCount' },
+    { label: 'Total strikes', key: 'totalStrikes', id: 'league-totalStrikes' },
+    { label: 'Strikes per game', key: 'averageStrikesPerGame', id: 'league-averageStrikesPerGame', prevKey: 'averageStrikesPerGame' },
+    {
+      label: 'Strike-percentage',
+      key: 'strikePercentage',
+      id: 'league-strikePercentage',
+      isPercentage: true,
+      toolTip: 'This shows your strike probability, calculated as the percentage of strikes you achieve out of a maximum of 12 per game.',
+      prevKey: 'strikePercentage',
+    },
+    { label: 'Total spares', key: 'totalSpares', id: 'league-totalSpares' },
+    { label: 'Spares per game', key: 'averageSparesPerGame', id: 'league-averageSparesPerGame', prevKey: 'averageSparesPerGame' },
+    {
+      label: 'Spare-percentage',
+      key: 'overallSpareRate',
+      id: 'league-sparePercentage',
+      isPercentage: true,
+      toolTip: 'This is the probability of how likely you hit a spare if your first throw was not a strike.',
+      prevKey: 'overallSpareRate',
+    },
+    { label: 'Total opens', key: 'totalSparesMissed', id: 'totalSparesMissed' },
+    { label: 'Opens per game', key: 'averageOpensPerGame', id: 'league-averageOpensPerGame', prevKey: 'averageOpensPerGame' },
+    {
+      label: 'Open-percentage',
+      key: 'overallMissedRate',
+      id: 'league-openPercentage',
+      isPercentage: true,
+      toolTip: 'This is the probability of how likely you miss a spare if your first throw was not a strike.',
+      prevKey: 'overallMissedRate',
+    },
+  ];
   isLoading: boolean = false;
 
   constructor(
@@ -170,6 +228,7 @@ export class LeaguePage implements OnInit, OnDestroy {
       this.loadingService.setLoading(true);
       // await this.getLeagues();
       await this.getGames();
+      this.leagueKeys = this.getLeagueKeys();
       this.subscribeToDataEvents();
     } catch (error) {
       this.toastService.showToast('Error loading leagues and games', 'error');
@@ -212,7 +271,18 @@ export class LeaguePage implements OnInit, OnDestroy {
     if (this.swiperInstance) {
       const activeIndex = this.swiperInstance.realIndex;
       this.selectedSegment = this.getSegmentValue(activeIndex);
+      if (activeIndex === this.swiperInstance.slides.length - 1) {
+        this.swiperInstance.params.followFinger = false;
+      } else {
+        this.swiperInstance.params.followFinger = true;
+      }
     }
+  }
+
+  resize() {
+    setTimeout(() => {
+      this.swiperInstance?.updateAutoHeight(75);
+    }, 100);
   }
 
   async saveLeague(league: string): Promise<void> {
@@ -227,13 +297,6 @@ export class LeaguePage implements OnInit, OnDestroy {
 
   getStatsByLeague(league: string): Stats {
     return this.statsByLeague[league] || [];
-  }
-
-  getLeagueKeys(excludePractice: boolean = false): string[] {
-    if (excludePractice) {
-      return Object.keys(this.gamesByLeague).filter((league) => league !== 'Practice');
-    }
-    return Object.keys(this.gamesByLeague);
   }
 
   async addLeague() {
@@ -325,6 +388,13 @@ export class LeaguePage implements OnInit, OnDestroy {
   //   this.leagues = await this.storageService.loadLeagues();
   // }
 
+  private getLeagueKeys(excludePractice: boolean = false): string[] {
+    if (excludePractice) {
+      return Object.keys(this.gamesByLeague).filter((league) => league !== 'Practice');
+    }
+    return Object.keys(this.gamesByLeague);
+  }
+
   private getOverallStats(): void {
     this.overallStats = this.statService.calculateBowlingStats(this.games);
   }
@@ -359,6 +429,7 @@ export class LeaguePage implements OnInit, OnDestroy {
         //   this.calculateStatsForLeagues();
         // });
         this.calculateStatsForLeagues();
+        this.leagueKeys = this.getLeagueKeys();
       })
     );
 

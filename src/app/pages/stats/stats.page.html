@@ -29,87 +29,27 @@
   <!-- Main content to display when there is game history or when loading is done -->
   <ng-template #content>
     <swiper-container
+      [spaceBetween]="8"
       [modules]="swiperModules"
       #swiper
       [slidesPerView]="1"
       (swiperslidechange)="onSlideChanged()"
-      [autoheight]="true"
+      [autoHeight]="true"
       style="background: var(--ion-item-background)">
       <!-- Overall Segment -->
       <swiper-slide>
         <div class="tab">
-          <app-stat-display label="Games" [currentStat]="stats.totalGames" id="totalGames"></app-stat-display>
-          <app-stat-display
-            label="Perfect games"
-            [currentStat]="stats.perfectGameCount"
-            [prevStat]="prevStats.perfectGameCount"
-            [toolTip]="'A perfect game means every frame is filled with strikes.'"
-            [id]="'perfectGameCount'"></app-stat-display>
-          <app-stat-display
-            label="Clean games"
-            [currentStat]="stats.cleanGameCount"
-            [prevStat]="prevStats.cleanGameCount"
-            [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"
-            [id]="'cleanGameCount'"></app-stat-display>
-          <app-stat-display
-            label="Clean game percentage"
-            [currentStat]="stats.cleanGamePercentage"
-            [prevStat]="prevStats.cleanGamePercentage"
-            [toolTip]="'The percentage of how many games were clean games.'"
-            [id]="'cleanGamePercentage'"
-            [isPercentage]="true"></app-stat-display>
-          <app-stat-display
-            label="Average"
-            [currentStat]="stats.averageScore"
-            [prevStat]="prevStats.averageScore"
-            [id]="'averageScore'"></app-stat-display>
-          <app-stat-display label="High game" [currentStat]="stats.highGame" id="highGame"></app-stat-display>
-          <app-stat-display label="Total pins" [currentStat]="stats.totalPins" id="totalPins"></app-stat-display>
-          <app-stat-display
-            label="First ball average"
-            [currentStat]="stats.averageFirstCount"
-            [prevStat]="prevStats.averageFirstCount"
-            [id]="'averageFirstCount'"></app-stat-display>
-          <app-stat-display label="Total strikes" [currentStat]="stats.totalStrikes" id="totalStrikes"></app-stat-display>
-          <app-stat-display
-            label="Strikes per game"
-            [currentStat]="stats.averageStrikesPerGame"
-            [prevStat]="prevStats.averageStrikesPerGame"
-            [id]="'averageStrikesPerGame'"></app-stat-display>
-          <app-stat-display
-            label="Strike-percentage"
-            [currentStat]="stats.strikePercentage"
-            [prevStat]="prevStats.strikePercentage"
-            [id]="'strikePercentage'"
-            [toolTip]="'This is the strike probability, calculated as the percentage of strikes you achieve out of a maximum of 12 per game.'"
-            [isPercentage]="true"></app-stat-display>
-          <app-stat-display label="Total spares" [currentStat]="stats.totalSpares" id="totalSpares"></app-stat-display>
-          <app-stat-display
-            label="Spares per game"
-            [currentStat]="stats.averageSparesPerGame"
-            [prevStat]="prevStats.averageSparesPerGame"
-            [id]="'averageSparesPerGame'"></app-stat-display>
-          <app-stat-display
-            label="Spare-percentage"
-            [currentStat]="stats.overallSpareRate"
-            [prevStat]="prevStats.overallSpareRate"
-            [id]="'sparePercentage'"
-            [toolTip]="'This is the probability of how likely you hit a spare if your first throw was not a strike.'"
-            [isPercentage]="true"></app-stat-display>
-          <app-stat-display label="Total opens" [currentStat]="stats.totalSparesMissed" id="totalSparesMissed"></app-stat-display>
-          <app-stat-display
-            label="Opens per game"
-            [currentStat]="stats.averageOpensPerGame"
-            [prevStat]="prevStats.averageOpensPerGame"
-            [id]="'averageOpensPerGame'"></app-stat-display>
-          <app-stat-display
-            label="Open-percentage"
-            [currentStat]="stats.overallMissedRate"
-            [prevStat]="prevStats.overallMissedRate"
-            [id]="'openPercentage'"
-            [toolTip]="'This is the probability of how likely you miss a spare if your first throw was not a strike.'"
-            [isPercentage]="true"></app-stat-display>
-          <canvas #scoreChart class="score" style="width: 300px; height: 300px"></canvas>
+          <ng-container *ngFor="let stat of statDefinitions">
+            <app-stat-display
+              [label]="stat.label"
+              [currentStat]="stats[stat.key]"
+              [prevStat]="stat.prevKey ? prevStats[stat.prevKey] : undefined"
+              [toolTip]="stat.toolTip"
+              [id]="stat.id"
+              [isPercentage]="stat.isPercentage || false">
+            </app-stat-display>
+          </ng-container>
+          <canvas #scoreChart class="score" style="width: 300px; height: 400px"></canvas>
         </div>
       </swiper-slide>
 
@@ -122,8 +62,10 @@
       </swiper-slide>
 
       <!-- Throws Segment -->
-      <swiper-slide>
-        <canvas #throwChart class="throws" style="width: 300px; height: 300px"></canvas>
+      <swiper-slide style="min-height: 100%">
+        <div class="tab">
+          <canvas #throwChart class="throws" style="width: 300px; height: 300px"></canvas>
+        </div>
       </swiper-slide>
 
       <swiper-slide>
@@ -141,81 +83,23 @@
         </ion-item>
         <swiper-container [nested]="true" [modules]="swiperModules" #swipernest>
           <swiper-slide>
-            <app-stat-display label="Games" [currentStat]="sessionStats.totalGames"></app-stat-display>
-            <app-stat-display
-              label="Perfect games"
-              [id]="'sessionPerfectGameCount'"
-              [toolTip]="'A perfect game means every frame is filled with strikes.'"
-              [currentStat]="sessionStats.perfectGameCount"></app-stat-display>
-            <app-stat-display
-              label="Clean games"
-              [id]="'sessionCleanGameCount'"
-              [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"
-              [currentStat]="sessionStats.cleanGameCount"
-              [toolTip]="'A clean game means every frame is filled with either a strike or a spare.'"></app-stat-display>
-            <app-stat-display
-              label="Clean game percentage"
-              [prevStat]="stats.cleanGamePercentage"
-              [currentStat]="sessionStats.cleanGamePercentage"
-              [toolTip]="'The percentage of how many games were clean games.'"
-              [id]="'sessionCleanGamePercentage'"
-              [isPercentage]="true"></app-stat-display>
-            <app-stat-display
-              label="Average"
-              [currentStat]="sessionStats.averageScore"
-              [prevStat]="stats.averageScore"
-              [id]="'sessionAverage'"></app-stat-display>
-            <app-stat-display label="High game" [currentStat]="sessionStats.highGame"></app-stat-display>
-            <app-stat-display label="Low game" [currentStat]="sessionStats.lowGame"></app-stat-display>
-            <app-stat-display label="Total pins" [currentStat]="sessionStats.totalPins"></app-stat-display>
-            <app-stat-display
-              label="First ball average"
-              [currentStat]="sessionStats.averageFirstCount"
-              [prevStat]="stats.averageFirstCount"
-              [id]="'sessionAverageFirstCount'"></app-stat-display>
-            <app-stat-display label="Total strikes" [currentStat]="sessionStats.totalStrikes"></app-stat-display>
-            <app-stat-display
-              label="Strikes per game"
-              [currentStat]="sessionStats.averageStrikesPerGame"
-              [prevStat]="stats.averageStrikesPerGame"
-              [id]="'sessionAverageStriksPerGame'"></app-stat-display>
-            <app-stat-display
-              label="Strike-percentage"
-              [id]="'sessionStrikePercentage'"
-              [toolTip]="'This shows your strike probability, calculated as the percentage of strikes you achieve out of a maximum of 12 per game.'"
-              [prevStat]="stats.strikePercentage"
-              [currentStat]="sessionStats.strikePercentage"
-              [isPercentage]="true"></app-stat-display>
-            <app-stat-display label="Total spares" [currentStat]="sessionStats.totalSpares"></app-stat-display>
-            <app-stat-display
-              label="Spares per game"
-              [currentStat]="sessionStats.averageSparesPerGame"
-              [prevStat]="stats.averageSparesPerGame"
-              [id]="'sessionAverageSparesPerGame'"></app-stat-display>
-            <app-stat-display
-              label="Spare-percentage"
-              [id]="'sessionSparePercentage'"
-              [toolTip]="'This is the probability of how likely you hit a spare if your first throw was not a strike.'"
-              [prevStat]="stats.overallSpareRate"
-              [currentStat]="sessionStats.overallSpareRate"
-              [isPercentage]="true"></app-stat-display>
-            <app-stat-display label="Total opens" [currentStat]="sessionStats.totalSparesMissed"></app-stat-display>
-            <app-stat-display
-              label="Opens per game"
-              [currentStat]="sessionStats.averageOpensPerGame"
-              [prevStat]="stats.averageOpensPerGame"
-              [id]="'sessionAverageOpensPerGame'"></app-stat-display>
-            <app-stat-display
-              label="Open-percentage"
-              [id]="'sessionOpenPercentage'"
-              [toolTip]="'This is the probability of how likely you miss a spare if your first throw was not a strike.'"
-              [prevStat]="stats.overallMissedRate"
-              [currentStat]="sessionStats.overallMissedRate"
-              [isPercentage]="true"></app-stat-display>
+            <div class="tab">
+              <ng-container *ngFor="let stat of sessionStatDefinitions">
+                <app-stat-display
+                  [label]="stat.label"
+                  [currentStat]="sessionStats[stat.key]"
+                  [prevStat]="stat.prevKey ? stats[stat.prevKey] : undefined"
+                  [toolTip]="stat.toolTip"
+                  [id]="stat.id"
+                  [isPercentage]="stat.isPercentage || false">
+                </app-stat-display>
+              </ng-container>
+            </div>
           </swiper-slide>
-
           <swiper-slide>
-            <app-spare-display [prevStats]="stats" [stats]="sessionStats" [id]="'sessionSpareStats'"></app-spare-display>
+            <div class="tab">
+              <app-spare-display [prevStats]="stats" [stats]="sessionStats" [id]="'sessionSpareStats'"></app-spare-display>
+            </div>
           </swiper-slide>
         </swiper-container>
       </swiper-slide>

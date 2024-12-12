@@ -23,6 +23,7 @@ export interface Stats {
   spareRates: number[];
   overallSpareRate: number;
   overallMissedRate: number;
+  [key: string]: any;
 }
 export interface SessionStats extends Stats {
   lowGame: number;
@@ -43,4 +44,5 @@ export interface PrevStats {
   overallSpareRate: number;
   overallMissedRate: number;
   spareRates: number[];
+  [key: string]: any;
 }

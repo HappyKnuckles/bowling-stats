@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe } from '@angular/common';
-import { Component, Input, Renderer2, ViewChild, OnChanges } from '@angular/core';
+import { Component, Input, Renderer2, ViewChild, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ImpactStyle } from '@capacitor/haptics';
@@ -88,6 +88,7 @@ export class GameComponent implements OnChanges {
   @Input() leagues!: string[];
   @Input() isLeaguePage?: boolean = false;
   @Input() gameCount?: number;
+  @Output() resizeSwiperEvent = new EventEmitter<any>();
   @ViewChild('accordionGroup') accordionGroup!: IonAccordionGroup;
   isEditMode: { [key: string]: boolean } = {};
   private originalGameState: { [key: string]: Game } = {};
@@ -114,8 +115,8 @@ export class GameComponent implements OnChanges {
     });
   }
 
-  ngOnChanges(): void {
-    if (this.games) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['games'] && this.games) {
       this.showingGames = this.games.slice(0, 15);
     }
   }
@@ -150,6 +151,7 @@ export class GameComponent implements OnChanges {
     setTimeout(() => {
       (event as InfiniteScrollCustomEvent).target.complete();
       this.showingGames = this.games.slice(0, nextPage);
+      this.resizeSwiperEvent.emit();
     }, 150);
   }
 
@@ -168,6 +170,18 @@ export class GameComponent implements OnChanges {
 
     if (accordionId) {
       this.openExpansionPanel(accordionId);
+    }
+  }
+
+  resizeSwiper(event: any) {
+    const openIds = event.detail.value;
+    const gameLength = this.showingGames.length;
+    const openIndices = this.showingGames.map((game, index) => (openIds.includes(game.gameId) ? index : -1)).filter((index) => index !== -1);
+
+    const shouldEmit = openIndices.some((index) => gameLength - index <= 3);
+
+    if (shouldEmit || event.detail.value.length === 0) {
+      this.resizeSwiperEvent.emit();
     }
   }
 

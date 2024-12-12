@@ -35,7 +35,7 @@ describe('BowlingCalculatorService', () => {
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
-      expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      expect(service.calculateMaxScore()).toBe(expectedMaxScores[i]);
     }
   });
 
@@ -60,7 +60,7 @@ describe('BowlingCalculatorService', () => {
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
-      expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      expect(service.calculateMaxScore()).toBe(expectedMaxScores[i]);
     }
   });
 
@@ -86,7 +86,7 @@ describe('BowlingCalculatorService', () => {
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
-      expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      expect(service.calculateMaxScore()).toBe(expectedMaxScores[i]);
     }
   });
 
@@ -112,7 +112,7 @@ describe('BowlingCalculatorService', () => {
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
-      expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      expect(service.calculateMaxScore()).toBe(expectedMaxScores[i]);
     }
   });
 
@@ -138,7 +138,7 @@ describe('BowlingCalculatorService', () => {
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
-      expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      expect(service.calculateMaxScore()).toBe(expectedMaxScores[i]);
     }
   });
 
@@ -163,7 +163,7 @@ describe('BowlingCalculatorService', () => {
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
-      expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      expect(service.calculateMaxScore()).toBe(expectedMaxScores[i]);
     }
   });
 
@@ -188,7 +188,7 @@ describe('BowlingCalculatorService', () => {
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
-      expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      expect(service.calculateMaxScore()).toBe(expectedMaxScores[i]);
     }
   });
   it('should calculate 300', () => {
@@ -212,7 +212,7 @@ describe('BowlingCalculatorService', () => {
 
     // Calculate and verify the max score after each frame
     for (let i = 0; i < service.frames.length; i++) {
-      expect(service.calculateMaxScore(i)).toBe(expectedMaxScores[i]);
+      expect(service.calculateMaxScore()).toBe(expectedMaxScores[i]);
     }
   });
 });

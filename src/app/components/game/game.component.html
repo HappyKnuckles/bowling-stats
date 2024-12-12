@@ -1,6 +1,6 @@
 <ion-accordion-group color="dark" multiple="true" #accordionGroup (ionChange)="resizeSwiper($event)">
   <!-- <ion-button (click)="deleteAll()"> Alles löschen</ion-button> -->
-  <ion-item-sliding *ngFor="let game of showingGames; let i = index" class="sliding swiper-no-swiping" #slidingItem>
+  <ion-item-sliding *ngFor="let game of showingGames; let i = index" class="sliding" #slidingItem>
     <ion-item-options side="end" (ionSwipe)="deleteGame(game.gameId); slidingItem.closeOpened()">
       <ion-item-option color="danger" expandable (click)="deleteGame(game.gameId); slidingItem.closeOpened()">
         <ion-icon class="title" style="transform: translateY(-2px)" name="trash-outline"></ion-icon>

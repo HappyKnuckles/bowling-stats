@@ -33,8 +33,8 @@ import { StorageService } from 'src/app/services/storage/storage.service';
 import { FilterComponent } from 'src/app/components/filter/filter.component';
 import { ModalController } from '@ionic/angular';
 import { FilterService } from 'src/app/services/filter/filter.service';
-import { ChartDataService } from 'src/app/services/chart/chart-data.service';
 import { SortUtilsService } from 'src/app/services/sort-utils/sort-utils.service';
+import { ChartService } from 'src/app/services/chart/chart-data.service';
 
 @Component({
   selector: 'app-stats',
@@ -302,7 +302,7 @@ export class StatsPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private filterService: FilterService,
     private sortUtilsService: SortUtilsService,
-    private chartDataService: ChartDataService
+    private chartService: ChartService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;
@@ -324,7 +324,7 @@ export class StatsPage implements OnInit, OnDestroy {
       await this.loadGameHistory();
       this.calculateStats();
       this.subscribeToDataEvents();
-      this.generateCharts();
+      // this.generateCharts();
       this.swiperInstance?.updateAutoHeight();
     } catch (error) {
       console.error(error);
@@ -508,266 +508,15 @@ export class StatsPage implements OnInit, OnDestroy {
       return;
     }
 
-    const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.chartDataService.calculateScoreChartData(this.gameHistory);
-
-    const ctx = this.scoreChart.nativeElement;
-
-    if (isReload) {
-      this.scoreChartInstance?.destroy();
-    }
-
-    if (this.scoreChartInstance && !isReload) {
-      this.scoreChartInstance.data.labels = gameLabels;
-      this.scoreChartInstance.data.datasets[0].data = overallAverages;
-      this.scoreChartInstance.data.datasets[1].data = differences;
-      this.scoreChartInstance.data.datasets[2].data = gamesPlayedDaily;
-      this.scoreChartInstance.update();
-    }
-
-    // Create a new chart instance with multiple datasets
-    else {
-      this.scoreChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: gameLabels,
-          datasets: [
-            {
-              label: 'Average',
-              data: overallAverages,
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-              pointHitRadius: 10,
-            },
-            {
-              label: 'Difference from average',
-              data: differences,
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1,
-              pointHitRadius: 10,
-            },
-            {
-              label: 'Games played',
-              data: gamesPlayedDaily,
-              type: 'bar',
-              backgroundColor: 'rgba(153, 102, 255, 0.1)',
-              borderColor: 'rgba(153, 102, 255, .5)',
-              borderWidth: 1,
-              yAxisID: 'y1', // Use a second y-axis for this dataset
-            },
-          ],
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-              suggestedMax: 300,
-              ticks: {
-                font: {
-                  size: 14,
-                },
-              },
-            },
-            y1: {
-              beginAtZero: true,
-              position: 'right',
-              grid: {
-                drawOnChartArea: false, // Only draw grid lines for the first y-axis
-              },
-              ticks: {
-                font: {
-                  size: 14,
-                },
-              },
-            },
-          },
-          plugins: {
-            title: {
-              display: true,
-              text: 'Score analysis',
-              color: 'white',
-              font: {
-                size: 20,
-              },
-            },
-            legend: {
-              display: true, // Show legend to differentiate datasets
-              labels: {
-                font: {
-                  size: 15,
-                },
-              },
-              onClick: (e, legendItem) => {
-                // Access the dataset index from the legend item
-                const index = legendItem.datasetIndex!;
-
-                // Ensure that chartInstance is defined and points to your chart
-                const ci = this.scoreChartInstance;
-                if (!ci) {
-                  console.error('Chart instance is not defined.');
-                  return;
-                }
-
-                // Get the metadata of the clicked dataset
-                const meta = ci.getDatasetMeta(index);
-
-                // Toggle the visibility of the dataset
-                meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : !meta.hidden;
-
-                // Find the index of the "Games Played" dataset
-                const gamesPlayedIndex = ci.data.datasets.findIndex((dataset) => dataset.label === 'Games played');
-
-                // Check if the "Games Played" dataset exists
-                if (gamesPlayedIndex !== -1) {
-                  const gamesPlayedMeta = ci.getDatasetMeta(gamesPlayedIndex);
-                  const isGamesPlayedHidden = gamesPlayedMeta.hidden;
-
-                  // Update the y1 axis visibility based on the "Games Played" dataset visibility
-                  if (ci.options.scales && ci.options.scales['y1']) {
-                    ci.options.scales['y1'].display = !isGamesPlayedHidden;
-                  }
-                }
-
-                // Update the chart to apply the changes
-                ci.update();
-              },
-            },
-          },
-        },
-      });
-    }
+    this.scoreChartInstance = this.chartService.generateScoreChart(this.scoreChart, this.gameHistory, this.scoreChartInstance!, isReload);
   }
 
-  //TODO adjust look of this
   private generatePinChart(isReload?: boolean): void {
     if (!this.pinChart) {
       return;
     }
 
-    const { filteredSpareRates, filteredMissedCounts } = this.chartDataService.calculatePinChartData(this.stats);
-
-    const ctx = this.pinChart.nativeElement;
-
-    if (isReload) {
-      this.pinChartInstance?.destroy();
-    }
-
-    if (this.pinChartInstance && !isReload) {
-      this.pinChartInstance.data.datasets[0].data = filteredSpareRates;
-      this.pinChartInstance.data.datasets[1].data = filteredMissedCounts;
-      this.pinChartInstance.update();
-    } else {
-      this.pinChartInstance = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['1 Pin', '2 Pins', '3 Pins', '4 Pins', '5 Pins', '6 Pins', '7 Pins', '8 Pins', '9 Pins', '10 Pins'], // Labels for each pin count
-          datasets: [
-            {
-              label: 'Converted',
-              data: filteredSpareRates, // Exclude the first element if it's for total
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-              pointHitRadius: 10,
-            },
-            {
-              label: 'Missed',
-              data: filteredMissedCounts,
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1,
-              pointHitRadius: 10,
-            },
-          ],
-        },
-        options: {
-          scales: {
-            r: {
-              beginAtZero: true,
-              max: 100,
-              grid: {
-                color: 'rgba(128, 128, 128, 0.3)',
-              },
-              angleLines: {
-                color: 'rgba(128, 128, 128, 0.3)',
-              },
-              pointLabels: {
-                color: 'gray',
-                font: {
-                  size: 14,
-                },
-              },
-              ticks: {
-                backdropColor: 'transparent',
-                color: 'white',
-                display: false,
-              },
-            },
-          },
-          plugins: {
-            tooltip: {
-              callbacks: {
-                title: function (context) {
-                  // Get the value of the hovered point
-                  const value = context[0].raw;
-
-                  // Find all labels with the same value
-                  const matchingLabels = context[0].chart.data.labels!.filter((label, index) => {
-                    // Check if the value matches any point in the datasets and is 0
-                    return context[0].chart.data.datasets.some((dataset) => dataset.data[index] === value && value === 0);
-                  });
-
-                  // Only modify the title if multiple labels match the same value
-                  if (matchingLabels.length > 1) {
-                    // Extract only the numbers from each label and join them
-                    const extractedNumbers = matchingLabels.map((label) => {
-                      // Use regex to extract the number part from the label (e.g., "1 Pin" -> "1")
-                      const match = (label as string).match(/\d+/);
-                      return match ? match[0] : ''; // Return the matched number or an empty string if no match
-                    });
-
-                    // Return the combined numbers as the title (e.g., "2, 3 Pins")
-                    return extractedNumbers.join(', ') + ' Pins';
-                  }
-
-                  // Default behavior: return the original label if only one match
-                  return context[0].label || '';
-                },
-                label: function (context) {
-                  // Create the base label with dataset name and value percentage
-                  let label = context.dataset.label || '';
-                  if (label) {
-                    label += ': ';
-                  }
-                  if (context.parsed.r !== null) {
-                    label += context.parsed.r + '%';
-                  }
-
-                  return label;
-                },
-              },
-            },
-            title: {
-              display: true,
-              text: 'Converted vs Missed spares',
-              color: 'white',
-              font: {
-                size: 20,
-              },
-            },
-            legend: {
-              display: true,
-              labels: {
-                font: {
-                  size: 15,
-                },
-              },
-            },
-          },
-        },
-      });
-    }
+    this.pinChartInstance = this.chartService.generatePinChart(this.pinChart, this.stats, this.pinChartInstance!, isReload);
   }
 
   private generateThrowChart(isReload?: boolean): void {
@@ -775,121 +524,6 @@ export class StatsPage implements OnInit, OnDestroy {
       return;
     }
 
-    const { opens, spares, strikes } = this.chartDataService.calculateThrowChartData(this.stats);
-
-    const ctx = this.throwChart.nativeElement;
-
-    if (isReload) {
-      this.throwChartInstance?.destroy();
-    }
-
-    if (this.throwChartInstance && !isReload) {
-      this.throwChartInstance.data.datasets[0].data = [spares, strikes, opens];
-      this.throwChartInstance.update();
-    } else {
-      this.throwChartInstance = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['Spare', 'Strike', 'Open'],
-          datasets: [
-            {
-              label: 'Percentage',
-              data: [spares, strikes, opens],
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
-              borderColor: 'rgb(54, 162, 235)',
-              pointBackgroundColor: 'rgb(54, 162, 235)',
-              pointBorderColor: '#fff',
-              pointHoverBackgroundColor: '#fff',
-              pointHoverBorderColor: 'rgb(54, 162, 235)',
-              pointHitRadius: 10,
-            },
-          ],
-        },
-        options: {
-          scales: {
-            r: {
-              beginAtZero: true,
-              max: 100,
-              grid: {
-                color: 'rgba(128, 128, 128, 0.3)',
-                lineWidth: 0.5,
-              },
-              angleLines: {
-                color: 'rgba(128, 128, 128, 0.3)',
-                lineWidth: 0.5,
-              },
-              pointLabels: {
-                color: 'gray',
-                font: {
-                  size: 14,
-                },
-              },
-              ticks: {
-                display: false,
-                backdropColor: 'transparent',
-                color: 'white',
-              },
-            },
-          },
-          plugins: {
-            tooltip: {
-              callbacks: {
-                title: function (context) {
-                  // Get the value of the hovered point
-                  const value = context[0].raw;
-
-                  // Find all labels with the same value
-                  const matchingLabels = context[0].chart.data.labels!.filter((label, index) => {
-                    // Check if the value matches any point in the datasets and is 0
-                    return context[0].chart.data.datasets.some((dataset) => dataset.data[index] === value && value === 0);
-                  });
-
-                  // Only modify the title if multiple labels match the same value
-                  if (matchingLabels.length > 1) {
-                    // Return the combined titles as the title (e.g., "2, 3 Pins")
-                    return matchingLabels.join(', ');
-                  }
-
-                  // Default behavior: return the original label if only one match
-                  return context[0].label || '';
-                },
-                label: function (context) {
-                  let label = context.dataset.label || '';
-                  if (label) {
-                    label += ': ';
-                  }
-                  if (context.parsed.r !== null) {
-                    label += context.parsed.r + '%';
-                  }
-                  return label;
-                },
-              },
-            },
-            title: {
-              display: true,
-              text: 'Throw distribution',
-              color: 'white',
-              font: {
-                size: 20,
-              },
-            },
-            legend: {
-              display: false,
-            },
-          },
-          layout: {
-            padding: {
-              top: 10,
-              bottom: 10,
-            },
-          },
-          elements: {
-            line: {
-              borderWidth: 2,
-            },
-          },
-        },
-      });
-    }
+    this.throwChartInstance = this.chartService.generateThrowChart(this.throwChart, this.stats, this.throwChartInstance!, isReload);
   }
 }

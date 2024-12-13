@@ -34,7 +34,7 @@ import { FilterComponent } from 'src/app/components/filter/filter.component';
 import { ModalController } from '@ionic/angular';
 import { FilterService } from 'src/app/services/filter/filter.service';
 import { SortUtilsService } from 'src/app/services/sort-utils/sort-utils.service';
-import { ChartService } from 'src/app/services/chart/chart-data.service';
+import { ChartGenerationService } from 'src/app/services/chart/chart-generation.service';
 
 @Component({
   selector: 'app-stats',
@@ -302,7 +302,7 @@ export class StatsPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private filterService: FilterService,
     private sortUtilsService: SortUtilsService,
-    private chartService: ChartService
+    private chartService: ChartGenerationService
   ) {
     this.loadingSubscription = this.loadingService.isLoading$.subscribe((isLoading) => {
       this.isLoading = isLoading;

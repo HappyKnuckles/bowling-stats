@@ -58,7 +58,12 @@
     </ng-container>
   </ng-template>
 
-  <ion-modal *ngFor="let league of leagueKeys" [trigger]="league" #modal (didPresent)="loadingService.setLoading(false); generateCharts(true)">
+  <ion-modal
+    *ngFor="let league of leagueKeys"
+    [trigger]="league"
+    #modal
+    (didDismiss)="destroyCharts(league)"
+    (didPresent)="loadingService.setLoading(false); generateCharts(0, league, true)">
     <ng-template>
       <ion-header [translucent]="true">
         <ion-toolbar>
@@ -67,7 +72,7 @@
           </ion-buttons>
           <ion-title>{{league}}</ion-title>
         </ion-toolbar>
-        <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChanged($event)">
+        <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChanged(league, $event)">
           <ion-segment-button *ngFor="let segment of segments" [value]="segment">
             <ion-label class="segmentLabel">{{segment}}</ion-label>
           </ion-segment-button>
@@ -80,7 +85,7 @@
           [modules]="swiperModules"
           [slidesPerView]="1"
           #swiper
-          (swiperslidechange)="onSlideChanged()"
+          (swiperslidechange)="onSlideChanged(league)"
           [autoHeight]="true"
           style="background: var(--ion-item-background)">
           <!-- Overall Segment -->
@@ -96,7 +101,7 @@
                   [isPercentage]="stat.isPercentage || false">
                 </app-stat-display>
               </ng-container>
-              <canvas #scoreChart style="width: 300px; height: 300px;"></canvas>
+              <canvas #scoreChart style="width: 300px; height: 300px"></canvas>
             </div>
           </swiper-slide>
 
@@ -104,7 +109,7 @@
           <swiper-slide>
             <div class="tab">
               <app-spare-display [prevStats]="overallStats" [stats]="statsByLeague[league]" id="league-spareStats"></app-spare-display>
-              <canvas #pinChart style="width: 300px; height: 300px;"></canvas>
+              <canvas #pinChart style="width: 300px; height: 300px"></canvas>
             </div>
           </swiper-slide>
 

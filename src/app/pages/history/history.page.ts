@@ -127,7 +127,6 @@ export class HistoryPage implements OnInit, OnDestroy {
       return acc;
     }, []);
     this.leagues = [...new Set([...leagueKeys, ...savedLeagues])];
-
   }
 
   async openFilterModal() {

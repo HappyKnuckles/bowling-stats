@@ -59,8 +59,8 @@ import { LeagueSelectorComponent } from '../../components/league-selector/league
     NgFor,
     FormsModule,
     ReactiveFormsModule,
-    LeagueSelectorComponent
-],
+    LeagueSelectorComponent,
+  ],
 })
 export class SettingsPage implements OnInit {
   username: string | null = '';

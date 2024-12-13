@@ -7,8 +7,8 @@ import Chart from 'chart.js/auto';
 @Injectable({
   providedIn: 'root',
 })
-export class ChartService {
-  constructor() { }
+export class ChartGenerationService {
+  constructor() {}
 
   generateScoreChart(scoreChart: ElementRef, games: Game[], existingChartInstance: Chart | undefined, isReload?: boolean): Chart {
     const { gameLabels, overallAverages, differences, gamesPlayedDaily } = this.calculateScoreChartData(games);

@@ -102,9 +102,9 @@ export class AddGamePage implements OnInit {
       this.swiperInstance = swiperRef?.nativeElement.swiper;
     }, 0);
   }
- 
+
   selectedSegment: string = 'Game 1';
-  segments: string[] = ['Game 1']; 
+  segments: string[] = ['Game 1'];
   private swiperInstance: Swiper | undefined;
   private allowedDeviceIds = [
     '820fabe8-d29b-45c2-89b3-6bcc0e149f2b',

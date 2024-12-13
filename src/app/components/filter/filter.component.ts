@@ -72,7 +72,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private filterService: FilterService,
     private sortUtilsService: SortUtilsService,
-    private storageService: StorageService,
+    // private storageService: StorageService,
     private utilsService: UtilsService
   ) {
     this.filterSubscription = this.filterService.filters$.subscribe((filters: Filter) => {

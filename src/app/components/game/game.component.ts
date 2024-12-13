@@ -84,12 +84,12 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
 })
 export class GameComponent implements OnChanges {
   @Input() games!: Game[];
-  showingGames: Game[] = [];
   @Input() leagues!: string[];
   @Input() isLeaguePage?: boolean = false;
   @Input() gameCount?: number;
   @Output() resizeSwiperEvent = new EventEmitter<any>();
   @ViewChild('accordionGroup') accordionGroup!: IonAccordionGroup;
+  showingGames: Game[] = [];
   isEditMode: { [key: string]: boolean } = {};
   private originalGameState: { [key: string]: Game } = {};
   constructor(

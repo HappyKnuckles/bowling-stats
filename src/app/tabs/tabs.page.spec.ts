@@ -1,5 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 import { TabsPage } from './tabs.page';
 
@@ -11,6 +13,16 @@ describe('TabsPage', () => {
     await TestBed.configureTestingModule({
       imports: [TabsPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({}),
+            queryParams: of({}),
+            snapshot: { paramMap: { get: () => null } },
+          },
+        },
+      ],
     }).compileComponents();
   });
 

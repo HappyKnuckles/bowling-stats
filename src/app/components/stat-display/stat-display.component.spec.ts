@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-
 import { StatDisplayComponent } from './stat-display.component';
 
 describe('StatDisplayComponent', () => {
@@ -13,6 +12,11 @@ describe('StatDisplayComponent', () => {
 
     fixture = TestBed.createComponent(StatDisplayComponent);
     component = fixture.componentInstance;
+
+    // Provide default input values
+    component.label = 'Test Stat';
+    component.currentStat = 100;
+
     fixture.detectChanges();
   }));
 

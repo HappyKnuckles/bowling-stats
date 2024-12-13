@@ -18,7 +18,6 @@ import {
   IonTextarea,
   IonModal,
   IonButtons,
-  IonRippleEffect,
 } from '@ionic/angular/standalone';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -38,7 +37,6 @@ import { LeagueSelectorComponent } from '../../components/league-selector/league
   styleUrls: ['./settings.page.scss'],
   standalone: true,
   imports: [
-    IonRippleEffect,
     IonButtons,
     IonModal,
     IonTextarea,
@@ -61,8 +59,8 @@ import { LeagueSelectorComponent } from '../../components/league-selector/league
     NgFor,
     FormsModule,
     ReactiveFormsModule,
-    LeagueSelectorComponent,
-  ],
+    LeagueSelectorComponent
+],
 })
 export class SettingsPage implements OnInit {
   username: string | null = '';

@@ -120,7 +120,7 @@
           <ion-item class="league">
             <ion-icon name="medal-outline" slot="start"></ion-icon>
             <ion-select name="league" [(ngModel)]="game.league" label="League/Tournament" [value]="game.league">
-              <ion-select-option value="">None</ion-select-option>
+              <ion-select-option [value]="''">None</ion-select-option>
               <ion-select-option *ngFor="let league of leagues" [value]="league">{{ league }}</ion-select-option>
             </ion-select>
           </ion-item>

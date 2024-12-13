@@ -71,12 +71,12 @@ export class HistoryPage implements OnInit, OnDestroy {
   leagues: string[] = [];
   arrayBuffer: any;
   file!: File;
+  isLoading: boolean = false;
+  activeFilterCount = this.filterService.activeFilterCount;
   private gameSubscriptions: Subscription = new Subscription();
   private filteredGamesSubscription!: Subscription;
   private loadingSubscription: Subscription;
   private leagueSubscriptions: Subscription = new Subscription();
-  isLoading: boolean = false;
-  activeFilterCount = this.filterService.activeFilterCount;
 
   constructor(
     private alertController: AlertController,
@@ -119,7 +119,15 @@ export class HistoryPage implements OnInit, OnDestroy {
   }
 
   async getLeagues() {
-    this.leagues = await this.storageService.loadLeagues();
+    const savedLeagues = await this.storageService.loadLeagues();
+    const leagueKeys = this.gameHistory.reduce((acc: string[], game: Game) => {
+      if (game.league && !acc.includes(game.league)) {
+        acc.push(game.league);
+      }
+      return acc;
+    }, []);
+    this.leagues = [...new Set([...leagueKeys, ...savedLeagues])];
+
   }
 
   async openFilterModal() {

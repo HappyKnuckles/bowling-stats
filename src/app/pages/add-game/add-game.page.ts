@@ -90,13 +90,6 @@ export class AddGamePage implements OnInit {
   gameData!: Game;
   deviceId: string = '';
   leagues: string[] = [];
-  private allowedDeviceIds = [
-    '820fabe8-d29b-45c2-89b3-6bcc0e149f2b',
-    '21330a3a-9cff-41ce-981a-00208c21d883',
-    'b376db84-c3a4-4c65-8c59-9710b7d05791',
-    '01c1e0d1-3469-4091-96a0-76beb68a6f97',
-  ];
-
   @ViewChildren(TrackGridComponent) trackGrids!: QueryList<TrackGridComponent>;
   @ViewChild(IonModal) modal!: IonModal;
   @ViewChild('swiper')
@@ -109,21 +102,17 @@ export class AddGamePage implements OnInit {
       this.swiperInstance = swiperRef?.nativeElement.swiper;
     }, 0);
   }
-  private swiperInstance: Swiper | undefined;
+ 
   selectedSegment: string = 'Game 1';
-  segments: string[] = ['Game 1'];
-  updateSegments(): void {
-    if (this.selectedMode === SeriesMode.Series3) {
-      this.segments = ['Game 1', 'Game 2', 'Game 3'];
-    } else if (this.selectedMode === SeriesMode.Series4) {
-      this.segments = ['Game 1', 'Game 2', 'Game 3', 'Game 4'];
-    } else if (this.selectedMode === SeriesMode.Series5) {
-      this.segments = ['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5'];
-    } else {
-      this.segments = ['Game 1'];
-    }
-    this.selectedSegment = this.segments[0];
-  }
+  segments: string[] = ['Game 1']; 
+  private swiperInstance: Swiper | undefined;
+  private allowedDeviceIds = [
+    '820fabe8-d29b-45c2-89b3-6bcc0e149f2b',
+    '21330a3a-9cff-41ce-981a-00208c21d883',
+    'b376db84-c3a4-4c65-8c59-9710b7d05791',
+    '01c1e0d1-3469-4091-96a0-76beb68a6f97',
+  ];
+
   constructor(
     private actionSheetCtrl: ActionSheetController,
     private imageProcessingService: ImageProcesserService,
@@ -147,6 +136,19 @@ export class AddGamePage implements OnInit {
     });
     this.deviceId = (await Device.getId()).identifier;
     this.leagues = await this.storageService.loadLeagues();
+  }
+
+  updateSegments(): void {
+    if (this.selectedMode === SeriesMode.Series3) {
+      this.segments = ['Game 1', 'Game 2', 'Game 3'];
+    } else if (this.selectedMode === SeriesMode.Series4) {
+      this.segments = ['Game 1', 'Game 2', 'Game 3', 'Game 4'];
+    } else if (this.selectedMode === SeriesMode.Series5) {
+      this.segments = ['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5'];
+    } else {
+      this.segments = ['Game 1'];
+    }
+    this.selectedSegment = this.segments[0];
   }
 
   async handleImageUpload(): Promise<void> {

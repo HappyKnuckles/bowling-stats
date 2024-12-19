@@ -325,7 +325,6 @@ export class StatsPage implements OnInit, OnDestroy {
       this.calculateStats();
       this.subscribeToDataEvents();
       // this.generateCharts();
-      this.swiperInstance?.updateAutoHeight();
     } catch (error) {
       console.error(error);
     } finally {
@@ -458,6 +457,7 @@ export class StatsPage implements OnInit, OnDestroy {
       if (index !== undefined) {
         this.statsValueChanged[index] = false;
       }
+      this.swiperInstance?.updateAutoHeight();
     }
   }
 
